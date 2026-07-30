@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lamborghini Aventador SVJ – Spatial UI Experience
 
-## Getting Started
+![Lamborghini Spatial UI](https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg)
 
-First, run the development server:
+An ultra-premium, highly performant WebGL 3D configurator and interactive showcase for the Lamborghini Aventador SVJ. Built with Next.js, React Three Fiber, and Framer Motion, this project demonstrates the bleeding edge of web-based spatial UI design, combining cinematic aesthetics with flawless 60fps performance.
+
+## 🌟 Key Features
+
+- **Massive Spatial Typography:** Hardware-accelerated, zero-DOM-cost typographic watermarks and gradients.
+- **Cinematic 3D Environment:** A custom-built lighting pipeline featuring Champagne spotlighting and an infinite dark gallery void.
+- **Zero-Stutter Scroll Architecture:** Fully decoupled React rendering. The scroll state bypasses the React reconciler and injects directly into the WebGL render loop, ensuring absolute zero bounding-box recalculation lag.
+- **Interactive 3D Configurator:** Real-time paint and material customization for a 50MB AAA-quality 3D asset.
+- **Micro-Interactions:** Custom frosted glassmorphism elements, precise timing springs, and editorial layouts.
+
+## 🛠️ Technology Stack
+
+- **Framework:** Next.js 14
+- **3D Graphics Engine:** Three.js & React Three Fiber
+- **Animation Engine:** Framer Motion
+- **Styling:** Tailwind CSS
+- **State Management:** Zustand
+
+## 🚀 Getting Started
+
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏎️ Performance Optimizations
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This repository implements several advanced WebGL optimization techniques:
+1. **Shader Pruning Bypass:** Prevented Three.js from recompiling shaders mid-scroll by clamping minimum light intensities to `0.001` instead of `0`.
+2. **Baked Shadows:** `ContactShadows` are locked to `frames={1}`, completely eliminating per-frame shadow map generation costs.
+3. **Reactive Decoupling:** The 3D `<Model />` component subscribes to Zustand state non-reactively via `.getState()` inside the `useFrame` loop, preventing `@react-three/drei`'s `<Center>` from executing massive CPU-bound bounding box calculations during scroll events.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Developed as a masterclass in WebGL performance and luxury Spatial UI design.*

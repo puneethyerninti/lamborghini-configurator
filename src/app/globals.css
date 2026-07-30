@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-background: #050505;
+  --color-foreground: #f0f0f0;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-highlight: rgba(255, 255, 255, 0.15);
+
+  --color-primary: #ffffff;
+  --color-primary-glow: rgba(255, 255, 255, 0.3);
+  --color-accent: #3b82f6;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --shadow-spatial: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-glass-border), inset 0 1px 0 0 var(--color-glass-highlight);
+  --shadow-spatial-hover: 0 35px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--color-glass-highlight), inset 0 1px 0 0 rgba(255,255,255,0.3);
+
+  --radius-spatial: 1.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #050505;
+    --foreground: #f0f0f0;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background-color: var(--color-glass);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: var(--shadow-spatial);
+    border-radius: var(--radius-spatial);
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(20, 20, 30, 0.5), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(30, 20, 40, 0.5), transparent 30%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background-color: var(--color-glass-highlight);
+  color: #fff;
 }

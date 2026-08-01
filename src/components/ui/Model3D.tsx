@@ -97,14 +97,14 @@ function CinematicLighting() {
       if (currentSlide === 0) {
         _targetLightPos.set(0, 8, 4);
         lightRef.current.position.lerp(_targetLightPos, lerpSpeed);
-        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 15, lerpSpeed);
+        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 5, lerpSpeed);
         lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.6, lerpSpeed);
         lightRef.current.color.setHex(0xfff5e6);
       } else {
         const t = state.clock.elapsedTime;
         _orbitLightPos.set(Math.sin(t * 0.5) * 15, 10, Math.cos(t * 0.3) * 10);
         lightRef.current.position.lerp(_orbitLightPos, lerpSpeed);
-        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 10, lerpSpeed);
+        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 3, lerpSpeed);
         lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.4, lerpSpeed);
         lightRef.current.color.setHex(0xffffff);
       }
@@ -116,7 +116,7 @@ function CinematicLighting() {
       <ambientLight ref={ambientRef} intensity={0.05} />
       {/* Lightweight environment — "apartment" is much smaller than "studio" */}
       <Environment preset="studio" />
-      <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={15} color="#fff5e6" />
+      <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={5} color="#fff5e6" />
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
       <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
       
@@ -485,7 +485,7 @@ export function Model3D() {
         <color attach="background" args={["#020202"]} />
         {typeof window !== 'undefined' && window.innerWidth > 768 && (
           <EffectComposer disableNormalPass>
-            <Bloom luminanceThreshold={2.0} mipmapBlur intensity={0.8} />
+            <Bloom luminanceThreshold={4.0} mipmapBlur intensity={0.5} />
             <Vignette eskil={false} offset={0.1} darkness={1.1} />
           </EffectComposer>
         )}

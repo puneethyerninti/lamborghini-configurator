@@ -2,11 +2,14 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, ContactShadows } from "@react-three/drei";
+import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
+import { ParticleField } from "./ParticleField";
+import { Hotspots } from "./Hotspots";
 
-const MODEL_PATH = "/lamborghini_aventador.glb";
+const MODEL_PATH = "/lamborghini_light.glb";
 
 // ─── Pre-allocated vectors (zero GC pressure) ───
 const _targetLightPos = new THREE.Vector3();
@@ -169,6 +172,24 @@ function CinematicLighting() {
       <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={30} color="#fff5e6" />
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
       <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
+      
+      {/* Showroom Floor */}
+      <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[50, 50]} />
+        <MeshReflectorMaterial
+          blur={[300, 100]}
+          resolution={1024}
+          mixBlur={1}
+          mixStrength={40}
+          roughness={0.2}
+          depthScale={1.2}
+          minDepthThreshold={0.4}
+          maxDepthThreshold={1.4}
+          color="#151515"
+          metalness={0.5}
+          mirror={1}
+        />
+      </mesh>
     </>
   );
 }
@@ -177,8 +198,10 @@ function CinematicLighting() {
 // Model — aggressively optimizes the GLB geometry at load time
 // ═══════════════════════════════════════════════════════════════════
 function CarModel() {
-  const { scene } = useGLTF(MODEL_PATH);
+  const { scene, materials } = useGLTF(MODEL_PATH) as any;
   const carColor = useAppStore((s) => s.carColor);
+  const wheelStyle = useAppStore((s) => s.wheelStyle);
+  const packageTier = useAppStore((s) => s.packageTier);
   const groupRef = useRef<THREE.Group>(null);
   const targetRotation = useRef(new THREE.Quaternion());
   const currentRotation = useRef(new THREE.Quaternion());
@@ -190,7 +213,6 @@ function CarModel() {
     optimized.current = true;
 
     let totalVertices = 0;
-    const meshesToSimplify: THREE.Mesh[] = [];
 
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
@@ -210,12 +232,6 @@ function CarModel() {
           const geo = mesh.geometry;
           if (geo.attributes.uv2) geo.deleteAttribute('uv2');
           if (geo.attributes.color) geo.deleteAttribute('color');
-          
-          // Merge geometry index if possible
-          if (!geo.index && geo.attributes.position) {
-            // Non-indexed geometry — much slower to render. 
-            // We can't easily index it, but at least mark it.
-          }
         }
 
         // Simplify materials — disable expensive features
@@ -279,11 +295,61 @@ function CarModel() {
         }
       });
     }
-  }, [scene, carColor]);
+  }, [scene]);
+
+  // Real-time dynamic material configuration
+  const _targetColor = new THREE.Color();
+  const _caliperColor = new THREE.Color();
+  const _wheelColor = new THREE.Color();
+  const _trimColor = new THREE.Color();
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
-    const { currentSlide, isInteriorMode } = useAppStore.getState();
+    const { isInteriorMode, currentSlide } = useAppStore.getState();
+
+    // 1. Smooth Camera/Model Rotation tracking
+    if (groupRef.current && (currentSlide === 0 || currentSlide === 12 || currentSlide === 13)) {
+      currentRotation.current.slerp(targetRotation.current, delta * 2);
+      groupRef.current.quaternion.copy(currentRotation.current);
+    }
+
+    // 2. Real-Time Material Injection
+    if (!materials) return;
+
+    const lerpSpeed = delta * 5;
+
+    // Body Paint
+    if (materials['Body']) {
+      _targetColor.set(carColor);
+      materials['Body'].color.lerp(_targetColor, lerpSpeed);
+    }
+
+    // Brake Calipers (Match body paint, unless SVJ63 where they turn Gold/Yellow)
+    if (materials['Brake_2']) {
+      _caliperColor.set(packageTier === 'svj63' ? '#ffaa00' : carColor);
+      materials['Brake_2'].color.lerp(_caliperColor, lerpSpeed);
+    }
+
+    // Wheels (Dark_Metal handles the rims in this GLB)
+    if (materials['Dark_Metal']) {
+      _wheelColor.set(
+        wheelStyle === 0 ? '#111111' :
+        wheelStyle === 1 ? '#cccccc' :
+        '#8a603c' // Bronze
+      );
+      materials['Dark_Metal'].color.lerp(_wheelColor, lerpSpeed);
+      materials['Dark_Metal'].metalness = THREE.MathUtils.lerp(
+        materials['Dark_Metal'].metalness, 
+        wheelStyle === 1 ? 0.9 : 0.6, 
+        lerpSpeed
+      );
+    }
+
+    // Accent Trim / Exhaust (SVJ 63 Edition Gold)
+    if (materials['Aluminum']) {
+      _trimColor.set(packageTier === 'svj63' ? '#cca300' : '#ffffff');
+      materials['Aluminum'].color.lerp(_trimColor, lerpSpeed);
+    }
 
     if (isInteriorMode) {
       targetRotation.current.identity();
@@ -470,6 +536,12 @@ export function Model3D() {
         frameloop="always"
       >
         <color attach="background" args={["#020202"]} />
+        {typeof window !== 'undefined' && window.innerWidth > 768 && (
+          <EffectComposer disableNormalPass>
+            <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} />
+            <Vignette eskil={false} offset={0.1} darkness={1.1} />
+          </EffectComposer>
+        )}
 
         <CinematicLighting />
 
@@ -477,6 +549,7 @@ export function Model3D() {
           <CarModel />
           <WindTunnel />
           <ParticleField />
+          <Hotspots />
           <ContactShadows frames={1} resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
         </Suspense>
 

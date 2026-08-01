@@ -6,11 +6,11 @@ import { useAppStore } from "@/store/useAppStore";
 
 export function WindTunnel() {
   const currentSlide = useAppStore((s) => s.currentSlide);
-  const active = currentSlide === 2;
+  const active = currentSlide === 4; // Active Aero Chapter
   const linesRef = useRef<THREE.LineSegments>(null);
   
-  const lineCount = 800;
-  const lineLength = 3.0; // The length of the aerodynamic streak
+  const lineCount = 1500; // Increased density for cinematic feel
+  const lineLength = 6.0; // Longer streaks
   
   const [positions, speeds] = useMemo(() => {
     const pos = new Float32Array(lineCount * 2 * 3);
@@ -22,21 +22,21 @@ export function WindTunnel() {
       const y = (Math.random() * 5);
       const z = (Math.random() - 0.5) * 40;
       
-      // Start vertex
+      // Start vertex (slightly above ground to avoid clipping floor)
       pos[i * 6] = x;
-      pos[i * 6 + 1] = y;
+      pos[i * 6 + 1] = y + 0.5;
       pos[i * 6 + 2] = z;
       
       // End vertex (trailing behind to form a line)
       pos[i * 6 + 3] = x;
-      pos[i * 6 + 4] = y;
+      pos[i * 6 + 4] = y + 0.5;
       pos[i * 6 + 5] = z + lineLength;
       
-      spd[i] = Math.random() * 0.8 + 0.5; // Kinetic speed
+      spd[i] = Math.random() * 1.5 + 0.8; // Faster kinetic speed
     }
     
     return [pos, spd];
-  }, [lineCount]);
+  }, [lineCount, lineLength]);
 
   const opacityRef = useRef(0);
 
@@ -72,16 +72,21 @@ export function WindTunnel() {
   return (
     <lineSegments ref={linesRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={lineCount * 2} />
+        <bufferAttribute 
+          attach="attributes-position" 
+          count={lineCount * 2} 
+          array={positions} 
+          itemSize={3} 
+          usage={THREE.DynamicDrawUsage}
+        />
       </bufferGeometry>
       {/* High-tech clinical blue aerodynamic laser streaks */}
       <lineBasicMaterial 
-        color="#38bdf8" 
+        color="#00ffff" 
         transparent 
         opacity={0} 
         blending={THREE.AdditiveBlending} 
         depthWrite={false} 
-        linewidth={1}
       />
     </lineSegments>
   );

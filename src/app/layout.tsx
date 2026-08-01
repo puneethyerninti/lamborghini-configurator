@@ -13,8 +13,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Spatial Luxury UI",
+  title: "Lamborghini Aventador SVJ",
   description: "A luxury automotive digital experience.",
+  icons: {
+    icon: "https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg",
+  },
 };
 
 export default function RootLayout({

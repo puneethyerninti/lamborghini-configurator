@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial, Trail } from "@react-three/drei";
+import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial, Trail, Text3D } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
@@ -99,9 +99,22 @@ function CinematicLighting() {
     }
     if (lightRef.current) {
       if (currentSlide === 0) {
-        _targetLightPos.set(0, 8, 4);
-        lightRef.current.position.lerp(_targetLightPos, lerpSpeed);
-        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 5, lerpSpeed);
+        const t = state.clock.elapsedTime;
+        if (t < 3) {
+          // Ignition wake-up sequence
+          const sweepX = THREE.MathUtils.lerp(-15, 10, t / 3);
+          _targetLightPos.set(sweepX, 8, 4);
+          lightRef.current.position.lerp(_targetLightPos, lerpSpeed * 2);
+          
+          // Pulse intensity
+          const pulse = Math.sin(t * Math.PI * 4); // Fast pulsing
+          lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 5 + pulse * 3, lerpSpeed);
+        } else {
+          // Settle
+          _targetLightPos.set(0, 8, 4);
+          lightRef.current.position.lerp(_targetLightPos, lerpSpeed);
+          lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 5, lerpSpeed);
+        }
         lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.6, lerpSpeed);
       } else {
         const t = state.clock.elapsedTime;
@@ -187,6 +200,97 @@ function CursorLightPainting() {
       </mesh>
       <pointLight ref={lightRef} distance={5} color={carColor} intensity={0} />
     </Trail>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Refractive Glass Typography
+// ═══════════════════════════════════════════════════════════════════
+function RefractiveText() {
+  const currentSlide = useAppStore((s) => s.currentSlide);
+  const active = currentSlide === 0;
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    const targetScale = active ? 1 : 0;
+    groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 4);
+    groupRef.current.position.y = Math.sin(Date.now() / 1000) * 0.1;
+  });
+
+  return (
+    <group ref={groupRef} position={[0, 0, -2]}>
+      <Center>
+        <Text3D
+          font="/helvetiker_bold.typeface.json"
+          size={4}
+          height={0.5}
+          curveSegments={32}
+          bevelEnabled
+          bevelThickness={0.1}
+          bevelSize={0.05}
+          bevelOffset={0}
+          bevelSegments={8}
+        >
+          SVJ
+          <MeshTransmissionMaterial
+            backside
+            samples={4}
+            thickness={2}
+            chromaticAberration={0.025}
+            anisotropy={0.1}
+            distortion={0.1}
+            distortionScale={0.1}
+            temporalDistortion={0.0}
+            clearcoat={1}
+            attenuationDistance={0.5}
+            attenuationColor="#ffffff"
+            color="#ffffff"
+          />
+        </Text3D>
+      </Center>
+    </group>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Holographic Heritage Rings
+// ═══════════════════════════════════════════════════════════════════
+function HoloProjector() {
+  const currentSlide = useAppStore((s) => s.currentSlide);
+  const active = currentSlide === 1 || currentSlide === 2;
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame((state, delta) => {
+    if (!groupRef.current) return;
+    
+    // Fade in/out
+    const targetScale = active ? 1 : 0.001;
+    groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 3);
+    
+    // Rotate rings
+    const t = state.clock.elapsedTime;
+    groupRef.current.children.forEach((child, i) => {
+      child.rotation.x = t * (0.2 + i * 0.1);
+      child.rotation.y = t * (0.3 + i * 0.15);
+    });
+  });
+
+  return (
+    <group ref={groupRef} position={[0, 0.5, 0]}>
+      <mesh>
+        <torusGeometry args={[3, 0.02, 16, 100]} />
+        <meshBasicMaterial color="#00d4ff" wireframe transparent opacity={0.3} blending={THREE.AdditiveBlending} />
+      </mesh>
+      <mesh>
+        <torusGeometry args={[3.2, 0.01, 16, 100]} />
+        <meshBasicMaterial color="#ff3333" wireframe transparent opacity={0.2} blending={THREE.AdditiveBlending} />
+      </mesh>
+      <mesh>
+        <torusGeometry args={[2.8, 0.01, 16, 100]} />
+        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.1} blending={THREE.AdditiveBlending} />
+      </mesh>
+    </group>
   );
 }
 
@@ -596,6 +700,8 @@ export function Model3D() {
 
         <Suspense fallback={null}>
           <CursorLightPainting />
+          <RefractiveText />
+          <HoloProjector />
           <CarModel />
           <WindTunnel />
           <Hotspots />

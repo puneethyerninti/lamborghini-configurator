@@ -154,13 +154,7 @@ const SlideContent = React.memo(function SlideContent() {
       <Slide active={currentSlide === 0 && !isInteriorMode} className="p-8 md:p-16">
         <ChapterBadge chapter={0} title="Identity" active={currentSlide === 0} />
         
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-full flex flex-col items-center justify-center pointer-events-none mix-blend-overlay z-[-1]">
-          <FadeIn delay={0.2} direction="none" active={currentSlide === 0}>
-            <h1 className={`${syncopate.className} text-[18vw] font-bold tracking-tighter leading-none text-white/5 opacity-30 select-none`}>
-              SVJ
-            </h1>
-          </FadeIn>
-        </div>
+
 
         <div className="absolute bottom-16 left-8 md:left-16 flex flex-col gap-4">
           <FadeIn delay={0.4} active={currentSlide === 0}>

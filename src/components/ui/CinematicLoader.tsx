@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useProgress } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,10 +10,22 @@ const montserrat = Montserrat({ weight: ["200", "300", "400"], subsets: ["latin"
 
 export function CinematicLoader() {
   const { progress, active } = useProgress();
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    if (!active && progress === 100) {
+      // Add a generous delay to allow ThreeJS shader compilation to finish
+      // before we drop the loader. This prevents the initial hero section from lagging.
+      const timer = setTimeout(() => {
+        setShow(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [active, progress]);
 
   return (
     <AnimatePresence>
-      {active && (
+      {show && (
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05, filter: "blur(20px)" }}

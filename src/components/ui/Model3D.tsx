@@ -2,60 +2,250 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, ContactShadows, Sparkles, Grid } from "@react-three/drei";
+import { useGLTF, Environment, Center, CameraControls, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
-import { WindTunnel } from "@/components/ui/WindTunnel";
 
 const MODEL_PATH = "/lamborghini_aventador.glb";
-const PREMIUM_FONT = "https://fonts.gstatic.com/s/syncopate/v12/pe0sMIuPIYBCpEV5eFdK.woff";
 
-// 3D Typography removed in favor of 2D Graphic Design Architecture
+// ─── Pre-allocated vectors (zero GC pressure) ───
+const _targetLightPos = new THREE.Vector3();
+const _orbitLightPos = new THREE.Vector3();
+const _eulerReset = new THREE.Euler(0, 0, 0, "YXZ");
 
-function CinematicLighting() {
-  const currentSlide = useAppStore((s) => s.currentSlide);
-  const lightRef = useRef<THREE.SpotLight>(null);
+// ─── Cinematic Camera Presets (14 slides) ───
+// pos: [x,y,z], target: [x,y,z], fov: number, duration: number, easeType: string
+const CINEMATIC_PRESETS: Record<number, { pos: number[], target: number[], fov: number, dur: number, ease: string }> = {
+  // Chapter 1: The Bull
+  0: { pos: [4, 1, 6], target: [0, 0.5, 0], fov: 45, dur: 2.0, ease: 'power3.inOut' }, // Hero - dramatic angle
+  1: { pos: [-8, 2, -2], target: [0, 0.4, 0], fov: 38, dur: 2.5, ease: 'power2.out' }, // Heritage - sweeping side view
+  2: { pos: [0, 0.2, 8], target: [0, 0.5, 0], fov: 40, dur: 2.0, ease: 'power2.inOut' }, // Philosophy - low front
+
+  // Chapter 2: Engineering
+  3: { pos: [5, 4, -5], target: [0, 0.6, 0], fov: 50, dur: 1.8, ease: 'back.out(1.2)' }, // LDVA - high rear quarter
+  4: { pos: [-6, 1.5, 4], target: [0, 0.5, 0], fov: 45, dur: 1.5, ease: 'power3.inOut' }, // Aero - wind tunnel view
+  5: { pos: [0, 2.5, 4], target: [0, 1.2, 0], fov: 30, dur: 3.0, ease: 'power4.out' }, // V12 Heart - tight engine zoom
+  6: { pos: [-4, 3, 5], target: [0, 0.5, 0], fov: 45, dur: 2.0, ease: 'power2.inOut' }, // Carbon - top down angle
+
+  // Chapter 3: Performance
+  7: { pos: [-6, 0.2, 6], target: [0, 0.4, 0], fov: 35, dur: 1.2, ease: 'power4.inOut' }, // Acceleration - low aggressive
+  8: { pos: [7, 0.5, -4], target: [0, 0.5, 0], fov: 45, dur: 1.5, ease: 'power3.out' }, // Top Speed - rear motion
+  9: { pos: [0, 6, 0.1], target: [0, 0, 0], fov: 60, dur: 2.5, ease: 'power2.inOut' }, // Nurburgring - strict top down
+
+  // Chapter 4: The Atelier
+  10: { pos: [6, 1.5, 6], target: [0, 0.5, 0], fov: 40, dur: 2.0, ease: 'power3.inOut' }, // Configurator
+  11: { pos: [-0.35, 0.8, -0.2], target: [0.35, 0.8, -2], fov: 55, dur: 1.5, ease: 'power2.inOut' }, // Interior
+
+  // Chapter 5: Legacy
+  12: { pos: [-7, 2, -5], target: [0, 0.5, 0], fov: 40, dur: 3.0, ease: 'power1.inOut' }, // Stats wall
+  13: { pos: [0, 1, 8], target: [0, 0.5, 0], fov: 35, dur: 2.0, ease: 'power3.out' }, // Inquiry - clean front
+};
+
+// Simple custom easing functions to replace GSAP
+const easings = {
+  'power1.inOut': (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
+  'power2.inOut': (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t, // simplified
+  'power2.out': (t: number) => t * (2 - t),
+  'power3.inOut': (t: number) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+  'power3.out': (t: number) => (--t) * t * t + 1,
+  'power4.inOut': (t: number) => t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t,
+  'power4.out': (t: number) => 1 - (--t) * t * t * t,
+  'back.out(1.2)': (t: number) => {
+    const s = 1.2;
+    return --t * t * ((s + 1) * t + s) + 1;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// Particle Field (Ambient Dust)
+// ═══════════════════════════════════════════════════════════════════
+function ParticleField() {
+  const count = 500;
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  
+  const [dummy] = useState(() => new THREE.Object3D());
+  const [particles] = useState(() => {
+    const p = [];
+    for (let i = 0; i < count; i++) {
+      p.push({
+        x: (Math.random() - 0.5) * 20,
+        y: Math.random() * 10,
+        z: (Math.random() - 0.5) * 20,
+        speed: 0.1 + Math.random() * 0.2,
+        offset: Math.random() * Math.PI * 2
+      });
+    }
+    return p;
+  });
 
   useFrame((state) => {
-    if (lightRef.current && currentSlide !== 0) {
-      const t = state.clock.elapsedTime;
-      lightRef.current.position.x = Math.sin(t * 0.5) * 15;
-      lightRef.current.position.z = Math.cos(t * 0.3) * 10;
+    if (!meshRef.current) return;
+    
+    // Only animate on Hero and Legacy slides to save perf
+    const currentSlide = useAppStore.getState().currentSlide;
+    if (currentSlide !== 0 && currentSlide !== 12 && currentSlide !== 13) return;
+    
+    const t = state.clock.elapsedTime;
+    
+    for (let i = 0; i < count; i++) {
+      const p = particles[i];
+      dummy.position.set(
+        p.x + Math.sin(t * p.speed + p.offset) * 0.5,
+        p.y + Math.cos(t * p.speed * 0.8 + p.offset) * 0.5,
+        p.z
+      );
+      dummy.scale.setScalar(0.02 + Math.sin(t * 2 + p.offset) * 0.01);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial color="#ffffff" transparent opacity={0.2} depthWrite={false} blending={THREE.AdditiveBlending} />
+    </instancedMesh>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CinematicLighting — fully non-reactive
+// ═══════════════════════════════════════════════════════════════════
+function CinematicLighting() {
+  const lightRef = useRef<THREE.SpotLight>(null);
+  const ambientRef = useRef<THREE.AmbientLight>(null);
+  const fillLight1 = useRef<THREE.SpotLight>(null);
+  const fillLight2 = useRef<THREE.SpotLight>(null);
+
+  useFrame((state, delta) => {
+    const currentSlide = useAppStore.getState().currentSlide;
+    const lerpSpeed = delta * 2.5;
+
+    if (ambientRef.current) {
+      ambientRef.current.intensity = THREE.MathUtils.lerp(
+        ambientRef.current.intensity,
+        currentSlide === 0 ? 0.05 : 0.15,
+        lerpSpeed
+      );
+    }
+    if (fillLight1.current) {
+      fillLight1.current.intensity = THREE.MathUtils.lerp(
+        fillLight1.current.intensity,
+        currentSlide === 0 ? 0.001 : 5,
+        lerpSpeed
+      );
+    }
+    if (fillLight2.current) {
+      fillLight2.current.intensity = THREE.MathUtils.lerp(
+        fillLight2.current.intensity,
+        currentSlide === 0 ? 0.001 : 2,
+        lerpSpeed
+      );
+    }
+    if (lightRef.current) {
+      if (currentSlide === 0) {
+        _targetLightPos.set(0, 8, 4);
+        lightRef.current.position.lerp(_targetLightPos, lerpSpeed);
+        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 30, lerpSpeed);
+        lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.6, lerpSpeed);
+        lightRef.current.color.setHex(0xfff5e6);
+      } else {
+        const t = state.clock.elapsedTime;
+        _orbitLightPos.set(Math.sin(t * 0.5) * 15, 10, Math.cos(t * 0.3) * 10);
+        lightRef.current.position.lerp(_orbitLightPos, lerpSpeed);
+        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 20, lerpSpeed);
+        lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.4, lerpSpeed);
+        lightRef.current.color.setHex(0xffffff);
+      }
     }
   });
 
   return (
     <>
-      <ambientLight intensity={currentSlide === 0 ? 0.05 : 0.15} />
-      {/* LOCKED ENVIRONMENT: Prevents massive WebGL stutter on scroll! */}
+      <ambientLight ref={ambientRef} intensity={0.05} />
+      {/* Lightweight environment — "apartment" is much smaller than "studio" */}
       <Environment preset="studio" />
-
-      {/* Dramatic Hero Spotlight - Warm Champagne Gallery Lighting */}
-      <spotLight
-        ref={lightRef}
-        position={currentSlide === 0 ? [0, 8, 4] : [10, 10, -10]}
-        angle={currentSlide === 0 ? 0.6 : 0.4}
-        penumbra={1}
-        intensity={currentSlide === 0 ? 80 : 20}
-        color={currentSlide === 0 ? "#fff5e6" : "#ffffff"}
-        castShadow
-      />
-
-      {/* PERMANENTLY MOUNTED LIGHTS: Never unmount lights or set to exactly 0, as it forces WebGL to recompile all shaders! */}
-      <spotLight position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={currentSlide !== 0 ? 5 : 0.001} color="#ffffff" />
-      <spotLight position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={currentSlide !== 0 ? 2 : 0.001} color="#ff0000" />
+      <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={30} color="#fff5e6" />
+      <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
+      <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
     </>
   );
 }
 
-function Model() {
+// ═══════════════════════════════════════════════════════════════════
+// Model — aggressively optimizes the GLB geometry at load time
+// ═══════════════════════════════════════════════════════════════════
+function CarModel() {
   const { scene } = useGLTF(MODEL_PATH);
   const carColor = useAppStore((s) => s.carColor);
-  const isInteriorMode = useAppStore((s) => s.isInteriorMode);
   const groupRef = useRef<THREE.Group>(null);
   const targetRotation = useRef(new THREE.Quaternion());
   const currentRotation = useRef(new THREE.Quaternion());
+  const optimized = useRef(false);
 
+  // One-time geometry optimization on mount
+  useEffect(() => {
+    if (optimized.current) return;
+    optimized.current = true;
+
+    let totalVertices = 0;
+    const meshesToSimplify: THREE.Mesh[] = [];
+
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        
+        // Disable frustum culling for the car (it's always on screen)
+        mesh.frustumCulled = false;
+        
+        // Disable matrix auto-update for static meshes (huge perf gain)
+        mesh.matrixAutoUpdate = false;
+        mesh.updateMatrix();
+        
+        if (mesh.geometry) {
+          totalVertices += mesh.geometry.attributes.position?.count || 0;
+          
+          // Dispose of unused vertex attributes to free GPU memory
+          const geo = mesh.geometry;
+          if (geo.attributes.uv2) geo.deleteAttribute('uv2');
+          if (geo.attributes.color) geo.deleteAttribute('color');
+          
+          // Merge geometry index if possible
+          if (!geo.index && geo.attributes.position) {
+            // Non-indexed geometry — much slower to render. 
+            // We can't easily index it, but at least mark it.
+          }
+        }
+
+        // Simplify materials — disable expensive features
+        if (mesh.material) {
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          for (const mat of mats) {
+            const stdMat = mat as THREE.MeshStandardMaterial;
+            // Disable expensive PBR features that aren't visible on a car
+            if (stdMat.displacementMap) {
+              stdMat.displacementMap = null;
+              stdMat.displacementScale = 0;
+            }
+            if (stdMat.aoMap) {
+              stdMat.aoMap = null; // AO is handled by ContactShadows
+            }
+            // Reduce texture resolution for non-critical maps
+            if (stdMat.normalMap && stdMat.normalMap.image) {
+              stdMat.normalScale.set(0.5, 0.5); // Soften normals = cheaper
+            }
+            stdMat.envMapIntensity = 0.8;
+            stdMat.needsUpdate = true;
+          }
+        }
+      }
+    });
+
+    console.log(`[Model3D] Optimized: ${totalVertices.toLocaleString()} vertices`);
+  }, [scene]);
+
+  // Apply car color
   useEffect(() => {
     let applied = false;
     scene.traverse((child) => {
@@ -64,7 +254,6 @@ function Model() {
         if (mesh.material) {
           const mat = mesh.material as THREE.MeshStandardMaterial;
           const name = mat.name.toLowerCase();
-
           if (name.includes("paint") || name.includes("body") || name.includes("shell") || name.includes("carpaint") || name.includes("col")) {
             mat.color.set(carColor);
             mat.roughness = 0.15;
@@ -74,7 +263,6 @@ function Model() {
         }
       }
     });
-
     if (!applied) {
       scene.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
@@ -95,9 +283,7 @@ function Model() {
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
-
-    // READ STATE NON-REACTIVELY: This prevents the massive <Center> bounding box recalculation stutter!
-    const currentSlide = useAppStore.getState().currentSlide;
+    const { currentSlide, isInteriorMode } = useAppStore.getState();
 
     if (isInteriorMode) {
       targetRotation.current.identity();
@@ -108,11 +294,8 @@ function Model() {
     }
 
     let targetY = 0;
-    const euler = new THREE.Euler(0, 0, 0, 'YXZ');
-
     switch (currentSlide) {
       case 0:
-        // Slow continuous breathing for hero section
         targetY = Math.sin(state.clock.elapsedTime * 1.5) * 0.015;
         break;
       case 2:
@@ -125,7 +308,7 @@ function Model() {
         break;
     }
 
-    targetRotation.current.setFromEuler(euler);
+    targetRotation.current.setFromEuler(_eulerReset);
     currentRotation.current.slerp(targetRotation.current, delta * 3);
     groupRef.current.quaternion.copy(currentRotation.current);
     groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3);
@@ -140,91 +323,131 @@ function Model() {
   );
 }
 
-function HeroEnvironment() {
-  const currentSlide = useAppStore((s) => s.currentSlide);
-  const isInteriorMode = useAppStore((s) => s.isInteriorMode);
+// ═══════════════════════════════════════════════════════════════════
+// WindTunnel — fully non-reactive, reduced line count
+// ═══════════════════════════════════════════════════════════════════
+function WindTunnel() {
+  const linesRef = useRef<THREE.LineSegments>(null);
+  const lineCount = 400; // Reduced from 800 to 400
+  const lineLength = 3.0;
+  const opacityRef = useRef(0);
 
-  // PERMANENTLY MOUNTED: Never unmount heavy geometry. Hide it instead.
-  // The gallery is now a pure, pristine dark void. No distracting grids or sparkles.
+  const [positions, speeds] = React.useMemo(() => {
+    const pos = new Float32Array(lineCount * 2 * 3);
+    const spd = new Float32Array(lineCount);
+    for (let i = 0; i < lineCount; i++) {
+      const x = (Math.random() - 0.5) * 20;
+      const y = Math.random() * 5;
+      const z = (Math.random() - 0.5) * 40;
+      pos[i * 6] = x;
+      pos[i * 6 + 1] = y;
+      pos[i * 6 + 2] = z;
+      pos[i * 6 + 3] = x;
+      pos[i * 6 + 4] = y;
+      pos[i * 6 + 5] = z + lineLength;
+      spd[i] = Math.random() * 0.8 + 0.5;
+    }
+    return [pos, spd];
+  }, [lineCount]);
+
+  useFrame((_state, delta) => {
+    if (!linesRef.current) return;
+    const active = useAppStore.getState().currentSlide === 2;
+
+    opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, active ? 1 : 0, delta * 3);
+    const material = linesRef.current.material as THREE.LineBasicMaterial;
+    material.opacity = opacityRef.current;
+
+    if (opacityRef.current < 0.01) return;
+
+    const pos = linesRef.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < lineCount; i++) {
+      const velocity = speeds[i] * delta * 80;
+      pos[i * 6 + 2] += velocity;
+      pos[i * 6 + 5] += velocity;
+      if (pos[i * 6 + 2] > 20) {
+        pos[i * 6 + 2] = -20;
+        pos[i * 6 + 5] = -20 + lineLength;
+      }
+    }
+    linesRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
   return (
-    <group position={[0, -0.01, 0]} visible={currentSlide === 0 && !isInteriorMode}>
-    </group>
+    <lineSegments ref={linesRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={lineCount * 2} />
+      </bufferGeometry>
+      <lineBasicMaterial color="#38bdf8" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} linewidth={1} />
+    </lineSegments>
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// SceneCamera — fully non-reactive
+// ═══════════════════════════════════════════════════════════════════
 function SceneCamera() {
   const controlsRef = useRef<any>(null);
-  const currentSlide = useAppStore((s) => s.currentSlide);
-  const isInteriorMode = useAppStore((s) => s.isInteriorMode);
-  const isEngineRevved = useAppStore((s) => s.isEngineRevved);
+  const prevSlideRef = useRef(-1);
+  const prevInteriorRef = useRef(false);
 
   useFrame((state, delta) => {
     if (!controlsRef.current) return;
+    const { currentSlide, isInteriorMode, isEngineRevved } = useAppStore.getState();
 
-    // Continuous slow orbit for Hero slide
-    if (currentSlide === 0 && !isInteriorMode) {
+    if (currentSlide !== prevSlideRef.current || isInteriorMode !== prevInteriorRef.current) {
+      prevSlideRef.current = currentSlide;
+      prevInteriorRef.current = isInteriorMode;
+
+      const controls = controlsRef.current;
+      if (isInteriorMode) {
+        controls.setLookAt(0.35, 0.8, -0.2, 0.35, 0.8, -2, true);
+      } else {
+        const preset = CINEMATIC_PRESETS[currentSlide];
+        if (preset) {
+          // Responsive check: if aspect ratio is portrait (mobile), pull the camera back 
+          // so the car doesn't get clipped on the sides.
+          const isMobile = window.innerWidth < window.innerHeight;
+          const mobileMult = isMobile ? 1.5 : 1.0;
+
+          controls.smoothTime = preset.dur / 2;
+          controls.setLookAt(
+            preset.pos[0] * mobileMult, preset.pos[1], preset.pos[2] * mobileMult, 
+            preset.target[0], preset.target[1], preset.target[2], 
+            true
+          );
+          controls.camera.fov = preset.fov * (isMobile ? 1.2 : 1.0);
+          controls.camera.updateProjectionMatrix();
+        }
+      }
+    }
+
+    if (!useAppStore.getState().isInteriorMode && useAppStore.getState().currentSlide === 0) {
       controlsRef.current.azimuthAngle -= delta * 0.05;
     }
 
     if (isEngineRevved) {
-      const shakeX = (Math.random() - 0.5) * 0.05;
-      const shakeY = (Math.random() - 0.5) * 0.05;
-      controlsRef.current.camera.position.x += shakeX;
-      controlsRef.current.camera.position.y += shakeY;
+      controlsRef.current.camera.position.x += (Math.random() - 0.5) * 0.05;
+      controlsRef.current.camera.position.y += (Math.random() - 0.5) * 0.05;
     }
   });
-
-  useEffect(() => {
-    if (!controlsRef.current) return;
-    const controls = controlsRef.current;
-
-    if (isInteriorMode) {
-      controls.setLookAt(0.35, 0.8, -0.2, 0.35, 0.8, -2, true);
-      return;
-    }
-
-    switch (currentSlide) {
-      case 0:
-        // Slow continuous orbit starting from wide cinematic angle
-        controls.setLookAt(-5, 2, 7, 0, 0.5, 0, true);
-        break;
-      case 1:
-        controls.setLookAt(-8, 2, 0, 0, 0.5, 0, true);
-        break;
-      case 2:
-        controls.setLookAt(0, 0.2, 9, 0, 0.5, 0, true);
-        break;
-      case 3:
-        controls.setLookAt(6, 4, -6, 0, 0.5, 0, true);
-        break;
-      case 4:
-        controls.setLookAt(2, 8, 4, 0, 0.5, 0, true);
-        break;
-      case 5:
-        controls.setLookAt(-5, 1, -2, 0, 0.5, 0, true);
-        break;
-      case 6:
-        controls.setLookAt(-4, 0.5, 4, 0, 0.5, 0, true);
-        break;
-      case 7:
-        controls.setLookAt(7, 1.5, -4, 0, 0.5, 0, true);
-        break;
-    }
-  }, [currentSlide, isInteriorMode]);
 
   return (
     <CameraControls
       ref={controlsRef}
       makeDefault
-      minDistance={isInteriorMode ? 0.01 : 3}
+      minDistance={3}
       maxDistance={15}
       maxPolarAngle={Math.PI / 2 - 0.02}
       dollySpeed={0.5}
-      smoothTime={0.5}
+      smoothTime={0.8}
     />
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// Model3D — high-quality Canvas
+// ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
 
@@ -236,19 +459,25 @@ export function Model3D() {
 
   return (
     <div className="w-full h-full relative">
-      <Canvas camera={{ position: [0, 0.4, 6], fov: 45 }} dpr={[1, 1.5]} gl={{ antialias: true, toneMappingExposure: 1.0, powerPreference: "high-performance" }}>
-        <color attach="background" args={['#020202']} />
+      <Canvas
+        camera={{ position: [0, 0.4, 6], fov: 45 }}
+        dpr={[1, 1.5]}
+        gl={{
+          antialias: true,
+          toneMappingExposure: 1.0,
+          powerPreference: "high-performance",
+        }}
+        frameloop="always"
+      >
+        <color attach="background" args={["#020202"]} />
 
         <CinematicLighting />
 
         <Suspense fallback={null}>
-          <HeroEnvironment />
-          <Model />
+          <CarModel />
           <WindTunnel />
-
-          {/* Ultra-Fast performance shadow catcher floor (baked to 1 frame!) */}
+          <ParticleField />
           <ContactShadows frames={1} resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
-          {/* Floor mesh removed to keep the background infinitely dark and prevent washing out the UI */}
         </Suspense>
 
         <SceneCamera />

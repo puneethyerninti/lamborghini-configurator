@@ -53,3 +53,65 @@ body {
   background-color: var(--color-glass-highlight);
   color: #fff;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GPU-Composited Animations — zero main-thread cost
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: var(--fade-from, translateY(20px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@keyframes scrollpulse {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes lineReveal {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes lineRevealY {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes numberBlast {
+  0% { opacity: 0; filter: blur(20px); transform: scale(1.1); }
+  100% { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.animate-fadein {
+  animation: fadein 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-scrollpulse {
+  animation: scrollpulse 1.5s linear infinite;
+}
+
+.animate-line-x {
+  transform-origin: left;
+  animation: lineReveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-line-y {
+  transform-origin: top;
+  animation: lineRevealY 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-number {
+  animation: numberBlast 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}

@@ -6,7 +6,6 @@ import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshRefle
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
-import { ParticleField } from "./ParticleField";
 import { Hotspots } from "./Hotspots";
 
 const MODEL_PATH = "/lamborghini_light.glb";

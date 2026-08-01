@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial } from "@react-three/drei";
+import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial, Trail } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
@@ -62,6 +62,10 @@ const easings = {
 // ═══════════════════════════════════════════════════════════════════
 // CinematicLighting — fully non-reactive
 // ═══════════════════════════════════════════════════════════════════
+const _dawnColor = new THREE.Color(0xffb77a);
+const _noonColor = new THREE.Color(0xffffff);
+const _duskColor = new THREE.Color(0x3a5a9c);
+
 function CinematicLighting() {
   const lightRef = useRef<THREE.SpotLight>(null);
   const ambientRef = useRef<THREE.AmbientLight>(null);
@@ -99,14 +103,22 @@ function CinematicLighting() {
         lightRef.current.position.lerp(_targetLightPos, lerpSpeed);
         lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 5, lerpSpeed);
         lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.6, lerpSpeed);
-        lightRef.current.color.setHex(0xfff5e6);
       } else {
         const t = state.clock.elapsedTime;
         _orbitLightPos.set(Math.sin(t * 0.5) * 15, 10, Math.cos(t * 0.3) * 10);
         lightRef.current.position.lerp(_orbitLightPos, lerpSpeed);
         lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 3, lerpSpeed);
         lightRef.current.angle = THREE.MathUtils.lerp(lightRef.current.angle, 0.4, lerpSpeed);
-        lightRef.current.color.setHex(0xffffff);
+      }
+
+      // Day-Night Cycle color interpolation
+      const chapter = useAppStore.getState().chapter;
+      if (chapter === 0) { // Dawn
+        lightRef.current.color.lerp(_dawnColor, lerpSpeed);
+      } else if (chapter === 2) { // Dusk / Night track
+        lightRef.current.color.lerp(_duskColor, lerpSpeed);
+      } else { // Noon / Studio
+        lightRef.current.color.lerp(_noonColor, lerpSpeed);
       }
     }
   });
@@ -138,6 +150,43 @@ function CinematicLighting() {
         />
       </mesh>
     </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Cursor Light Painting
+// ═══════════════════════════════════════════════════════════════════
+function CursorLightPainting() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
+  const carColor = useAppStore((s) => s.carColor);
+  const targetPos = useRef(new THREE.Vector3());
+
+  useFrame((state) => {
+    if (!meshRef.current || !lightRef.current) return;
+    
+    // Map normalized device coordinates (state.pointer) to 3D world space
+    // We project the pointer onto a plane roughly where the car sits
+    const zDepth = 4; // Distance from camera
+    targetPos.current.set(state.pointer.x * (state.viewport.width / 2), state.pointer.y * (state.viewport.height / 2), zDepth);
+    
+    // Smoothly follow the mouse
+    meshRef.current.position.lerp(targetPos.current, 0.1);
+    lightRef.current.position.copy(meshRef.current.position);
+    
+    // Pulse light intensity based on movement
+    const speed = meshRef.current.position.distanceTo(targetPos.current);
+    lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, speed * 2, 0.1);
+  });
+
+  return (
+    <Trail width={0.5} color={carColor} length={30} decay={1} local={false} stride={0} interval={1}>
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[0.02, 16, 16]} />
+        <meshBasicMaterial color={carColor} transparent opacity={0.5} />
+      </mesh>
+      <pointLight ref={lightRef} distance={5} color={carColor} intensity={0} />
+    </Trail>
   );
 }
 
@@ -205,6 +254,29 @@ function CarModel() {
       }
     });
 
+    // Setup Original Positions & Explosion Vectors
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        mesh.userData.originalPos = mesh.position.clone();
+        
+        // Calculate explosion direction based on mesh center
+        if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+        const center = new THREE.Vector3();
+        mesh.geometry.boundingBox?.getCenter(center);
+        
+        // Normalize the vector pushing it outwards
+        const explodeDir = center.clone().normalize().multiplyScalar(1.2);
+        
+        // Make body panels float up, wheels push sideways
+        if (mesh.material && (mesh.material as THREE.Material).name.toLowerCase().includes('body')) {
+          explodeDir.y += 0.8;
+        }
+        
+        mesh.userData.explodeDir = explodeDir;
+      }
+    });
+
     console.log(`[Model3D] Optimized: ${totalVertices.toLocaleString()} vertices`);
   }, [scene]);
 
@@ -265,10 +337,20 @@ function CarModel() {
 
     const lerpSpeed = delta * 5;
 
-    // Body Paint
+    // Body Paint & X-Ray Mode
     if (materials['Body']) {
-      _targetColor.set(carColor);
+      const isXRay = currentSlide === 6;
+      _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
+      
+      // Toggle Wireframe and Opacity
+      materials['Body'].wireframe = isXRay;
+      materials['Body'].transparent = true;
+      materials['Body'].opacity = THREE.MathUtils.lerp(
+        materials['Body'].opacity, 
+        isXRay ? 0.3 : 1.0, 
+        lerpSpeed
+      );
     }
 
     // Brake Calipers (Match body paint, unless SVJ63 where they turn Gold/Yellow)
@@ -304,6 +386,26 @@ function CarModel() {
       groupRef.current.quaternion.copy(currentRotation.current);
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, 0, delta * 4);
       return;
+    }
+
+    // Exploded View Assembly (Slide 6)
+    const isExploded = currentSlide === 6;
+    const targetExplosionAmount = isExploded ? 1 : 0;
+    
+    // Only animate if we're on Slide 6 or actively returning from it
+    if (isExploded || (currentSlide !== 6 && scene.children[0]?.position.distanceTo(scene.children[0]?.userData.originalPos || new THREE.Vector3()) > 0.01)) {
+      scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          if (mesh.userData.originalPos && mesh.userData.explodeDir) {
+            const targetPos = mesh.userData.originalPos.clone().add(
+              mesh.userData.explodeDir.clone().multiplyScalar(targetExplosionAmount)
+            );
+            mesh.position.lerp(targetPos, lerpSpeed);
+            mesh.updateMatrix(); // Required because matrixAutoUpdate = false
+          }
+        }
+      });
     }
 
     let targetY = 0;
@@ -493,6 +595,7 @@ export function Model3D() {
         <CinematicLighting />
 
         <Suspense fallback={null}>
+          <CursorLightPainting />
           <CarModel />
           <WindTunnel />
           <Hotspots />

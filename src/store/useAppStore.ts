@@ -15,6 +15,7 @@ interface AppState {
   isInteriorMode: boolean;
   isEngineRevved: boolean;
   engineRevLevel: number;
+  isTransitioning: boolean;
   
   // Actions
   setSlide: (index: number) => void;
@@ -49,29 +50,44 @@ export const useAppStore = create<AppState>((set) => ({
   isInteriorMode: false,
   isEngineRevved: false,
   engineRevLevel: 0,
+  isTransitioning: false,
   
-  setSlide: (index) => set({ 
-    currentSlide: index, 
-    chapter: getChapter(index),
-    isInteriorMode: false 
-  }),
+  setSlide: (index) => {
+    set({ isTransitioning: true });
+    setTimeout(() => set({ isTransitioning: false }), 800);
+    set({ 
+      currentSlide: index, 
+      chapter: getChapter(index),
+      isInteriorMode: false 
+    });
+  },
   
   nextSlide: () => set((state) => {
     const next = Math.min(state.currentSlide + 1, state.totalSlides - 1);
-    return { 
-      currentSlide: next,
-      chapter: getChapter(next),
-      isInteriorMode: false 
-    };
+    if (next !== state.currentSlide) {
+      setTimeout(() => set({ isTransitioning: false }), 800);
+      return { 
+        currentSlide: next, 
+        chapter: getChapter(next),
+        isInteriorMode: false,
+        isTransitioning: true 
+      };
+    }
+    return state;
   }),
   
   prevSlide: () => set((state) => {
     const prev = Math.max(state.currentSlide - 1, 0);
-    return { 
-      currentSlide: prev,
-      chapter: getChapter(prev),
-      isInteriorMode: false 
-    };
+    if (prev !== state.currentSlide) {
+      setTimeout(() => set({ isTransitioning: false }), 800);
+      return { 
+        currentSlide: prev, 
+        chapter: getChapter(prev),
+        isInteriorMode: false,
+        isTransitioning: true
+      };
+    }
+    return state;
   }),
   
   setCarColor: (color) => set({ carColor: color }),

@@ -10,6 +10,7 @@ import { StatCounter } from "@/components/ui/StatCounter";
 import { LineReveal } from "@/components/ui/LineReveal";
 import { WaveformViz } from "@/components/ui/WaveformViz";
 import { TrackMap } from "@/components/ui/TrackMap";
+import { TelemetryHUD } from "@/components/ui/TelemetryHUD";
 import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
 
@@ -397,12 +398,26 @@ const SlideContent = React.memo(function SlideContent() {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+// Cinematic Letterbox (Phase A)
+// ═══════════════════════════════════════════════════════════════════
+function CinematicLetterbox() {
+  const isTransitioning = useAppStore(s => s.isTransitioning);
+  return (
+    <div className="pointer-events-none z-[100]">
+      <div className={`fixed top-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[10vh]' : 'h-0'}`} />
+      <div className={`fixed bottom-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[10vh]' : 'h-0'}`} />
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // Main Page Shell
 // ═══════════════════════════════════════════════════════════════════
 export default function Home() {
   return (
     <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
       <CinematicLoader />
+      <CinematicLetterbox />
 
       <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-50 flex justify-between items-center pointer-events-auto text-white">
         <div className="flex items-center gap-4">
@@ -426,6 +441,8 @@ export default function Home() {
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         <SlideContent />
       </div>
+
+      <TelemetryHUD />
 
       <InteractionHandler />
     </main>

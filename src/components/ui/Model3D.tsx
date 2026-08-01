@@ -58,58 +58,6 @@ const easings = {
   }
 };
 
-// ═══════════════════════════════════════════════════════════════════
-// Particle Field (Ambient Dust)
-// ═══════════════════════════════════════════════════════════════════
-function ParticleField() {
-  const count = 500;
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  
-  const [dummy] = useState(() => new THREE.Object3D());
-  const [particles] = useState(() => {
-    const p = [];
-    for (let i = 0; i < count; i++) {
-      p.push({
-        x: (Math.random() - 0.5) * 20,
-        y: Math.random() * 10,
-        z: (Math.random() - 0.5) * 20,
-        speed: 0.1 + Math.random() * 0.2,
-        offset: Math.random() * Math.PI * 2
-      });
-    }
-    return p;
-  });
-
-  useFrame((state) => {
-    if (!meshRef.current) return;
-    
-    // Only animate on Hero and Legacy slides to save perf
-    const currentSlide = useAppStore.getState().currentSlide;
-    if (currentSlide !== 0 && currentSlide !== 12 && currentSlide !== 13) return;
-    
-    const t = state.clock.elapsedTime;
-    
-    for (let i = 0; i < count; i++) {
-      const p = particles[i];
-      dummy.position.set(
-        p.x + Math.sin(t * p.speed + p.offset) * 0.5,
-        p.y + Math.cos(t * p.speed * 0.8 + p.offset) * 0.5,
-        p.z
-      );
-      dummy.scale.setScalar(0.02 + Math.sin(t * 2 + p.offset) * 0.01);
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial color="#ffffff" transparent opacity={0.2} depthWrite={false} blending={THREE.AdditiveBlending} />
-    </instancedMesh>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════════
 // CinematicLighting — fully non-reactive
@@ -547,7 +495,6 @@ export function Model3D() {
         <Suspense fallback={null}>
           <CarModel />
           <WindTunnel />
-          <ParticleField />
           <Hotspots />
           <ContactShadows frames={1} resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
         </Suspense>

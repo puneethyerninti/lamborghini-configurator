@@ -13,7 +13,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "AVENTADOR SVJ // The Atelier",
+  title: "Automobili Lamborghini | Aventador SVJ",
   description: "A luxury automotive digital experience.",
   icons: {
     icon: "https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg",

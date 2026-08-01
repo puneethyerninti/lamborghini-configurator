@@ -75,7 +75,7 @@ export function ConfiguratorUI() {
       </div>
       
       {/* Scrollable Content */}
-      <div className="w-full overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4" style={{ scrollbarWidth: 'thin' }}>
+      <div className="w-full overflow-y-auto pr-2 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         
         {/* Exterior Tab */}
         {activeTab === "exterior" && (

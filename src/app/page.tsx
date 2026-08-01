@@ -303,7 +303,7 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S10: Configurator */}
       <Slide active={currentSlide === 10 && !isInteriorMode} className="!pointer-events-none">
         <ChapterBadge chapter={3} title="Ad Personam" delay={0} active={currentSlide === 10} />
-        <div className="absolute right-0 md:right-24 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto">
+        <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
           <Parallax intensity={10}>
             <FadeIn delay={0.2} direction="left" active={currentSlide === 10}>
               <ConfiguratorUI />
@@ -315,7 +315,7 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S11: Interior (Same Configurator UI, but camera moves inside) */}
       <Slide active={currentSlide === 11} className="!pointer-events-none">
          <ChapterBadge chapter={3} title="Cockpit" delay={0} active={currentSlide === 11} />
-         <div className="absolute right-0 md:right-24 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto">
+         <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
           <Parallax intensity={10}>
             <FadeIn delay={0} direction="left" active={currentSlide === 11}>
               <ConfiguratorUI />

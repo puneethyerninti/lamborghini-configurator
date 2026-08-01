@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial, Trail, Text3D } from "@react-three/drei";
+import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial, Trail, Text3D, MeshTransmissionMaterial } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";

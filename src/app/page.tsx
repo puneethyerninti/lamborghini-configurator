@@ -16,6 +16,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
 import { Hotspots } from "@/components/ui/Hotspots";
 import { SplitTextReveal } from "@/components/ui/SplitTextReveal";
+import { Navbar } from "@/components/ui/Navbar";
 import { MouseParallaxProvider, useParallax, MouseParallax } from "@/components/ui/MouseParallax";
 import { AudioEngine, globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 

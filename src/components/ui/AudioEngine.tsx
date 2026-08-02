@@ -33,18 +33,18 @@ export function AudioEngine() {
       audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
       
       masterGain.current = audioCtx.current.createGain();
-      masterGain.current.gain.value = 0.1;
+      masterGain.current.gain.value = 0.5; // Increased volume
       masterGain.current.connect(audioCtx.current.destination);
 
       // Deep V12 idling drone
       droneOsc.current = audioCtx.current.createOscillator();
       droneOsc.current.type = "sawtooth";
-      droneOsc.current.frequency.value = 45; // Deep rumble
+      droneOsc.current.frequency.value = 55; // Slightly higher rumble for audibility
       
       // Lowpass filter for drone
       const filter = audioCtx.current.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.value = 150;
+      filter.frequency.value = 350; // Opened filter so harmonics pass through
       
       droneOsc.current.connect(filter);
       filter.connect(masterGain.current);

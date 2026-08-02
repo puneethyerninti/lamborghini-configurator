@@ -142,9 +142,9 @@ function CinematicLighting() {
     <>
       <ambientLight ref={ambientRef} intensity={0.05} />
       {environment === 'studio' ? (
-        <Environment files="/ferndale_studio_01_4k.hdr" />
+        <Environment files="/ferndale_studio_01_4k.hdr" background blur={0.05} />
       ) : (
-        <Environment preset={environment as any} />
+        <Environment preset={environment as any} background blur={0.1} />
       )}
       <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={5} color="#fff5e6" />
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
@@ -605,7 +605,6 @@ export function Model3D() {
         }}
         frameloop="always"
       >
-        <color attach="background" args={["#020202"]} />
         {typeof window !== 'undefined' && window.innerWidth > 768 && (
           <EffectComposer disableNormalPass>
             <Bloom luminanceThreshold={4.0} mipmapBlur intensity={0.5} />

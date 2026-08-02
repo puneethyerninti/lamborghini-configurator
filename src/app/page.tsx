@@ -14,7 +14,7 @@ import { TelemetryHUD } from "@/components/ui/TelemetryHUD";
 import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
 import { Hotspots } from "@/components/ui/Hotspots";
-import { AudioEngine, globalMusic } from "@/components/ui/AudioEngine";
+import { AudioEngine, globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 
 const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
 const montserrat = Montserrat({ weight: ["200", "300", "400", "500"], subsets: ["latin"] });
@@ -442,12 +442,13 @@ export default function Home() {
           <button 
             onClick={() => {
               toggleAudio();
-              if (globalMusic) {
-                if (!isAudioEnabled) {
-                  globalMusic.play().catch(e => console.error(e));
-                } else {
-                  globalMusic.pause();
-                }
+              if (globalAudioCtx && globalAudioCtx.state === "suspended") {
+                globalAudioCtx.resume();
+              }
+              if (!isAudioEnabled) {
+                playGlobalMusic();
+              } else {
+                pauseGlobalMusic();
               }
             }}
             className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg"

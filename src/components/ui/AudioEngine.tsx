@@ -49,8 +49,6 @@ export function AudioEngine() {
       droneOsc.current.connect(filter);
       filter.connect(masterGain.current);
       droneOsc.current.start();
-
-      droneOsc.current.start();
     }
 
     if (audioCtx.current.state === "suspended") {

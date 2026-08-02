@@ -215,11 +215,11 @@ function RefractiveText() {
     if (!groupRef.current) return;
     const targetScale = active ? 1 : 0;
     groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 4);
-    groupRef.current.position.y = Math.sin(Date.now() / 1000) * 0.1;
+    groupRef.current.position.y = Math.sin(Date.now() / 1000) * 0.1 + 0.8;
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, -2]}>
+    <group ref={groupRef} position={[0, 0.8, -2]}>
       <Center>
         <Text3D
           font="/helvetiker_bold.typeface.json"
@@ -250,47 +250,6 @@ function RefractiveText() {
           />
         </Text3D>
       </Center>
-    </group>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// Holographic Heritage Rings
-// ═══════════════════════════════════════════════════════════════════
-function HoloProjector() {
-  const currentSlide = useAppStore((s) => s.currentSlide);
-  const active = currentSlide === 1 || currentSlide === 2;
-  const groupRef = useRef<THREE.Group>(null);
-  
-  useFrame((state, delta) => {
-    if (!groupRef.current) return;
-    
-    // Fade in/out
-    const targetScale = active ? 1 : 0.001;
-    groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 3);
-    
-    // Rotate rings
-    const t = state.clock.elapsedTime;
-    groupRef.current.children.forEach((child, i) => {
-      child.rotation.x = t * (0.2 + i * 0.1);
-      child.rotation.y = t * (0.3 + i * 0.15);
-    });
-  });
-
-  return (
-    <group ref={groupRef} position={[0, 0.5, 0]}>
-      <mesh>
-        <torusGeometry args={[3, 0.02, 16, 100]} />
-        <meshBasicMaterial color="#00d4ff" wireframe transparent opacity={0.3} blending={THREE.AdditiveBlending} />
-      </mesh>
-      <mesh>
-        <torusGeometry args={[3.2, 0.01, 16, 100]} />
-        <meshBasicMaterial color="#ff3333" wireframe transparent opacity={0.2} blending={THREE.AdditiveBlending} />
-      </mesh>
-      <mesh>
-        <torusGeometry args={[2.8, 0.01, 16, 100]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.1} blending={THREE.AdditiveBlending} />
-      </mesh>
     </group>
   );
 }
@@ -702,7 +661,6 @@ export function Model3D() {
         <Suspense fallback={null}>
           <CursorLightPainting />
           <RefractiveText />
-          <HoloProjector />
           <CarModel />
           <WindTunnel />
           <Hotspots />

@@ -385,6 +385,7 @@ function CarModel() {
   const _caliperColor = new THREE.Color();
   const _wheelColor = new THREE.Color();
   const _trimColor = new THREE.Color();
+  const _tempVec = new THREE.Vector3();
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
@@ -457,20 +458,28 @@ function CarModel() {
     const targetExplosionAmount = isExploded ? 1 : 0;
     
     // Only animate if we're on Slide 6 or actively returning from it
-    if (isExploded || (currentSlide !== 6 && scene.children[0]?.position.distanceTo(scene.children[0]?.userData.originalPos || new THREE.Vector3()) > 0.01)) {
-      scene.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const mesh = child as THREE.Mesh;
-          if (mesh.userData.originalPos && mesh.userData.explodeDir) {
-            const targetPos = mesh.userData.originalPos.clone().add(
-              mesh.userData.explodeDir.clone().multiplyScalar(targetExplosionAmount)
-            );
-            mesh.position.lerp(targetPos, lerpSpeed);
-            mesh.updateMatrix(); // Required because matrixAutoUpdate = false
-          }
+      // Optimization: Only traverse if the first child is far from origin or we are exploded
+      let shouldAnimate = isExploded;
+      if (!shouldAnimate) {
+        const firstChild = scene.children[0];
+        if (firstChild && firstChild.userData.originalPos) {
+           shouldAnimate = firstChild.position.distanceTo(firstChild.userData.originalPos) > 0.01;
         }
-      });
-    }
+      }
+
+      if (shouldAnimate) {
+        scene.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh;
+            if (mesh.userData.originalPos && mesh.userData.explodeDir) {
+              // Avoid .clone() allocations in the render loop to prevent GC freezing
+              _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(targetExplosionAmount).add(mesh.userData.originalPos);
+              mesh.position.lerp(_tempVec, lerpSpeed);
+              mesh.updateMatrix();
+            }
+          }
+        });
+      }
 
     let targetY = 0;
     switch (currentSlide) {
@@ -503,62 +512,58 @@ function CarModel() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// WindTunnel — fully non-reactive, reduced line count
+// Particle Vortex (Philosophy Slide) - Next Level InstancedMesh
 // ═══════════════════════════════════════════════════════════════════
 function WindTunnel() {
-  const linesRef = useRef<THREE.LineSegments>(null);
-  const lineCount = 400; // Reduced from 800 to 400
-  const lineLength = 3.0;
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const particleCount = 1000;
+  const dummy = React.useMemo(() => new THREE.Object3D(), []);
+  
+  const [particles] = React.useMemo(() => {
+    const p = [];
+    for (let i = 0; i < particleCount; i++) {
+      p.push({
+        angle: Math.random() * Math.PI * 2,
+        radius: Math.random() * 3 + 1.5,
+        z: (Math.random() - 0.5) * 40,
+        speed: Math.random() * 20 + 20,
+        scale: Math.random() * 0.5 + 0.1
+      });
+    }
+    return [p];
+  }, [particleCount]);
+
   const opacityRef = useRef(0);
 
-  const [positions, speeds] = React.useMemo(() => {
-    const pos = new Float32Array(lineCount * 2 * 3);
-    const spd = new Float32Array(lineCount);
-    for (let i = 0; i < lineCount; i++) {
-      const x = (Math.random() - 0.5) * 20;
-      const y = Math.random() * 5;
-      const z = (Math.random() - 0.5) * 40;
-      pos[i * 6] = x;
-      pos[i * 6 + 1] = y;
-      pos[i * 6 + 2] = z;
-      pos[i * 6 + 3] = x;
-      pos[i * 6 + 4] = y;
-      pos[i * 6 + 5] = z + lineLength;
-      spd[i] = Math.random() * 0.8 + 0.5;
-    }
-    return [pos, spd];
-  }, [lineCount]);
-
-  useFrame((_state, delta) => {
-    if (!linesRef.current) return;
-    const active = useAppStore.getState().currentSlide === 2;
+  useFrame((state, delta) => {
+    if (!meshRef.current) return;
+    const active = useAppStore.getState().currentSlide === 1;
 
     opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, active ? 1 : 0, delta * 3);
-    const material = linesRef.current.material as THREE.LineBasicMaterial;
+    const material = meshRef.current.material as THREE.MeshBasicMaterial;
     material.opacity = opacityRef.current;
 
     if (opacityRef.current < 0.01) return;
 
-    const pos = linesRef.current.geometry.attributes.position.array as Float32Array;
-    for (let i = 0; i < lineCount; i++) {
-      const velocity = speeds[i] * delta * 80;
-      pos[i * 6 + 2] += velocity;
-      pos[i * 6 + 5] += velocity;
-      if (pos[i * 6 + 2] > 20) {
-        pos[i * 6 + 2] = -20;
-        pos[i * 6 + 5] = -20 + lineLength;
-      }
+    for (let i = 0; i < particleCount; i++) {
+      const p = particles[i];
+      p.z += p.speed * delta;
+      if (p.z > 20) p.z = -20;
+      
+      const spiral = p.angle + p.z * 0.1;
+      dummy.position.set(Math.cos(spiral) * p.radius, Math.sin(spiral) * p.radius + 1, p.z);
+      dummy.scale.set(p.scale * 0.03, p.scale * 0.03, p.scale * 8);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
     }
-    linesRef.current.geometry.attributes.position.needsUpdate = true;
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <lineSegments ref={linesRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={lineCount * 2} />
-      </bufferGeometry>
-      <lineBasicMaterial color="#38bdf8" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} linewidth={1} />
-    </lineSegments>
+    <instancedMesh ref={meshRef} args={[undefined as any, undefined as any, particleCount]}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshBasicMaterial color="#00d4ff" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
+    </instancedMesh>
   );
 }
 

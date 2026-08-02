@@ -12,60 +12,39 @@ export function AudioEngine() {
   const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
   const isEngineRevved = useAppStore((s) => s.isEngineRevved);
   
-  // Real Audio File Reference
-  const revAudio = useRef<HTMLAudioElement | null>(null);
+  // The Music Track
+  const musicAudio = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !revAudio.current) {
-      revAudio.current = new Audio("/785503__litesaturation__energy-metal-short.wav");
-      revAudio.current.volume = 0.8;
+    if (typeof window !== "undefined" && !musicAudio.current) {
+      // The provided file is actually a music track!
+      musicAudio.current = new Audio("/785503__litesaturation__energy-metal-short.wav");
+      musicAudio.current.volume = 0.5;
+      musicAudio.current.loop = true;
     }
   }, []);
 
+  // Play/Pause music based on global sound toggle
   useEffect(() => {
-    // Initialize once
-    if (typeof window !== "undefined" && !globalAudioCtx) {
-      globalAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      masterGain = globalAudioCtx.createGain();
-      masterGain.gain.value = 0.0; // Start silent
-      masterGain.connect(globalAudioCtx.destination);
-
-      droneOsc = globalAudioCtx.createOscillator();
-      droneOsc.type = "sawtooth";
-      droneOsc.frequency.value = 110; // A2 note, very audible on all speakers
-      
-      const filter = globalAudioCtx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 400; // Let some buzz through
-      
-      droneOsc.connect(filter);
-      filter.connect(masterGain);
-      droneOsc.start();
-    }
-
-    if (!globalAudioCtx || !masterGain) return;
+    if (!musicAudio.current) return;
 
     if (isAudioEnabled) {
-      if (globalAudioCtx.state === "suspended") {
-        globalAudioCtx.resume();
-      }
-      // Fade in drone
-      masterGain.gain.setTargetAtTime(0.15, globalAudioCtx.currentTime, 0.5);
+      musicAudio.current.play().catch(e => console.error("Music play failed:", e));
     } else {
-      // Fade out drone
-      masterGain.gain.setTargetAtTime(0, globalAudioCtx.currentTime, 0.5);
+      musicAudio.current.pause();
     }
   }, [isAudioEnabled]);
 
-  // Handle Revving with Real Audio File
+  // If the user wants a rev sound for Ignite later, it can go here. 
+  // For now, Ignite just triggers visual effects since no rev file was provided.
   useEffect(() => {
-    if (!isAudioEnabled || !revAudio.current) return;
-
-    if (isEngineRevved) {
-      revAudio.current.currentTime = 0; // Reset to start
-      revAudio.current.play().catch(e => console.error("Audio play failed:", e));
-    }
+    if (!isAudioEnabled || !isEngineRevved || !musicAudio.current) return;
+    
+    // Optional: Boost volume slightly when engine revs as a cool effect
+    musicAudio.current.volume = 0.9;
+    setTimeout(() => {
+      if (musicAudio.current) musicAudio.current.volume = 0.5;
+    }, 2000);
   }, [isEngineRevved, isAudioEnabled]);
 
   return null;

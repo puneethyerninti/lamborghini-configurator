@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat } from "next/font/google";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 
 const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
 const montserrat = Montserrat({ weight: ["300", "400"], subsets: ["latin"] });
@@ -91,20 +92,22 @@ export function ConfiguratorUI() {
             <div className="flex flex-col gap-2 mb-4">
               <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-1`}>Livery Package</span>
               {PACKAGES.map((pkg) => (
-                <button
-                  key={pkg.id}
-                  onClick={() => setPackageTier(pkg.id as any)}
-                  className={`text-left p-3 border transition-all ${
-                    packageTier === pkg.id 
-                      ? "border-white bg-white/10" 
-                      : "border-white/10 hover:border-white/40"
-                  }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className={`${syncopate.className} text-[9px] text-white`}>{pkg.name}</span>
-                  </div>
-                  <span className={`${montserrat.className} text-[8px] text-white/50 mt-1 block`}>{pkg.price}</span>
-                </button>
+                <MagneticButton key={pkg.id} strength={10} className="w-full">
+                  <button
+                    onClick={() => setPackageTier(pkg.id as any)}
+                    className={`relative overflow-hidden w-full text-left p-3 border transition-all group ${
+                      packageTier === pkg.id 
+                        ? "border-white bg-white/10" 
+                        : "border-white/10 hover:border-white/40"
+                    }`}
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <div className="flex justify-between items-center relative z-10">
+                      <span className={`${syncopate.className} text-[9px] text-white`}>{pkg.name}</span>
+                    </div>
+                    <span className={`${montserrat.className} text-[8px] text-white/50 mt-1 block relative z-10`}>{pkg.price}</span>
+                  </button>
+                </MagneticButton>
               ))}
             </div>
 
@@ -112,23 +115,25 @@ export function ConfiguratorUI() {
             <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-1`}>Paintwork</span>
             <div className="grid grid-cols-2 gap-3">
               {COLORS.map((color) => (
-                <button
-                  key={color.hex}
-                  onClick={() => setCarColor(color.hex)}
-                  className="group flex flex-col items-center gap-3 p-3 border border-white/5 hover:bg-white/5 transition-all"
-                >
-                  <div className={`w-10 h-10 rounded-full border transition-all ${
-                    carColor === color.hex ? "border-white p-1" : "border-transparent p-0"
-                  }`}>
-                    <div className="w-full h-full rounded-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]" style={{ backgroundColor: color.hex }} />
-                  </div>
-                  <div className="text-center">
-                    <span className={`${syncopate.className} text-[8px] uppercase text-white block truncate w-full max-w-[100px]`}>
-                      {color.name}
-                    </span>
-                    <span className={`${montserrat.className} text-[7px] text-white/40`}>{color.type}</span>
-                  </div>
-                </button>
+                <MagneticButton key={color.hex} strength={15} className="w-full">
+                  <button
+                    onClick={() => setCarColor(color.hex)}
+                    className="relative overflow-hidden group w-full flex flex-col items-center gap-3 p-3 border border-white/5 hover:bg-white/5 transition-all"
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_0%,_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <div className={`relative z-10 w-10 h-10 rounded-full border transition-all ${
+                      carColor === color.hex ? "border-white p-1" : "border-transparent p-0"
+                    }`}>
+                      <div className="w-full h-full rounded-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]" style={{ backgroundColor: color.hex }} />
+                    </div>
+                    <div className="text-center relative z-10">
+                      <span className={`${syncopate.className} text-[8px] uppercase text-white block truncate w-full max-w-[100px]`}>
+                        {color.name}
+                      </span>
+                      <span className={`${montserrat.className} text-[7px] text-white/40`}>{color.type}</span>
+                    </div>
+                  </button>
+                </MagneticButton>
               ))}
             </div>
           </div>

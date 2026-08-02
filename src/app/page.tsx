@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Model3D } from "@/components/ui/Model3D";
 import { ConfiguratorUI } from "@/components/ui/ConfiguratorUI";
 import { CinematicLoader } from "@/components/ui/CinematicLoader";
@@ -14,6 +15,8 @@ import { TelemetryHUD } from "@/components/ui/TelemetryHUD";
 import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
 import { Hotspots } from "@/components/ui/Hotspots";
+import { SplitTextReveal } from "@/components/ui/SplitTextReveal";
+import { MouseParallaxProvider, useParallax, MouseParallax } from "@/components/ui/MouseParallax";
 import { AudioEngine, globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 
 const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
@@ -26,18 +29,24 @@ const playfair = Playfair_Display({ weight: ["400", "600"], style: ["normal", "i
 
 function Slide({ active, children, className = "" }: { active: boolean; children: React.ReactNode; className?: string }) {
   return (
-    <div
+    <motion.div
+      initial={false}
+      animate={{ 
+        opacity: active ? 1 : 0, 
+        filter: active ? "blur(0px)" : "blur(12px)",
+        scale: active ? 1 : 1.05,
+        y: active ? 0 : 20,
+        zIndex: active ? 10 : 0
+      }}
+      transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
       className={`absolute inset-0 pointer-events-none ${className}`}
       style={{
-        opacity: active ? 1 : 0,
-        transition: "opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)",
-        willChange: "opacity",
         pointerEvents: active ? "auto" : "none",
         visibility: active ? "visible" : "hidden",
       }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -169,13 +178,24 @@ const SlideContent = React.memo(function SlideContent() {
         
 
 
-        <div className="absolute bottom-16 left-8 md:left-16 flex flex-col gap-4">
+        <MouseParallax intensity={20} className="absolute bottom-16 left-8 md:left-16 flex flex-col gap-4">
           <FadeIn delay={0.4} active={currentSlide === 0}>
-            <LineReveal direction="x" color="bg-[#ff3333]" className="h-[2px] w-12" />
-            <h2 className={`${syncopate.className} text-4xl md:text-6xl text-white font-bold tracking-widest mt-4`}>AVENTADOR</h2>
-            <h3 className={`${playfair.className} text-xl md:text-3xl text-white/60 italic`}>Superveloce Jota</h3>
+            <LineReveal direction="x" color="bg-[#ff3333]" className="h-[2px] w-12 mb-4" />
           </FadeIn>
-        </div>
+          <SplitTextReveal 
+            text="AVENTADOR" 
+            className={`${syncopate.className} text-4xl md:text-6xl text-white font-bold tracking-widest`} 
+            active={currentSlide === 0} 
+            delay={0.6} 
+          />
+          <SplitTextReveal 
+            text="Superveloce Jota" 
+            className={`${playfair.className} text-xl md:text-3xl text-white/60 italic`} 
+            active={currentSlide === 0} 
+            delay={1.2} 
+            stagger={0.03}
+          />
+        </MouseParallax>
       </Slide>
 
       {/* S1: Heritage */}
@@ -183,14 +203,14 @@ const SlideContent = React.memo(function SlideContent() {
         <ChapterBadge chapter={0} title="Heritage" delay={0} active={currentSlide === 1} />
         <LineReveal direction="y" delay={0.2} className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-[1px] h-48" color="bg-[#ff3333]/40" />
         
-        <div className="absolute left-10 md:left-20 top-1/2 -translate-y-1/2 pr-6">
+        <MouseParallax intensity={15} className="absolute left-10 md:left-20 top-1/2 -translate-y-1/2 pr-6">
           <FadeIn delay={0.3} active={currentSlide === 1}>
             <span className={`${syncopate.className} text-[10px] text-[#ff3333] tracking-[0.4em] uppercase mb-4 block`}>Since 1963</span>
             <p className={`${montserrat.className} text-lg text-white/80 max-w-sm leading-relaxed`}>
               Born in Sant'Agata Bolognese. A lineage of uncompromising V12 power, daring design, and relentless pursuit of the extraordinary.
             </p>
           </FadeIn>
-        </div>
+        </MouseParallax>
       </Slide>
 
       {/* S2: Philosophy */}
@@ -411,8 +431,8 @@ function CinematicLetterbox() {
   const isTransitioning = useAppStore(s => s.isTransitioning);
   return (
     <div className="pointer-events-none z-[100]">
-      <div className={`fixed top-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[10vh]' : 'h-0'}`} />
-      <div className={`fixed bottom-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[10vh]' : 'h-0'}`} />
+      <div className={`fixed top-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[15vh]' : 'h-0'}`} />
+      <div className={`fixed bottom-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[15vh]' : 'h-0'}`} />
     </div>
   );
 }
@@ -424,53 +444,55 @@ export default function Home() {
   const { toggleAudio, isAudioEnabled } = useAppStore();
 
   return (
-    <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
-      <AudioEngine />
-      <CinematicLoader />
-      <CinematicLetterbox />
+    <MouseParallaxProvider>
+      <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
+        <AudioEngine />
+        <CinematicLoader />
+        <CinematicLetterbox />
 
-      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-50 flex justify-between items-center pointer-events-auto text-white mix-blend-difference">
-        <div className="flex items-center gap-4">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
-            alt="Lamborghini Logo"
-            className="w-10 h-11 md:w-12 md:h-14 object-contain drop-shadow-2xl brightness-110 cursor-pointer"
-            onClick={() => useAppStore.getState().setSlide(0)}
-          />
+        <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-50 flex justify-between items-center pointer-events-auto text-white mix-blend-difference">
+          <div className="flex items-center gap-4">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
+              alt="Lamborghini Logo"
+              className="w-10 h-11 md:w-12 md:h-14 object-contain drop-shadow-2xl brightness-110 cursor-pointer"
+              onClick={() => useAppStore.getState().setSlide(0)}
+            />
+          </div>
+          <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
+            <button 
+              onClick={() => {
+                toggleAudio();
+                if (globalAudioCtx && globalAudioCtx.state === "suspended") {
+                  globalAudioCtx.resume();
+                }
+                if (!isAudioEnabled) {
+                  playGlobalMusic();
+                } else {
+                  pauseGlobalMusic();
+                }
+              }}
+              className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg"
+            >
+              {isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
+            </button>
+            <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg hidden md:block">Models</button>
+            <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg">Menu</button>
+          </div>
+        </header>
+
+        <div className="absolute inset-0 z-0 bg-black">
+          <Model3D />
         </div>
-        <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
-          <button 
-            onClick={() => {
-              toggleAudio();
-              if (globalAudioCtx && globalAudioCtx.state === "suspended") {
-                globalAudioCtx.resume();
-              }
-              if (!isAudioEnabled) {
-                playGlobalMusic();
-              } else {
-                pauseGlobalMusic();
-              }
-            }}
-            className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg"
-          >
-            {isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
-          </button>
-          <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg hidden md:block">Models</button>
-          <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg">Menu</button>
+
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+          <SlideContent />
         </div>
-      </header>
 
-      <div className="absolute inset-0 z-0 bg-black">
-        <Model3D />
-      </div>
+        <TelemetryHUD />
 
-      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
-        <SlideContent />
-      </div>
-
-      <TelemetryHUD />
-
-      <InteractionHandler />
-    </main>
+        <InteractionHandler />
+      </main>
+    </MouseParallaxProvider>
   );
 }

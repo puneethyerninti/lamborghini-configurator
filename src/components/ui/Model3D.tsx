@@ -218,12 +218,15 @@ function RefractiveText() {
     groupRef.current.position.y = Math.sin(Date.now() / 1000) * 0.1 + 0.8;
   });
 
+  const isMobile = window.innerWidth < 768 || window.innerWidth < window.innerHeight;
+  const textSize = isMobile ? 2 : 4;
+
   return (
     <group ref={groupRef} position={[0, 0.8, -2]}>
       <Center>
         <Text3D
           font="/helvetiker_bold.typeface.json"
-          size={4}
+          size={textSize}
           height={0.5}
           curveSegments={12}
           bevelEnabled
@@ -536,7 +539,7 @@ function SceneCamera() {
           // Responsive check: if aspect ratio is portrait (mobile), pull the camera back 
           // so the car doesn't get clipped on the sides.
           const isMobile = window.innerWidth < window.innerHeight;
-          const mobileMult = isMobile ? 1.5 : 1.0;
+          const mobileMult = isMobile ? 2.0 : 1.0;
 
           controls.smoothTime = preset.dur / 2;
           controls.setLookAt(

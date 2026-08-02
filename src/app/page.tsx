@@ -89,7 +89,7 @@ function Parallax({ children, intensity = 15, className = "" }: { children: Reac
     rafId = requestAnimationFrame(tick);
     return () => { window.removeEventListener("mousemove", onMove); cancelAnimationFrame(rafId); };
   }, [intensity]);
-  return <div ref={ref} className={className} style={{ willChange: "transform" }}>{children}</div>;
+  return <div ref={ref} className={`touch-none ${className}`} style={{ willChange: "transform" }}>{children}</div>;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -98,6 +98,7 @@ function Parallax({ children, intensity = 15, className = "" }: { children: Reac
 function InteractionHandler() {
   const lastEventTime = useRef(0);
   const touchStartY = useRef(0);
+  const touchStartX = useRef(0);
   const locked = useRef(false);
 
   useEffect(() => {
@@ -109,7 +110,7 @@ function InteractionHandler() {
       if (now - lastEventTime.current > 1200) locked.current = false;
       if (locked.current) return;
 
-      if (Math.abs(deltaY) > 25) {
+      if (Math.abs(deltaY) > 40) { // Increased threshold for intentional swipes
         locked.current = true;
         lastEventTime.current = now;
         if (deltaY > 0) nextSlide();
@@ -118,10 +119,20 @@ function InteractionHandler() {
     };
 
     const onWheel = (e: WheelEvent) => handleMove(e.deltaY);
-    const onTouchStart = (e: TouchEvent) => touchStartY.current = e.touches[0].clientY;
+    
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+      touchStartX.current = e.touches[0].clientX;
+    };
+    
     const onTouchEnd = (e: TouchEvent) => {
       const deltaY = touchStartY.current - e.changedTouches[0].clientY;
-      handleMove(deltaY); // Swiping up means scrolling down (positive delta)
+      const deltaX = touchStartX.current - e.changedTouches[0].clientX;
+      
+      // Only trigger if it's primarily a vertical swipe
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        handleMove(deltaY);
+      }
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });

@@ -56,11 +56,11 @@ export function TelemetryHUD() {
     <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden mix-blend-screen opacity-80 animate-fadein">
       
       {/* HUD Reticle */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vh] h-[60vh] border border-[#00d4ff]/20 rounded-full border-dashed animate-[spin_60s_linear_infinite]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[60vh] h-[90vw] md:h-[60vh] max-w-[500px] max-h-[500px] border border-[#00d4ff]/20 rounded-full border-dashed animate-[spin_60s_linear_infinite]" />
       
       {/* RPM Gauge */}
-      <div className="absolute left-8 bottom-8 md:left-16 md:bottom-16 w-64 h-32 flex flex-col justify-end">
-        <span className={`${syncopate.className} text-[10px] text-[#00d4ff] tracking-[0.3em] uppercase mb-2`}>Engine RPM</span>
+      <div className="absolute left-6 bottom-6 md:left-16 md:bottom-16 w-40 md:w-64 flex flex-col justify-end">
+        <span className={`${syncopate.className} text-[8px] md:text-[10px] text-[#00d4ff] tracking-[0.3em] uppercase mb-2`}>Engine RPM</span>
         <div className="w-full h-2 bg-white/10 overflow-hidden relative">
            <div 
              className="absolute top-0 left-0 h-full bg-[#00d4ff] transition-all duration-75"
@@ -76,10 +76,10 @@ export function TelemetryHUD() {
       </div>
 
       {/* Speedometer */}
-      <div className="absolute right-8 bottom-8 md:right-16 md:bottom-16 text-right">
-        <span className={`${syncopate.className} text-[10px] text-[#00d4ff] tracking-[0.3em] uppercase block mb-1`}>Velocity</span>
-        <div className="flex items-baseline justify-end gap-2">
-          <span className={`${syncopate.className} text-6xl md:text-8xl text-white font-bold tracking-tighter`}>
+      <div className="absolute right-6 bottom-6 md:right-16 md:bottom-16 text-right">
+        <span className={`${syncopate.className} text-[8px] md:text-[10px] text-[#00d4ff] tracking-[0.3em] uppercase block mb-1`}>Velocity</span>
+        <div className="flex items-baseline justify-end gap-1 md:gap-2">
+          <span className={`${syncopate.className} text-5xl md:text-8xl text-white font-bold tracking-tighter`}>
             {Math.floor(speed)}
           </span>
           <span className={`${montserrat.className} text-sm text-white/50`}>KM/H</span>
@@ -87,7 +87,7 @@ export function TelemetryHUD() {
       </div>
 
       {/* G-Force Meter */}
-      <div className="absolute top-24 right-8 md:top-32 md:right-16 flex flex-col items-end gap-2">
+      <div className="absolute top-24 right-6 md:top-32 md:right-16 flex flex-col items-end gap-2 origin-top-right scale-75 md:scale-100">
          <span className={`${syncopate.className} text-[8px] text-[#00d4ff] tracking-[0.3em] uppercase`}>G-Force</span>
          <div className="w-24 h-24 rounded-full border border-white/20 relative flex items-center justify-center">
             {/* Crosshair */}

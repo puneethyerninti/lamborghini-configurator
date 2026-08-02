@@ -33,7 +33,7 @@ export function SlideNav() {
 
   return (
     <div 
-      className="absolute right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6 pointer-events-auto"
+      className="fixed right-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex flex-col gap-3 mix-blend-difference pointer-events-auto"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

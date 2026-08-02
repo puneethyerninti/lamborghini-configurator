@@ -49,7 +49,7 @@ export function ConfiguratorUI() {
   const [activeTab, setActiveTab] = useState<"exterior" | "wheels" | "interior">("exterior");
 
   return (
-    <div className="flex flex-col gap-6 pointer-events-auto items-end max-h-[50vh] md:max-h-[70vh] w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/40 backdrop-blur-xl border-t md:border border-white/10 p-6 md:rounded-none mt-auto">
+    <div className="flex flex-col gap-6 pointer-events-auto items-start md:items-end max-h-[65vh] md:max-h-[70vh] pb-12 md:pb-6 w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/40 backdrop-blur-xl border-t md:border border-white/10 p-6 md:rounded-none mt-auto">
       
       {/* Header */}
       <div className="text-right w-full border-b border-white/10 pb-4 mb-2">

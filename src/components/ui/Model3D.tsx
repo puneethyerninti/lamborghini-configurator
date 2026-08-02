@@ -512,82 +512,6 @@ function CarModel() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Heritage Embers (Philosophy Slide) - Elegant Golden Dust
-// ═══════════════════════════════════════════════════════════════════
-function HeritageEmbers() {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const particleCount = 600;
-  const dummy = React.useMemo(() => new THREE.Object3D(), []);
-  
-  const [particles] = React.useMemo(() => {
-    const p = [];
-    for (let i = 0; i < particleCount; i++) {
-      p.push({
-        x: (Math.random() - 0.5) * 30,
-        y: (Math.random() - 0.5) * 10,
-        z: (Math.random() - 0.5) * 30,
-        speedX: (Math.random() - 0.5) * 0.2,
-        speedY: Math.random() * 0.5 + 0.1,
-        speedZ: (Math.random() - 0.5) * 0.2,
-        scale: Math.random() * 0.03 + 0.01,
-        oscillationSpeed: Math.random() * 2 + 1,
-        oscillationOffset: Math.random() * Math.PI * 2
-      });
-    }
-    return [p];
-  }, [particleCount]);
-
-  const opacityRef = useRef(0);
-
-  useFrame((state, delta) => {
-    if (!meshRef.current) return;
-    const active = useAppStore.getState().currentSlide === 1;
-
-    opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, active ? 1 : 0, delta * 2);
-    const material = meshRef.current.material as THREE.MeshBasicMaterial;
-    material.opacity = opacityRef.current;
-
-    if (opacityRef.current < 0.01) return;
-
-    const time = state.clock.elapsedTime;
-
-    for (let i = 0; i < particleCount; i++) {
-      const p = particles[i];
-      p.y += p.speedY * delta;
-      p.x += p.speedX * delta;
-      p.z += p.speedZ * delta;
-      
-      if (p.y > 10) {
-        p.y = -5;
-        p.x = (Math.random() - 0.5) * 30;
-        p.z = (Math.random() - 0.5) * 30;
-      }
-      
-      // Gentle floating oscillation
-      const floatX = Math.sin(time * p.oscillationSpeed + p.oscillationOffset) * 0.5;
-      const floatZ = Math.cos(time * p.oscillationSpeed + p.oscillationOffset) * 0.5;
-      
-      dummy.position.set(p.x + floatX, p.y, p.z + floatZ);
-      
-      // Pulse scale
-      const pulse = (Math.sin(time * 3 + p.oscillationOffset) * 0.5 + 0.5) * 0.5 + 0.5;
-      dummy.scale.set(p.scale * pulse, p.scale * pulse, p.scale * pulse);
-      
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined as any, undefined as any, particleCount]}>
-      <sphereGeometry args={[1, 8, 8]} />
-      <meshBasicMaterial color="#ffaa00" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
-    </instancedMesh>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════
 // SceneCamera — fully non-reactive
 // ═══════════════════════════════════════════════════════════════════
 function SceneCamera() {
@@ -687,7 +611,6 @@ export function Model3D() {
           <CursorLightPainting />
           <RefractiveText />
           <CarModel />
-          <HeritageEmbers />
           <Hotspots />
           <ContactShadows frames={1} resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
         </Suspense>

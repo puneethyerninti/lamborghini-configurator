@@ -512,22 +512,26 @@ function CarModel() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Particle Vortex (Philosophy Slide) - Next Level InstancedMesh
+// Heritage Embers (Philosophy Slide) - Elegant Golden Dust
 // ═══════════════════════════════════════════════════════════════════
-function WindTunnel() {
+function HeritageEmbers() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const particleCount = 1000;
+  const particleCount = 600;
   const dummy = React.useMemo(() => new THREE.Object3D(), []);
   
   const [particles] = React.useMemo(() => {
     const p = [];
     for (let i = 0; i < particleCount; i++) {
       p.push({
-        angle: Math.random() * Math.PI * 2,
-        radius: Math.random() * 3 + 1.5,
-        z: (Math.random() - 0.5) * 40,
-        speed: Math.random() * 20 + 20,
-        scale: Math.random() * 0.5 + 0.1
+        x: (Math.random() - 0.5) * 30,
+        y: (Math.random() - 0.5) * 10,
+        z: (Math.random() - 0.5) * 30,
+        speedX: (Math.random() - 0.5) * 0.2,
+        speedY: Math.random() * 0.5 + 0.1,
+        speedZ: (Math.random() - 0.5) * 0.2,
+        scale: Math.random() * 0.03 + 0.01,
+        oscillationSpeed: Math.random() * 2 + 1,
+        oscillationOffset: Math.random() * Math.PI * 2
       });
     }
     return [p];
@@ -539,20 +543,36 @@ function WindTunnel() {
     if (!meshRef.current) return;
     const active = useAppStore.getState().currentSlide === 1;
 
-    opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, active ? 1 : 0, delta * 3);
+    opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, active ? 1 : 0, delta * 2);
     const material = meshRef.current.material as THREE.MeshBasicMaterial;
     material.opacity = opacityRef.current;
 
     if (opacityRef.current < 0.01) return;
 
+    const time = state.clock.elapsedTime;
+
     for (let i = 0; i < particleCount; i++) {
       const p = particles[i];
-      p.z += p.speed * delta;
-      if (p.z > 20) p.z = -20;
+      p.y += p.speedY * delta;
+      p.x += p.speedX * delta;
+      p.z += p.speedZ * delta;
       
-      const spiral = p.angle + p.z * 0.1;
-      dummy.position.set(Math.cos(spiral) * p.radius, Math.sin(spiral) * p.radius + 1, p.z);
-      dummy.scale.set(p.scale * 0.03, p.scale * 0.03, p.scale * 8);
+      if (p.y > 10) {
+        p.y = -5;
+        p.x = (Math.random() - 0.5) * 30;
+        p.z = (Math.random() - 0.5) * 30;
+      }
+      
+      // Gentle floating oscillation
+      const floatX = Math.sin(time * p.oscillationSpeed + p.oscillationOffset) * 0.5;
+      const floatZ = Math.cos(time * p.oscillationSpeed + p.oscillationOffset) * 0.5;
+      
+      dummy.position.set(p.x + floatX, p.y, p.z + floatZ);
+      
+      // Pulse scale
+      const pulse = (Math.sin(time * 3 + p.oscillationOffset) * 0.5 + 0.5) * 0.5 + 0.5;
+      dummy.scale.set(p.scale * pulse, p.scale * pulse, p.scale * pulse);
+      
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);
     }
@@ -561,8 +581,8 @@ function WindTunnel() {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined as any, undefined as any, particleCount]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial color="#00d4ff" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
+      <sphereGeometry args={[1, 8, 8]} />
+      <meshBasicMaterial color="#ffaa00" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
     </instancedMesh>
   );
 }
@@ -667,7 +687,7 @@ export function Model3D() {
           <CursorLightPainting />
           <RefractiveText />
           <CarModel />
-          <WindTunnel />
+          <HeritageEmbers />
           <Hotspots />
           <ContactShadows frames={1} resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
         </Suspense>

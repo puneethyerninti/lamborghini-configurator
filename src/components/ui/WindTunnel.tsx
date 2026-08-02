@@ -74,9 +74,7 @@ export function WindTunnel() {
       <bufferGeometry>
         <bufferAttribute 
           attach="attributes-position" 
-          count={lineCount * 2} 
-          array={positions} 
-          itemSize={3} 
+          args={[positions, 3]}
           usage={THREE.DynamicDrawUsage}
         />
       </bufferGeometry>

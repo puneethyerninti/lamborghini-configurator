@@ -278,7 +278,7 @@ function CarModel() {
 
     let totalVertices = 0;
 
-    scene.traverse((child) => {
+    scene.traverse((child: THREE.Object3D) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         
@@ -323,7 +323,7 @@ function CarModel() {
     });
 
     // Setup Original Positions & Explosion Vectors
-    scene.traverse((child) => {
+    scene.traverse((child: THREE.Object3D) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         mesh.userData.originalPos = mesh.position.clone();
@@ -351,7 +351,7 @@ function CarModel() {
   // Apply car color
   useEffect(() => {
     let applied = false;
-    scene.traverse((child) => {
+    scene.traverse((child: THREE.Object3D) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         if (mesh.material) {
@@ -367,7 +367,7 @@ function CarModel() {
       }
     });
     if (!applied) {
-      scene.traverse((child) => {
+      scene.traverse((child: THREE.Object3D) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           if (mesh.material) {
@@ -472,7 +472,7 @@ function CarModel() {
       }
 
       if (shouldAnimate) {
-        scene.traverse((child) => {
+        scene.traverse((child: THREE.Object3D) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             if (mesh.userData.originalPos && mesh.userData.explodeDir) {
@@ -603,7 +603,7 @@ export function Model3D() {
       >
         <color attach="background" args={["#000000"]} />
         {typeof window !== 'undefined' && window.innerWidth > 768 && (
-          <EffectComposer disableNormalPass>
+          <EffectComposer autoClear={false}>
             <Bloom luminanceThreshold={4.0} mipmapBlur intensity={0.5} />
             <Vignette eskil={false} offset={0.1} darkness={1.1} />
           </EffectComposer>

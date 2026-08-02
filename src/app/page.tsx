@@ -32,8 +32,8 @@ function Slide({ active, children, className = "" }: { active: boolean; children
   return (
     <motion.div
       initial={false}
-      animate={{ 
-        opacity: active ? 1 : 0, 
+      animate={{
+        opacity: active ? 1 : 0,
         filter: active ? "blur(0px)" : "blur(12px)",
         scale: active ? 1 : 1.05,
         y: active ? 0 : 20,
@@ -131,16 +131,16 @@ function InteractionHandler() {
     };
 
     const onWheel = (e: WheelEvent) => handleMove(e.deltaY);
-    
+
     const onTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0].clientY;
       touchStartX.current = e.touches[0].clientX;
     };
-    
+
     const onTouchEnd = (e: TouchEvent) => {
       const deltaY = touchStartY.current - e.changedTouches[0].clientY;
       const deltaX = touchStartX.current - e.changedTouches[0].clientX;
-      
+
       // Only trigger if it's primarily a vertical swipe
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
         handleMove(deltaY);
@@ -150,7 +150,7 @@ function InteractionHandler() {
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
-    
+
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
@@ -172,28 +172,28 @@ const SlideContent = React.memo(function SlideContent() {
       <SlideNav />
 
       {/* ── Chapter 1: The Bull ── */}
-      
+
       {/* S0: Hero Cold Open */}
       <Slide active={currentSlide === 0 && !isInteriorMode} className="p-8 md:p-16">
         <ChapterBadge chapter={0} title="Identity" active={currentSlide === 0} />
-        
+
 
 
         <MouseParallax intensity={20} className="absolute bottom-16 left-8 md:left-16 flex flex-col gap-4">
           <FadeIn delay={0.4} active={currentSlide === 0}>
             <LineReveal direction="x" color="bg-[#ff3333]" className="h-[2px] w-12 mb-4" />
           </FadeIn>
-          <SplitTextReveal 
-            text="AVENTADOR" 
-            className={`${syncopate.className} text-4xl md:text-6xl text-white font-bold tracking-widest`} 
-            active={currentSlide === 0} 
-            delay={0.6} 
+          <SplitTextReveal
+            text="AVENTADOR"
+            className={`${syncopate.className} text-4xl md:text-6xl text-white font-bold tracking-widest`}
+            active={currentSlide === 0}
+            delay={0.6}
           />
-          <SplitTextReveal 
-            text="Superveloce Jota" 
-            className={`${playfair.className} text-xl md:text-3xl text-white/60 italic`} 
-            active={currentSlide === 0} 
-            delay={1.2} 
+          <SplitTextReveal
+            text="Superveloce Jota"
+            className={`${playfair.className} text-xl md:text-3xl text-white/60 italic`}
+            active={currentSlide === 0}
+            delay={1.2}
             stagger={0.03}
           />
         </MouseParallax>
@@ -203,7 +203,7 @@ const SlideContent = React.memo(function SlideContent() {
       <Slide active={currentSlide === 1}>
         <ChapterBadge chapter={0} title="Heritage" delay={0} active={currentSlide === 1} />
         <LineReveal direction="y" delay={0.2} className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-[1px] h-48" color="bg-[#ff3333]/40" />
-        
+
         <MouseParallax intensity={15} className="absolute left-10 md:left-20 top-1/2 -translate-y-1/2 pr-6">
           <FadeIn delay={0.3} active={currentSlide === 1}>
             <span className={`${syncopate.className} text-[10px] text-[#ff3333] tracking-[0.4em] uppercase mb-4 block`}>Since 1963</span>
@@ -228,7 +228,7 @@ const SlideContent = React.memo(function SlideContent() {
 
 
       {/* ── Chapter 2: Engineering ── */}
-      
+
       {/* S3: LDVA 2.0 */}
       <Slide active={currentSlide === 3}>
         <ChapterBadge chapter={1} title="The Brain" delay={0} active={currentSlide === 3} />
@@ -284,7 +284,7 @@ const SlideContent = React.memo(function SlideContent() {
         <ChapterBadge chapter={1} title="Architecture" delay={0} active={currentSlide === 6} />
         <div className="absolute left-16 top-1/3">
           <FadeIn delay={0.2} active={currentSlide === 6}>
-            <h2 className={`${syncopate.className} text-4xl text-white font-bold mb-8`}>CARBON<br/>CORE</h2>
+            <h2 className={`${syncopate.className} text-4xl text-white font-bold mb-8`}>CARBON<br />CORE</h2>
             <StatCounter value={1525} suffix="kg" label="Dry Weight" delay={0.4} active={currentSlide === 6} />
           </FadeIn>
         </div>
@@ -292,12 +292,12 @@ const SlideContent = React.memo(function SlideContent() {
 
 
       {/* ── Chapter 3: Performance ── */}
-      
+
       {/* S7: Acceleration */}
       <Slide active={currentSlide === 7}>
         <ChapterBadge chapter={2} title="Acceleration" delay={0} active={currentSlide === 7} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-           <StatCounter value={2.8} decimals={1} suffix="s" label="0-100 KM/H" delay={0.2} active={currentSlide === 7} />
+          <StatCounter value={2.8} decimals={1} suffix="s" label="0-100 KM/H" delay={0.2} active={currentSlide === 7} />
         </div>
       </Slide>
 
@@ -305,7 +305,7 @@ const SlideContent = React.memo(function SlideContent() {
       <Slide active={currentSlide === 8}>
         <ChapterBadge chapter={2} title="Velocity" delay={0} active={currentSlide === 8} />
         <div className="absolute right-24 bottom-24 text-right">
-           <StatCounter value={352} suffix="KM/H" label="Top Speed" delay={0.2} active={currentSlide === 8} />
+          <StatCounter value={352} suffix="KM/H" label="Top Speed" delay={0.2} active={currentSlide === 8} />
         </div>
       </Slide>
 
@@ -328,7 +328,7 @@ const SlideContent = React.memo(function SlideContent() {
 
 
       {/* ── Chapter 4: The Atelier ── */}
-      
+
       {/* S10: Configurator */}
       <Slide active={currentSlide === 10 && !isInteriorMode} className="!pointer-events-none">
         <ChapterBadge chapter={3} title="Ad Personam" delay={0} active={currentSlide === 10} />
@@ -343,8 +343,8 @@ const SlideContent = React.memo(function SlideContent() {
 
       {/* S11: Interior (Same Configurator UI, but camera moves inside) */}
       <Slide active={currentSlide === 11} className="!pointer-events-none">
-         <ChapterBadge chapter={3} title="Cockpit" delay={0} active={currentSlide === 11} />
-         <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
+        <ChapterBadge chapter={3} title="Cockpit" delay={0} active={currentSlide === 11} />
+        <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
           <Parallax intensity={10}>
             <FadeIn delay={0} direction="left" active={currentSlide === 11}>
               <ConfiguratorUI />
@@ -355,14 +355,14 @@ const SlideContent = React.memo(function SlideContent() {
 
 
       {/* ── Chapter 5: The Invitation ── */}
-      
+
       {/* S12: Legacy / Stats Wall */}
       <Slide active={currentSlide === 12}>
         <ChapterBadge chapter={4} title="Masterpiece" delay={0} active={currentSlide === 12} />
         <div className="absolute left-8 md:left-16 top-1/4 max-w-[300px] md:max-w-lg">
           <FadeIn delay={0.2} active={currentSlide === 12}>
             <h2 className={`${syncopate.className} text-xl md:text-2xl text-white font-bold tracking-widest mb-8 md:mb-12 uppercase`}>Technical Specifications</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 md:gap-y-8">
               <div className="flex flex-col gap-1 border-l border-white/20 pl-4">
                 <span className={`${montserrat.className} text-[8px] text-white/50 uppercase tracking-widest`}>Engine</span>
@@ -400,8 +400,8 @@ const SlideContent = React.memo(function SlideContent() {
           />
           <h2 className={`${playfair.className} text-4xl text-white mb-12`}>Begin the Conversation</h2>
           <div className="flex gap-4">
-             <input type="text" placeholder="NAME" className={`bg-transparent border-b border-white/20 px-4 py-2 text-white outline-none focus:border-white transition-colors ${syncopate.className} text-[9px] tracking-widest`} />
-             <input type="email" placeholder="EMAIL" className={`bg-transparent border-b border-white/20 px-4 py-2 text-white outline-none focus:border-white transition-colors ${syncopate.className} text-[9px] tracking-widest`} />
+            <input type="text" placeholder="NAME" className={`bg-transparent border-b border-white/20 px-4 py-2 text-white outline-none focus:border-white transition-colors ${syncopate.className} text-[9px] tracking-widest`} />
+            <input type="email" placeholder="EMAIL" className={`bg-transparent border-b border-white/20 px-4 py-2 text-white outline-none focus:border-white transition-colors ${syncopate.className} text-[9px] tracking-widest`} />
           </div>
           <button
             className={`mt-12 border border-white px-16 py-5 ${syncopate.className} font-bold tracking-[0.3em] text-[9px] uppercase text-black bg-white hover:bg-black hover:text-white transition-all duration-500 cursor-pointer`}
@@ -410,7 +410,7 @@ const SlideContent = React.memo(function SlideContent() {
           </button>
         </FadeIn>
       </Slide>
-      
+
       {/* Scroll hint on Hero */}
       <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 pointer-events-none"
@@ -450,37 +450,8 @@ export default function Home() {
         <AudioEngine />
         <CinematicLoader />
         <CinematicLetterbox />
-
-        <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-50 flex justify-between items-center pointer-events-auto text-white mix-blend-difference">
-          <div className="flex items-center gap-4">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
-              alt="Lamborghini Logo"
-              className="w-10 h-11 md:w-12 md:h-14 object-contain drop-shadow-2xl brightness-110 cursor-pointer"
-              onClick={() => useAppStore.getState().setSlide(0)}
-            />
-          </div>
-          <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
-            <button 
-              onClick={() => {
-                toggleAudio();
-                if (globalAudioCtx && globalAudioCtx.state === "suspended") {
-                  globalAudioCtx.resume();
-                }
-                if (!isAudioEnabled) {
-                  playGlobalMusic();
-                } else {
-                  pauseGlobalMusic();
-                }
-              }}
-              className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg"
-            >
-              {isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
-            </button>
-            <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg hidden md:block">Models</button>
-            <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg">Menu</button>
-          </div>
-        </header>
+        
+        <Navbar />
 
         <div className="absolute inset-0 z-0 bg-black">
           <Model3D />

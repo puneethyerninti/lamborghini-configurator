@@ -225,20 +225,21 @@ function RefractiveText() {
           font="/helvetiker_bold.typeface.json"
           size={4}
           height={0.5}
-          curveSegments={32}
+          curveSegments={12}
           bevelEnabled
           bevelThickness={0.1}
           bevelSize={0.05}
           bevelOffset={0}
-          bevelSegments={8}
+          bevelSegments={3}
         >
           SVJ
           <MeshTransmissionMaterial
-            backside
-            samples={4}
+            backside={false}
+            samples={2}
+            resolution={256}
             thickness={2}
             chromaticAberration={0.025}
-            anisotropy={0.1}
+            anisotropy={0}
             distortion={0.1}
             distortionScale={0.1}
             temporalDistortion={0.0}

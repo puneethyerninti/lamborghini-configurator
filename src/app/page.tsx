@@ -13,6 +13,8 @@ import { TrackMap } from "@/components/ui/TrackMap";
 import { TelemetryHUD } from "@/components/ui/TelemetryHUD";
 import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
+import { Hotspots } from "@/components/ui/Hotspots";
+import { AudioEngine } from "@/components/ui/AudioEngine";
 
 const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
 const montserrat = Montserrat({ weight: ["200", "300", "400", "500"], subsets: ["latin"] });
@@ -419,12 +421,15 @@ function CinematicLetterbox() {
 // Main Page Shell
 // ═══════════════════════════════════════════════════════════════════
 export default function Home() {
+  const { toggleAudio, isAudioEnabled } = useAppStore();
+
   return (
     <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
+      <AudioEngine />
       <CinematicLoader />
       <CinematicLetterbox />
 
-      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-50 flex justify-between items-center pointer-events-auto text-white">
+      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-50 flex justify-between items-center pointer-events-auto text-white mix-blend-difference">
         <div className="flex items-center gap-4">
           <img
             src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
@@ -433,9 +438,15 @@ export default function Home() {
             onClick={() => useAppStore.getState().setSlide(0)}
           />
         </div>
-        <div className={`hidden md:flex gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
-          <button className="hover:opacity-100 transition-opacity drop-shadow-lg">Models</button>
-          <button className="hover:opacity-100 transition-opacity drop-shadow-lg">Menu</button>
+        <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
+          <button 
+            onClick={toggleAudio}
+            className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg"
+          >
+            {isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
+          </button>
+          <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg hidden md:block">Models</button>
+          <button className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg">Menu</button>
         </div>
       </header>
 

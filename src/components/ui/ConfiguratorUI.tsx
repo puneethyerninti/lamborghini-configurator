@@ -38,15 +38,22 @@ const PACKAGES = [
   { id: 'svj63', name: "SVJ 63 Edition Livery", price: "+ $35,000" },
 ];
 
+const ENVIRONMENTS = [
+  { id: 'studio', name: "Studio Lighting", desc: "Classic neutral reflections" },
+  { id: 'night', name: "Midnight Track", desc: "Aggressive dark ambiance" },
+  { id: 'city', name: "Urban Neon", desc: "High contrast colors" },
+];
+
 export function ConfiguratorUI() {
   const { 
     carColor, setCarColor, 
     wheelStyle, setWheelStyle,
     interiorTheme, setInteriorTheme,
-    packageTier, setPackageTier
+    packageTier, setPackageTier,
+    environment, setEnvironment
   } = useAppStore();
   
-  const [activeTab, setActiveTab] = useState<"exterior" | "wheels" | "interior">("exterior");
+  const [activeTab, setActiveTab] = useState<"exterior" | "wheels" | "interior" | "backdrop" | "summary">("exterior");
 
   return (
     <div className="flex flex-col gap-6 pointer-events-auto items-start md:items-end max-h-[65vh] md:max-h-[70vh] pb-12 md:pb-6 w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/40 backdrop-blur-xl border-t md:border border-white/10 p-6 md:rounded-none mt-auto">
@@ -58,8 +65,8 @@ export function ConfiguratorUI() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 w-full justify-between mb-4">
-        {(["exterior", "wheels", "interior"] as const).map((tab) => (
+      <div className="flex gap-4 w-full justify-between mb-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {(["exterior", "wheels", "interior", "backdrop", "summary"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -176,6 +183,61 @@ export function ConfiguratorUI() {
               >
                 Enter Cockpit View
               </button>
+          </div>
+        )}
+        {/* Backdrop Tab */}
+        {activeTab === "backdrop" && (
+          <div className="flex flex-col gap-3 animate-fadein">
+             <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Environment</span>
+             {ENVIRONMENTS.map((env) => (
+                <button
+                  key={env.id}
+                  onClick={() => setEnvironment(env.id as any)}
+                  className={`text-left p-4 border transition-all ${
+                    environment === env.id 
+                      ? "border-[#ff3333] bg-[#ff3333]/10" 
+                      : "border-white/10 hover:border-white/40"
+                  }`}
+                >
+                  <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{env.name}</span>
+                  <span className={`${montserrat.className} text-[9px] text-white/60 block`}>{env.desc}</span>
+                </button>
+              ))}
+          </div>
+        )}
+
+        {/* Summary Tab */}
+        {activeTab === "summary" && (
+          <div className="flex flex-col gap-4 animate-fadein">
+            <div className="border border-white/20 p-4 bg-white/5">
+              <h4 className={`${syncopate.className} text-[10px] text-[#ff3333] mb-4 uppercase`}>Configuration</h4>
+              
+              <div className="flex justify-between border-b border-white/10 pb-2 mb-2">
+                <span className={`${montserrat.className} text-[9px] text-white/50 uppercase`}>Exterior</span>
+                <span className={`${montserrat.className} text-[9px] text-white`}>{COLORS.find(c => c.hex === carColor)?.name}</span>
+              </div>
+              <div className="flex justify-between border-b border-white/10 pb-2 mb-2">
+                <span className={`${montserrat.className} text-[9px] text-white/50 uppercase`}>Wheels</span>
+                <span className={`${montserrat.className} text-[9px] text-white`}>{WHEELS.find(w => w.id === wheelStyle)?.name}</span>
+              </div>
+              <div className="flex justify-between border-b border-white/10 pb-2 mb-2">
+                <span className={`${montserrat.className} text-[9px] text-white/50 uppercase`}>Interior</span>
+                <span className={`${montserrat.className} text-[9px] text-white`}>{INTERIORS.find(i => i.id === interiorTheme)?.name}</span>
+              </div>
+              <div className="flex justify-between pt-2">
+                <span className={`${syncopate.className} text-[10px] text-white uppercase`}>Est. Total</span>
+                <span className={`${syncopate.className} text-[10px] text-[#00d4ff]`}>
+                  ${packageTier === 'svj63' ? '552,500' : packageTier === 'magnolia' ? '532,000' : '517,500'}
+                </span>
+              </div>
+            </div>
+
+            <button className={`w-full border border-white py-4 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase text-black bg-white hover:bg-black hover:text-white transition-colors`}>
+              Generate Share Link
+            </button>
+            <button className={`w-full border border-white/20 py-4 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase text-white hover:bg-white/10 transition-colors`}>
+              Save to PDF
+            </button>
           </div>
         )}
         

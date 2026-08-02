@@ -10,8 +10,10 @@ interface AppState {
   wheelStyle: 0 | 1 | 2;
   interiorTheme: 'nero' | 'bianco' | 'arancio';
   packageTier: 'standard' | 'magnolia' | 'svj63';
+  environment: 'studio' | 'night' | 'city';
   
   // Modes
+  isAudioEnabled: boolean;
   isInteriorMode: boolean;
   isEngineRevved: boolean;
   engineRevLevel: number;
@@ -25,6 +27,8 @@ interface AppState {
   setWheelStyle: (style: 0 | 1 | 2) => void;
   setInteriorTheme: (theme: 'nero' | 'bianco' | 'arancio') => void;
   setPackageTier: (tier: 'standard' | 'magnolia' | 'svj63') => void;
+  setEnvironment: (env: 'studio' | 'night' | 'city') => void;
+  toggleAudio: () => void;
   toggleInteriorMode: () => void;
   revEngine: () => void;
 }
@@ -46,7 +50,9 @@ export const useAppStore = create<AppState>((set) => ({
   wheelStyle: 0,
   interiorTheme: 'nero',
   packageTier: 'standard',
+  environment: 'studio',
   
+  isAudioEnabled: false,
   isInteriorMode: false,
   isEngineRevved: false,
   engineRevLevel: 0,
@@ -61,6 +67,9 @@ export const useAppStore = create<AppState>((set) => ({
       isInteriorMode: false 
     });
   },
+  
+  setEnvironment: (env) => set({ environment: env }),
+  toggleAudio: () => set((state) => ({ isAudioEnabled: !state.isAudioEnabled })),
   
   nextSlide: () => set((state) => {
     const next = Math.min(state.currentSlide + 1, state.totalSlides - 1);

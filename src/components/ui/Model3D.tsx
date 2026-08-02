@@ -142,9 +142,9 @@ function CinematicLighting() {
     <>
       <ambientLight ref={ambientRef} intensity={0.05} />
       {environment === 'studio' ? (
-        <Environment files="/ferndale_studio_01_4k.hdr" background blur={0.05} />
+        <Environment files="/ferndale_studio_01_4k.hdr" background ground={{ height: 15, radius: 60, scale: 100 }} />
       ) : (
-        <Environment preset={environment as any} background blur={0.1} />
+        <Environment preset={environment as any} background ground={{ height: 15, radius: 60, scale: 100 }} />
       )}
       <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={5} color="#fff5e6" />
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />

@@ -38,16 +38,10 @@ export function AudioEngine() {
 
       // Deep V12 idling drone
       droneOsc.current = audioCtx.current.createOscillator();
-      droneOsc.current.type = "sawtooth";
-      droneOsc.current.frequency.value = 55; // Slightly higher rumble for audibility
+      droneOsc.current.type = "triangle"; // Triangle is more audible on laptop speakers
+      droneOsc.current.frequency.value = 65; 
       
-      // Lowpass filter for drone
-      const filter = audioCtx.current.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 350; // Opened filter so harmonics pass through
-      
-      droneOsc.current.connect(filter);
-      filter.connect(masterGain.current);
+      droneOsc.current.connect(masterGain.current);
       droneOsc.current.start();
     }
 

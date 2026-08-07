@@ -46,19 +46,19 @@ const ENVIRONMENTS = [
 ];
 
 export function ConfiguratorUI() {
-  const { 
-    carColor, setCarColor, 
+  const {
+    carColor, setCarColor,
     wheelStyle, setWheelStyle,
     interiorTheme, setInteriorTheme,
     packageTier, setPackageTier,
     environment, setEnvironment
   } = useAppStore();
-  
+
   const [activeTab, setActiveTab] = useState<"exterior" | "wheels" | "interior" | "backdrop" | "summary">("exterior");
 
   return (
     <div className="flex flex-col gap-6 pointer-events-auto items-start md:items-end max-h-[65vh] md:max-h-[70vh] pb-12 md:pb-6 w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/40 backdrop-blur-xl border-t md:border border-white/10 p-6 md:rounded-none mt-auto">
-      
+
       {/* Header */}
       <div className="text-right w-full border-b border-white/10 pb-4 mb-2">
         <h3 className={`${syncopate.className} text-[8px] tracking-[0.4em] text-[#ff3333] mb-2 uppercase font-bold`}>Ad Personam</h3>
@@ -71,20 +71,19 @@ export function ConfiguratorUI() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-2 text-[9px] uppercase tracking-[0.2em] font-bold transition-all ${
-              activeTab === tab 
-                ? "text-white border-b border-white" 
+            className={`pb-2 text-[9px] uppercase tracking-[0.2em] font-bold transition-all ${activeTab === tab
+                ? "text-white border-b border-white"
                 : "text-white/40 border-b border-transparent hover:text-white/80"
-            }`}
+              }`}
           >
             {tab}
           </button>
         ))}
       </div>
-      
+
       {/* Scrollable Content */}
       <div className="w-full overflow-y-auto pr-2 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        
+
         {/* Exterior Tab */}
         {activeTab === "exterior" && (
           <div className="flex flex-col gap-6 animate-fadein">
@@ -95,11 +94,10 @@ export function ConfiguratorUI() {
                 <MagneticButton key={pkg.id} strength={10} className="w-full">
                   <button
                     onClick={() => setPackageTier(pkg.id as any)}
-                    className={`relative overflow-hidden w-full text-left p-3 border transition-all group ${
-                      packageTier === pkg.id 
-                        ? "border-white bg-white/10" 
+                    className={`relative overflow-hidden w-full text-left p-3 border transition-all group ${packageTier === pkg.id
+                        ? "border-white bg-white/10"
                         : "border-white/10 hover:border-white/40"
-                    }`}
+                      }`}
                   >
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     <div className="flex justify-between items-center relative z-10">
@@ -121,9 +119,8 @@ export function ConfiguratorUI() {
                     className="relative overflow-hidden group w-full flex flex-col items-center gap-3 p-3 border border-white/5 hover:bg-white/5 transition-all"
                   >
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_0%,_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                    <div className={`relative z-10 w-10 h-10 rounded-full border transition-all ${
-                      carColor === color.hex ? "border-white p-1" : "border-transparent p-0"
-                    }`}>
+                    <div className={`relative z-10 w-10 h-10 rounded-full border transition-all ${carColor === color.hex ? "border-white p-1" : "border-transparent p-0"
+                      }`}>
                       <div className="w-full h-full rounded-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]" style={{ backgroundColor: color.hex }} />
                     </div>
                     <div className="text-center relative z-10">
@@ -142,72 +139,69 @@ export function ConfiguratorUI() {
         {/* Wheels Tab */}
         {activeTab === "wheels" && (
           <div className="flex flex-col gap-3 animate-fadein">
-             <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Wheel Design</span>
-             {WHEELS.map((wheel) => (
-                <button
-                  key={wheel.id}
-                  onClick={() => setWheelStyle(wheel.id as any)}
-                  className={`text-left p-4 border transition-all ${
-                    wheelStyle === wheel.id 
-                      ? "border-[#ff3333] bg-[#ff3333]/10" 
-                      : "border-white/10 hover:border-white/40"
+            <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Wheel Design</span>
+            {WHEELS.map((wheel) => (
+              <button
+                key={wheel.id}
+                onClick={() => setWheelStyle(wheel.id as any)}
+                className={`text-left p-4 border transition-all ${wheelStyle === wheel.id
+                    ? "border-[#ff3333] bg-[#ff3333]/10"
+                    : "border-white/10 hover:border-white/40"
                   }`}
-                >
-                  <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{wheel.name}</span>
-                  <span className={`${montserrat.className} text-[9px] text-white/60 block`}>Finish: {wheel.finish}</span>
-                </button>
-              ))}
+              >
+                <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{wheel.name}</span>
+                <span className={`${montserrat.className} text-[9px] text-white/60 block`}>Finish: {wheel.finish}</span>
+              </button>
+            ))}
           </div>
         )}
 
         {/* Interior Tab */}
         {activeTab === "interior" && (
           <div className="flex flex-col gap-3 animate-fadein">
-             <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Cabin Trim</span>
-             {INTERIORS.map((int) => (
-                <button
-                  key={int.id}
-                  onClick={() => setInteriorTheme(int.id as any)}
-                  className={`text-left p-4 border transition-all ${
-                    interiorTheme === int.id 
-                      ? "border-white bg-white/10" 
-                      : "border-white/10 hover:border-white/40"
-                  }`}
-                >
-                  <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{int.name}</span>
-                  <div className="flex gap-4 mt-2">
-                    <span className={`${montserrat.className} text-[8px] text-white/60 block`}>Mat: {int.material}</span>
-                    <span className={`${montserrat.className} text-[8px] text-[#ff3333] block`}>Accent: {int.accent}</span>
-                  </div>
-                </button>
-              ))}
-              
+            <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Cabin Trim</span>
+            {INTERIORS.map((int) => (
               <button
-                onClick={() => useAppStore.getState().toggleInteriorMode()}
-                className={`mt-4 border border-white/20 px-8 py-4 ${syncopate.className} text-[9px] font-bold tracking-[0.3em] uppercase text-white hover:bg-white hover:text-black transition-colors w-full`}
+                key={int.id}
+                onClick={() => setInteriorTheme(int.id as any)}
+                className={`text-left p-4 border transition-all ${interiorTheme === int.id
+                    ? "border-white bg-white/10"
+                    : "border-white/10 hover:border-white/40"
+                  }`}
               >
-                Enter Cockpit View
+                <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{int.name}</span>
+                <div className="flex gap-4 mt-2">
+                  <span className={`${montserrat.className} text-[8px] text-white/60 block`}>Mat: {int.material}</span>
+                  <span className={`${montserrat.className} text-[8px] text-[#ff3333] block`}>Accent: {int.accent}</span>
+                </div>
               </button>
+            ))}
+
+            <button
+              onClick={() => useAppStore.getState().toggleInteriorMode()}
+              className={`mt-4 border border-white/20 px-8 py-4 ${syncopate.className} text-[9px] font-bold tracking-[0.3em] uppercase text-white hover:bg-white hover:text-black transition-colors w-full`}
+            >
+              Enter Cockpit View
+            </button>
           </div>
         )}
         {/* Backdrop Tab */}
         {activeTab === "backdrop" && (
           <div className="flex flex-col gap-3 animate-fadein">
-             <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Environment</span>
-             {ENVIRONMENTS.map((env) => (
-                <button
-                  key={env.id}
-                  onClick={() => setEnvironment(env.id as any)}
-                  className={`text-left p-4 border transition-all ${
-                    environment === env.id 
-                      ? "border-[#ff3333] bg-[#ff3333]/10" 
-                      : "border-white/10 hover:border-white/40"
+            <span className={`${montserrat.className} text-[9px] text-white/50 uppercase tracking-widest mb-2`}>Environment</span>
+            {ENVIRONMENTS.map((env) => (
+              <button
+                key={env.id}
+                onClick={() => setEnvironment(env.id as any)}
+                className={`text-left p-4 border transition-all ${environment === env.id
+                    ? "border-[#ff3333] bg-[#ff3333]/10"
+                    : "border-white/10 hover:border-white/40"
                   }`}
-                >
-                  <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{env.name}</span>
-                  <span className={`${montserrat.className} text-[9px] text-white/60 block`}>{env.desc}</span>
-                </button>
-              ))}
+              >
+                <span className={`${syncopate.className} text-[10px] text-white block mb-1`}>{env.name}</span>
+                <span className={`${montserrat.className} text-[9px] text-white/60 block`}>{env.desc}</span>
+              </button>
+            ))}
           </div>
         )}
 
@@ -216,7 +210,7 @@ export function ConfiguratorUI() {
           <div className="flex flex-col gap-4 animate-fadein">
             <div className="border border-white/20 p-4 bg-white/5">
               <h4 className={`${syncopate.className} text-[10px] text-[#ff3333] mb-4 uppercase`}>Configuration</h4>
-              
+
               <div className="flex justify-between border-b border-white/10 pb-2 mb-2">
                 <span className={`${montserrat.className} text-[9px] text-white/50 uppercase`}>Exterior</span>
                 <span className={`${montserrat.className} text-[9px] text-white`}>{COLORS.find(c => c.hex === carColor)?.name}</span>
@@ -245,7 +239,7 @@ export function ConfiguratorUI() {
             </button>
           </div>
         )}
-        
+
       </div>
     </div>
   );

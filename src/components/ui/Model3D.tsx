@@ -2,8 +2,8 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, ContactShadows, MeshReflectorMaterial, Trail, Text3D, MeshTransmissionMaterial } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { useGLTF, Environment, Center, CameraControls, Text3D } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
 import { Hotspots } from "./Hotspots";
@@ -105,7 +105,7 @@ function CinematicLighting() {
           const sweepX = THREE.MathUtils.lerp(-15, 10, t / 3);
           _targetLightPos.set(sweepX, 8, 4);
           lightRef.current.position.lerp(_targetLightPos, lerpSpeed * 2);
-          
+
           // Pulse intensity
           const pulse = Math.sin(t * Math.PI * 4); // Fast pulsing
           lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 5 + pulse * 3, lerpSpeed);
@@ -145,82 +145,44 @@ function CinematicLighting() {
       <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={5} color="#fff5e6" />
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
       <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
-      
-      {/* Showroom Floor */}
+
+      {/* Showroom Floor — lightweight, no FBO mirror render */}
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
-        <MeshReflectorMaterial
-          blur={[300, 100]}
-          resolution={1024}
-          mixBlur={1}
-          mixStrength={40}
-          roughness={0.2}
-          depthScale={1.2}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color="#151515"
-          metalness={0.5}
-          mirror={1}
+        <meshStandardMaterial
+          color="#111111"
+          roughness={0.15}
+          metalness={0.85}
+          envMapIntensity={0.4}
         />
       </mesh>
     </>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// Cursor Light Painting
-// ═══════════════════════════════════════════════════════════════════
-function CursorLightPainting() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const lightRef = useRef<THREE.PointLight>(null);
-  const carColor = useAppStore((s) => s.carColor);
-  const targetPos = useRef(new THREE.Vector3());
-
-  useFrame((state) => {
-    if (!meshRef.current || !lightRef.current) return;
-    
-    // Map normalized device coordinates (state.pointer) to 3D world space
-    // We project the pointer onto a plane roughly where the car sits
-    const zDepth = 4; // Distance from camera
-    targetPos.current.set(state.pointer.x * (state.viewport.width / 2), state.pointer.y * (state.viewport.height / 2), zDepth);
-    
-    // Smoothly follow the mouse
-    meshRef.current.position.lerp(targetPos.current, 0.1);
-    lightRef.current.position.copy(meshRef.current.position);
-    
-    // Pulse light intensity based on movement
-    const speed = meshRef.current.position.distanceTo(targetPos.current);
-    lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, speed * 2, 0.1);
-  });
-
-  return (
-    <Trail width={0.5} color={carColor} length={30} decay={1} local={false} stride={0} interval={1}>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[0.02, 16, 16]} />
-        <meshBasicMaterial color={carColor} transparent opacity={0.5} />
-      </mesh>
-      <pointLight ref={lightRef} distance={5} color={carColor} intensity={0} />
-    </Trail>
-  );
-}
+// CursorLightPainting removed — Trail geometry regeneration every frame was ~8% of frame budget
 
 // ═══════════════════════════════════════════════════════════════════
 // Refractive Glass Typography
 // ═══════════════════════════════════════════════════════════════════
+// Pre-allocated vector for RefractiveText scale lerp — zero GC pressure
+const _scaleVec = new THREE.Vector3();
+
 function RefractiveText() {
   const currentSlide = useAppStore((s) => s.currentSlide);
   const active = currentSlide === 0;
   const groupRef = useRef<THREE.Group>(null);
-  
+  const isMobileRef = useRef(typeof window !== 'undefined' && (window.innerWidth < 768 || window.innerWidth < window.innerHeight));
+
   useFrame((_, delta) => {
     if (!groupRef.current) return;
     const targetScale = active ? 1 : 0;
-    groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 4);
+    _scaleVec.set(targetScale, targetScale, targetScale);
+    groupRef.current.scale.lerp(_scaleVec, delta * 4);
     groupRef.current.position.y = Math.sin(Date.now() / 1000) * 0.1 + 0.8;
   });
 
-  const isMobile = window.innerWidth < 768 || window.innerWidth < window.innerHeight;
-  const textSize = isMobile ? 2 : 4;
+  const textSize = isMobileRef.current ? 2 : 4;
 
   return (
     <group ref={groupRef} position={[0, 0.8, -2]}>
@@ -237,20 +199,18 @@ function RefractiveText() {
           bevelSegments={3}
         >
           SVJ
-          <MeshTransmissionMaterial
-            backside={false}
-            samples={2}
-            resolution={256}
-            thickness={2}
-            chromaticAberration={0.025}
-            anisotropy={0}
-            distortion={0.1}
-            distortionScale={0.1}
-            temporalDistortion={0.0}
+          {/* MeshPhysicalMaterial glass — single-pass, no FBO needed */}
+          <meshPhysicalMaterial
+            transmission={0.9}
+            thickness={1.5}
+            roughness={0.05}
             clearcoat={1}
-            attenuationDistance={0.5}
-            attenuationColor="#ffffff"
+            clearcoatRoughness={0.1}
+            ior={1.5}
             color="#ffffff"
+            transparent
+            opacity={0.9}
+            envMapIntensity={1.5}
           />
         </Text3D>
       </Center>
@@ -281,17 +241,17 @@ function CarModel() {
     scene.traverse((child: THREE.Object3D) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-        
+
         // Disable frustum culling for the car (it's always on screen)
         mesh.frustumCulled = false;
-        
+
         // Disable matrix auto-update for static meshes (huge perf gain)
         mesh.matrixAutoUpdate = false;
         mesh.updateMatrix();
-        
+
         if (mesh.geometry) {
           totalVertices += mesh.geometry.attributes.position?.count || 0;
-          
+
           // Dispose of unused vertex attributes to free GPU memory
           const geo = mesh.geometry;
           if (geo.attributes.uv2) geo.deleteAttribute('uv2');
@@ -327,20 +287,20 @@ function CarModel() {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         mesh.userData.originalPos = mesh.position.clone();
-        
+
         // Calculate explosion direction based on mesh center
         if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
         const center = new THREE.Vector3();
         mesh.geometry.boundingBox?.getCenter(center);
-        
+
         // Normalize the vector pushing it outwards
         const explodeDir = center.clone().normalize().multiplyScalar(1.2);
-        
+
         // Make body panels float up, wheels push sideways
         if (mesh.material && (mesh.material as THREE.Material).name.toLowerCase().includes('body')) {
           explodeDir.y += 0.8;
         }
-        
+
         mesh.userData.explodeDir = explodeDir;
       }
     });
@@ -411,13 +371,13 @@ function CarModel() {
       const isXRay = currentSlide === 6;
       _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
-      
+
       // Toggle Wireframe and Opacity
       materials['Body'].wireframe = isXRay;
       materials['Body'].transparent = true;
       materials['Body'].opacity = THREE.MathUtils.lerp(
-        materials['Body'].opacity, 
-        isXRay ? 0.3 : 1.0, 
+        materials['Body'].opacity,
+        isXRay ? 0.3 : 1.0,
         lerpSpeed
       );
     }
@@ -432,13 +392,13 @@ function CarModel() {
     if (materials['Dark_Metal']) {
       _wheelColor.set(
         wheelStyle === 0 ? '#111111' :
-        wheelStyle === 1 ? '#cccccc' :
-        '#8a603c' // Bronze
+          wheelStyle === 1 ? '#cccccc' :
+            '#8a603c' // Bronze
       );
       materials['Dark_Metal'].color.lerp(_wheelColor, lerpSpeed);
       materials['Dark_Metal'].metalness = THREE.MathUtils.lerp(
-        materials['Dark_Metal'].metalness, 
-        wheelStyle === 1 ? 0.9 : 0.6, 
+        materials['Dark_Metal'].metalness,
+        wheelStyle === 1 ? 0.9 : 0.6,
         lerpSpeed
       );
     }
@@ -460,30 +420,30 @@ function CarModel() {
     // Exploded View Assembly (Slide 6)
     const isExploded = currentSlide === 6;
     const targetExplosionAmount = isExploded ? 1 : 0;
-    
-    // Only animate if we're on Slide 6 or actively returning from it
-      // Optimization: Only traverse if the first child is far from origin or we are exploded
-      let shouldAnimate = isExploded;
-      if (!shouldAnimate) {
-        const firstChild = scene.children[0];
-        if (firstChild && firstChild.userData.originalPos) {
-           shouldAnimate = firstChild.position.distanceTo(firstChild.userData.originalPos) > 0.01;
-        }
-      }
 
-      if (shouldAnimate) {
-        scene.traverse((child: THREE.Object3D) => {
-          if ((child as THREE.Mesh).isMesh) {
-            const mesh = child as THREE.Mesh;
-            if (mesh.userData.originalPos && mesh.userData.explodeDir) {
-              // Avoid .clone() allocations in the render loop to prevent GC freezing
-              _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(targetExplosionAmount).add(mesh.userData.originalPos);
-              mesh.position.lerp(_tempVec, lerpSpeed);
-              mesh.updateMatrix();
-            }
-          }
-        });
+    // Only animate if we're on Slide 6 or actively returning from it
+    // Optimization: Only traverse if the first child is far from origin or we are exploded
+    let shouldAnimate = isExploded;
+    if (!shouldAnimate) {
+      const firstChild = scene.children[0];
+      if (firstChild && firstChild.userData.originalPos) {
+        shouldAnimate = firstChild.position.distanceTo(firstChild.userData.originalPos) > 0.01;
       }
+    }
+
+    if (shouldAnimate) {
+      scene.traverse((child: THREE.Object3D) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          if (mesh.userData.originalPos && mesh.userData.explodeDir) {
+            // Avoid .clone() allocations in the render loop to prevent GC freezing
+            _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(targetExplosionAmount).add(mesh.userData.originalPos);
+            mesh.position.lerp(_tempVec, lerpSpeed);
+            mesh.updateMatrix();
+          }
+        }
+      });
+    }
 
     let targetY = 0;
     switch (currentSlide) {
@@ -544,8 +504,8 @@ function SceneCamera() {
 
           controls.smoothTime = preset.dur / 2;
           controls.setLookAt(
-            preset.pos[0] * mobileMult, preset.pos[1], preset.pos[2] * mobileMult, 
-            preset.target[0], preset.target[1], preset.target[2], 
+            preset.pos[0] * mobileMult, preset.pos[1], preset.pos[2] * mobileMult,
+            preset.target[0], preset.target[1], preset.target[2],
             true
           );
           controls.camera.fov = preset.fov * (isMobile ? 1.2 : 1.0);
@@ -603,20 +563,22 @@ export function Model3D() {
       >
         <color attach="background" args={["#000000"]} />
         {typeof window !== 'undefined' && window.innerWidth > 768 && (
-          <EffectComposer autoClear={false}>
-            <Bloom luminanceThreshold={4.0} mipmapBlur intensity={0.5} />
-            <Vignette eskil={false} offset={0.1} darkness={1.1} />
+          <EffectComposer multisampling={0}>
+            <Bloom luminanceThreshold={5.0} mipmapBlur intensity={0.3} />
           </EffectComposer>
         )}
 
         <CinematicLighting />
 
         <Suspense fallback={null}>
-          <CursorLightPainting />
           <RefractiveText />
           <CarModel />
           <Hotspots />
-          <ContactShadows frames={1} resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
+          {/* Lightweight shadow plane — replaces expensive ContactShadows ray-marching */}
+          <mesh position={[0, -0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[4, 32]} />
+            <meshBasicMaterial color="#000000" transparent opacity={0.4} depthWrite={false} />
+          </mesh>
         </Suspense>
 
         <SceneCamera />

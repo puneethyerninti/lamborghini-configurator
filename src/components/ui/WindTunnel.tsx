@@ -9,7 +9,7 @@ export function WindTunnel() {
   const active = currentSlide === 4; // Active Aero Chapter
   const linesRef = useRef<THREE.LineSegments>(null);
   
-  const lineCount = 1500; // Increased density for cinematic feel
+  const lineCount = 500; // Reduced from 1500 for performance — still visually dense
   const lineLength = 6.0; // Longer streaks
   
   const [positions, speeds] = useMemo(() => {

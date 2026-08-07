@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat } from "next/font/google";
 
@@ -11,37 +11,40 @@ export function TelemetryHUD() {
   const chapter = useAppStore((s) => s.chapter);
   const active = chapter === 2; // Performance chapter
   
-  const [rpm, setRpm] = useState(1000);
-  const [speed, setSpeed] = useState(0);
-  const [gForce, setGForce] = useState({ x: 0, y: 0 });
+  // Direct DOM refs — bypass React reconciliation entirely
+  const rpmTextRef = React.useRef<HTMLSpanElement>(null);
+  const rpmBarRef = React.useRef<HTMLDivElement>(null);
+  const speedTextRef = React.useRef<HTMLSpanElement>(null);
+  const gForceDotRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!active) return;
     
     let raf: number;
     let targetSpeed = 0;
+    let currentSpeed = 0;
+    let currentRpm = 1000;
     
     const updateTelemetry = () => {
-      // Simulate erratic high-speed telemetry
       const time = Date.now() / 1000;
       
       // Speed races up to ~350 then fluctuates
       targetSpeed = Math.min(352, targetSpeed + (Math.random() * 5 + 1));
       if (targetSpeed > 340) targetSpeed -= Math.random() * 10;
-      
-      setSpeed(prev => {
-        const next = prev + (targetSpeed - prev) * 0.1;
-        return next;
-      });
+      currentSpeed += (targetSpeed - currentSpeed) * 0.1;
 
       // RPM fluctuates wildly near redline
-      setRpm(8000 + Math.sin(time * 10) * 400 + Math.random() * 200);
+      currentRpm = 8000 + Math.sin(time * 10) * 400 + Math.random() * 200;
 
       // G-Force jitters in a circle
-      setGForce({
-        x: Math.sin(time * 5) * 1.2 + (Math.random() - 0.5) * 0.5,
-        y: Math.cos(time * 4) * 0.8 + (Math.random() - 0.5) * 0.5
-      });
+      const gX = Math.sin(time * 5) * 1.2 + (Math.random() - 0.5) * 0.5;
+      const gY = Math.cos(time * 4) * 0.8 + (Math.random() - 0.5) * 0.5;
+
+      // Direct DOM writes — zero React overhead
+      if (rpmTextRef.current) rpmTextRef.current.textContent = String(Math.floor(currentRpm));
+      if (rpmBarRef.current) rpmBarRef.current.style.width = `${Math.min(100, (currentRpm / 8500) * 100)}%`;
+      if (speedTextRef.current) speedTextRef.current.textContent = String(Math.floor(currentSpeed));
+      if (gForceDotRef.current) gForceDotRef.current.style.transform = `translate(${gX * 30}px, ${gY * 30}px)`;
 
       raf = requestAnimationFrame(updateTelemetry);
     };
@@ -63,14 +66,15 @@ export function TelemetryHUD() {
         <span className={`${syncopate.className} text-[8px] md:text-[10px] text-[#00d4ff] tracking-[0.3em] uppercase mb-2`}>Engine RPM</span>
         <div className="w-full h-2 bg-white/10 overflow-hidden relative">
            <div 
-             className="absolute top-0 left-0 h-full bg-[#00d4ff] transition-all duration-75"
-             style={{ width: `${Math.min(100, (rpm / 8500) * 100)}%` }}
+             ref={rpmBarRef}
+             className="absolute top-0 left-0 h-full bg-[#00d4ff]"
+             style={{ width: '0%' }}
            />
            {/* Redline marker */}
            <div className="absolute top-0 right-[5%] w-[1px] h-full bg-red-500" />
         </div>
         <div className="flex justify-between mt-2">
-           <span className={`${montserrat.className} text-xl text-white font-bold`}>{Math.floor(rpm)}</span>
+           <span ref={rpmTextRef} className={`${montserrat.className} text-xl text-white font-bold`}>1000</span>
            <span className={`${syncopate.className} text-[8px] text-white/40 mt-1`}>/ 8500</span>
         </div>
       </div>
@@ -79,8 +83,8 @@ export function TelemetryHUD() {
       <div className="absolute right-6 bottom-6 md:right-16 md:bottom-16 text-right">
         <span className={`${syncopate.className} text-[8px] md:text-[10px] text-[#00d4ff] tracking-[0.3em] uppercase block mb-1`}>Velocity</span>
         <div className="flex items-baseline justify-end gap-1 md:gap-2">
-          <span className={`${syncopate.className} text-5xl md:text-8xl text-white font-bold tracking-tighter`}>
-            {Math.floor(speed)}
+          <span ref={speedTextRef} className={`${syncopate.className} text-5xl md:text-8xl text-white font-bold tracking-tighter`}>
+            0
           </span>
           <span className={`${montserrat.className} text-sm text-white/50`}>KM/H</span>
         </div>
@@ -96,10 +100,9 @@ export function TelemetryHUD() {
             
             {/* Dot */}
             <div 
-              className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_10px_red] absolute transition-all duration-75"
-              style={{ 
-                transform: `translate(${gForce.x * 30}px, ${gForce.y * 30}px)` 
-              }}
+              ref={gForceDotRef}
+              className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_10px_red] absolute"
+              style={{ transform: 'translate(0px, 0px)' }}
             />
          </div>
       </div>

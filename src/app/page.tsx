@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Model3D } from "@/components/ui/Model3D";
 import { ConfiguratorUI } from "@/components/ui/ConfiguratorUI";
-import { CinematicLoader } from "@/components/ui/CinematicLoader";
+// CinematicLoader removed — no loading screen
 import { SlideNav } from "@/components/ui/SlideNav";
 import { ChapterBadge } from "@/components/ui/ChapterBadge";
 import { StatCounter } from "@/components/ui/StatCounter";
@@ -34,12 +34,11 @@ function Slide({ active, children, className = "" }: { active: boolean; children
       initial={false}
       animate={{
         opacity: active ? 1 : 0,
-        filter: active ? "blur(0px)" : "blur(12px)",
-        scale: active ? 1 : 1.05,
-        y: active ? 0 : 20,
+        scale: active ? 1 : 1.02,
+        y: active ? 0 : 10,
         zIndex: active ? 10 : 0
       }}
-      transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
       className={`absolute inset-0 pointer-events-none ${className}`}
       style={{
         pointerEvents: active ? "auto" : "none",
@@ -82,27 +81,7 @@ function FadeIn({ children, delay = 0, className = "", direction = "up", active 
   );
 }
 
-function Parallax({ children, intensity = 15, className = "" }: { children: React.ReactNode; intensity?: number; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    let rafId: number;
-    let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-    const onMove = (e: MouseEvent) => {
-      targetX = ((e.clientX / window.innerWidth) - 0.5) * intensity * 2;
-      targetY = ((e.clientY / window.innerHeight) - 0.5) * intensity * 2;
-    };
-    const tick = () => {
-      currentX += (targetX - currentX) * 0.08;
-      currentY += (targetY - currentY) * 0.08;
-      if (ref.current) ref.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-      rafId = requestAnimationFrame(tick);
-    };
-    window.addEventListener("mousemove", onMove, { passive: true });
-    rafId = requestAnimationFrame(tick);
-    return () => { window.removeEventListener("mousemove", onMove); cancelAnimationFrame(rafId); };
-  }, [intensity]);
-  return <div ref={ref} className={`touch-none ${className}`} style={{ willChange: "transform" }}>{children}</div>;
-}
+// Parallax component removed — redundant with MouseParallax (Framer Motion spring-based)
 
 // ═══════════════════════════════════════════════════════════════════
 // Scroll/Touch Handler
@@ -333,11 +312,11 @@ const SlideContent = React.memo(function SlideContent() {
       <Slide active={currentSlide === 10 && !isInteriorMode} className="!pointer-events-none">
         <ChapterBadge chapter={3} title="Ad Personam" delay={0} active={currentSlide === 10} />
         <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
-          <Parallax intensity={10}>
+          <MouseParallax intensity={10}>
             <FadeIn delay={0.2} direction="left" active={currentSlide === 10}>
               <ConfiguratorUI />
             </FadeIn>
-          </Parallax>
+          </MouseParallax>
         </div>
       </Slide>
 
@@ -345,11 +324,11 @@ const SlideContent = React.memo(function SlideContent() {
       <Slide active={currentSlide === 11} className="!pointer-events-none">
         <ChapterBadge chapter={3} title="Cockpit" delay={0} active={currentSlide === 11} />
         <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
-          <Parallax intensity={10}>
+          <MouseParallax intensity={10}>
             <FadeIn delay={0} direction="left" active={currentSlide === 11}>
               <ConfiguratorUI />
             </FadeIn>
-          </Parallax>
+          </MouseParallax>
         </div>
       </Slide>
 
@@ -448,14 +427,16 @@ export default function Home() {
     <MouseParallaxProvider>
       <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
         <AudioEngine />
-        <CinematicLoader />
         <CinematicLetterbox />
-        
+
         <Navbar />
 
         <div className="absolute inset-0 z-0 bg-black">
           <Model3D />
         </div>
+
+        {/* CSS Vignette — replaces expensive post-processing Vignette pass */}
+        <div className="absolute inset-0 z-[1] pointer-events-none" style={{ boxShadow: 'inset 0 0 150px 60px rgba(0,0,0,0.7)' }} />
 
         <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
           <SlideContent />

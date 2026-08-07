@@ -39,10 +39,10 @@ export function Navbar() {
             }}
           />
         </div>
-        
+
         <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
           <MagneticButton>
-            <button 
+            <button
               onClick={() => {
                 toggleAudio();
                 if (globalAudioCtx && globalAudioCtx.state === "suspended") {
@@ -59,9 +59,9 @@ export function Navbar() {
               {isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
             </button>
           </MagneticButton>
-          
+
           <MagneticButton className="hidden md:block">
-            <button 
+            <button
               onClick={() => {
                 setIsModelsOpen(!isModelsOpen);
                 setIsMenuOpen(false);
@@ -73,7 +73,7 @@ export function Navbar() {
           </MagneticButton>
 
           <MagneticButton>
-            <button 
+            <button
               onClick={() => {
                 setIsMenuOpen(!isMenuOpen);
                 setIsModelsOpen(false);
@@ -89,7 +89,7 @@ export function Navbar() {
       {/* ── Models Mega-Menu ── */}
       <AnimatePresence>
         {isModelsOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
@@ -98,7 +98,7 @@ export function Navbar() {
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
               {OTHER_MODELS.map((model, idx) => (
-                <motion.div 
+                <motion.div
                   key={model.name}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ export function Navbar() {
       {/* ── Full-Screen Menu ── */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -135,8 +135,8 @@ export function Navbar() {
               {MENU_LINKS.map((link, idx) => (
                 <MagneticButton key={link} strength={10}>
                   <div className="cursor-pointer group overflow-hidden">
-                    <SplitTextReveal 
-                      text={link} 
+                    <SplitTextReveal
+                      text={link}
                       className={`${syncopate.className} text-3xl md:text-6xl text-white/50 group-hover:text-white font-bold tracking-[0.1em] transition-colors`}
                       active={isMenuOpen}
                       delay={0.1 + idx * 0.1}

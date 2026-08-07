@@ -16,7 +16,7 @@
   --font-mono: var(--font-geist-mono);
 
   --shadow-spatial: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-glass-border), inset 0 1px 0 0 var(--color-glass-highlight);
-  --shadow-spatial-hover: 0 35px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--color-glass-highlight), inset 0 1px 0 0 rgba(255,255,255,0.3);
+  --shadow-spatial-hover: 0 35px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--color-glass-highlight), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
 
   --radius-spatial: 1.5rem;
 }
@@ -43,7 +43,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
-  background-image: 
+  background-image:
     radial-gradient(circle at 15% 50%, rgba(20, 20, 30, 0.5), transparent 30%),
     radial-gradient(circle at 85% 30%, rgba(30, 20, 40, 0.5), transparent 30%);
   background-attachment: fixed;
@@ -63,6 +63,7 @@ body {
     opacity: 0;
     transform: var(--fade-from, translateY(20px));
   }
+
   to {
     opacity: 1;
     transform: translateY(0) translateX(0);
@@ -70,28 +71,57 @@ body {
 }
 
 @keyframes scrollpulse {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 @keyframes lineReveal {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes lineRevealY {
-  from { transform: scaleY(0); }
-  to { transform: scaleY(1); }
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
 }
 
 @keyframes numberBlast {
-  0% { opacity: 0; filter: blur(20px); transform: scale(1.1); }
-  100% { opacity: 1; filter: blur(0); transform: scale(1); }
+  0% {
+    opacity: 0;
+    filter: blur(20px);
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
 }
 
 @keyframes scanline {
-  0% { transform: translateY(-100vh); }
-  100% { transform: translateY(100vh); }
+  0% {
+    transform: translateY(-100vh);
+  }
+
+  100% {
+    transform: translateY(100vh);
+  }
 }
 
 .animate-fadein {

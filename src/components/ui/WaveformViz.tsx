@@ -12,15 +12,11 @@ export function WaveformViz() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
+    let animationFrameId: number | null = null;
     let time = 0;
 
     const render = () => {
-      const { engineRevLevel, currentSlide } = useAppStore.getState();
-      if (currentSlide !== 5) { // Assuming slide 5 is V12 Heart
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
+      const { engineRevLevel } = useAppStore.getState();
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -35,19 +31,12 @@ export function WaveformViz() {
       ctx.moveTo(0, centerY);
 
       for (let x = 0; x < width; x++) {
-        // Create a complex waveform using multiple sine waves
         const normalizedX = x / width;
-        
-        // Envelope so it fades out at edges
         const envelope = Math.sin(normalizedX * Math.PI);
-        
-        // Frequencies
         const f1 = Math.sin((normalizedX * 10) + time * 0.1);
         const f2 = Math.sin((normalizedX * 25) - time * 0.2) * 0.5;
-        const f3 = engineRevLevel > 0 ? (Math.random() - 0.5) * engineRevLevel : 0; // Noise when revving
-
+        const f3 = engineRevLevel > 0 ? (Math.random() - 0.5) * engineRevLevel : 0;
         const y = centerY + (f1 + f2 + f3) * targetAmplitude * envelope;
-        
         ctx.lineTo(x, y);
       }
 
@@ -64,21 +53,47 @@ export function WaveformViz() {
         const f1 = Math.sin((normalizedX * 10) + time * 0.1);
         const f2 = Math.sin((normalizedX * 25) - time * 0.2) * 0.5;
         const f3 = engineRevLevel > 0 ? (Math.random() - 0.5) * engineRevLevel : 0;
-        const y = centerY - (f1 + f2 + f3) * targetAmplitude * envelope * 0.5; // Half amplitude for reflection
+        const y = centerY - (f1 + f2 + f3) * targetAmplitude * envelope * 0.5;
         ctx.lineTo(x, y);
       }
       ctx.strokeStyle = engineRevLevel > 0 ? "rgba(255, 51, 51, 0.3)" : "rgba(255, 255, 255, 0.1)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      time += 0.5 + (engineRevLevel * 2); // Faster when revving
+      time += 0.5 + (engineRevLevel * 2);
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    const startLoop = () => {
+      if (animationFrameId === null) {
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    const stopLoop = () => {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    };
+
+    // Subscribe to store — only run RAF when on slide 5
+    const unsubscribe = useAppStore.subscribe((state) => {
+      if (state.currentSlide === 5) {
+        startLoop();
+      } else {
+        stopLoop();
+      }
+    });
+
+    // Initial check
+    if (useAppStore.getState().currentSlide === 5) {
+      startLoop();
+    }
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      stopLoop();
+      unsubscribe();
     };
   }, []);
 

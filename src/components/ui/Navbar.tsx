@@ -27,7 +27,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-[100] flex justify-between items-center pointer-events-auto text-white mix-blend-difference">
+      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-[100] flex justify-between items-center pointer-events-auto text-white">
         <div className="flex items-center gap-4">
           <img
             src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
@@ -41,7 +41,7 @@ export function Navbar() {
           />
         </div>
 
-        <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
+        <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80 mix-blend-difference`}>
           <MagneticButton>
             <SplitHoverButton 
               primaryText={isAudioEnabled ? "SOUND ON" : "SOUND OFF"}

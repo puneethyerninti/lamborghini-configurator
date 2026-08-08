@@ -7,6 +7,7 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 import { motion, AnimatePresence } from "framer-motion";
 import { SplitTextReveal } from "@/components/ui/SplitTextReveal";
+import { SplitHoverButton } from "@/components/ui/SplitHoverButton";
 
 const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
 const montserrat = Montserrat({ weight: ["200", "300", "400", "500"], subsets: ["latin"] });
@@ -42,7 +43,9 @@ export function Navbar() {
 
         <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80`}>
           <MagneticButton>
-            <button
+            <SplitHoverButton 
+              primaryText={isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
+              secondaryText={isAudioEnabled ? "MUTE" : "PLAY"}
               onClick={() => {
                 toggleAudio();
                 if (globalAudioCtx && globalAudioCtx.state === "suspended") {
@@ -54,34 +57,31 @@ export function Navbar() {
                   pauseGlobalMusic();
                 }
               }}
-              className="hover:opacity-100 hover:text-[#ff3333] transition-colors drop-shadow-lg"
-            >
-              {isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
-            </button>
+            />
           </MagneticButton>
 
           <MagneticButton className="hidden md:block">
-            <button
+            <SplitHoverButton 
+              primaryText="MODELS"
+              secondaryText="VIEW ALL"
               onClick={() => {
                 setIsModelsOpen(!isModelsOpen);
                 setIsMenuOpen(false);
               }}
-              className={`transition-colors drop-shadow-lg ${isModelsOpen ? "text-[#ff3333] opacity-100" : "hover:opacity-100 hover:text-[#ff3333]"}`}
-            >
-              Models
-            </button>
+              className={isModelsOpen ? "text-[#b59b4c]" : ""}
+            />
           </MagneticButton>
 
           <MagneticButton>
-            <button
+            <SplitHoverButton 
+              primaryText={isMenuOpen ? "CLOSE" : "MENU"}
+              secondaryText={isMenuOpen ? "BACK" : "OPEN"}
               onClick={() => {
                 setIsMenuOpen(!isMenuOpen);
                 setIsModelsOpen(false);
               }}
-              className={`transition-colors drop-shadow-lg ${isMenuOpen ? "text-[#ff3333] opacity-100" : "hover:opacity-100 hover:text-[#ff3333]"}`}
-            >
-              {isMenuOpen ? "Close" : "Menu"}
-            </button>
+              className={isMenuOpen ? "text-[#b59b4c]" : ""}
+            />
           </MagneticButton>
         </div>
       </header>

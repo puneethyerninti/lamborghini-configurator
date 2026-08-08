@@ -16,6 +16,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
 import { Hotspots } from "@/components/ui/Hotspots";
 import { SplitTextReveal } from "@/components/ui/SplitTextReveal";
+import { ScrambleText } from "@/components/ui/ScrambleText";
 import { Navbar } from "@/components/ui/Navbar";
 import { MouseParallaxProvider, useParallax, MouseParallax } from "@/components/ui/MouseParallax";
 import { AudioEngine, globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
@@ -211,10 +212,12 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S3: LDVA 2.0 */}
       <Slide active={currentSlide === 3}>
         <ChapterBadge chapter={1} title="The Brain" delay={0} active={currentSlide === 3} />
-        <div className="absolute right-16 top-1/3 text-right">
+        <div className="absolute right-6 md:right-16 top-1/4 md:top-1/3 text-right z-20">
           <FadeIn delay={0.2} direction="left" active={currentSlide === 3}>
-            <h2 className={`${syncopate.className} text-4xl md:text-6xl text-white font-bold mb-4`}>LDVA 2.0</h2>
-            <p className={`${montserrat.className} text-sm text-[#00d4ff] max-w-sm ml-auto uppercase tracking-widest leading-loose mb-8`}>
+            <h2 className={`${syncopate.className} text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-[#00ffff] to-[#0088ff] drop-shadow-[0_0_20px_rgba(0,255,255,0.6)] font-bold mb-4`}>
+              <ScrambleText text="LDVA 2.0" active={currentSlide === 3} delay={0.2} />
+            </h2>
+            <p className={`${montserrat.className} text-sm text-[#00d4ff] max-w-sm ml-auto uppercase tracking-widest leading-loose mb-8 drop-shadow-[0_0_10px_rgba(0,212,255,0.5)]`}>
               Lamborghini Dinamica Veicolo Attiva
             </p>
             <StatCounter value={50} suffix="ms" label="Reaction Time" delay={0.5} active={currentSlide === 3} />
@@ -261,9 +264,12 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S6: Carbon Architecture */}
       <Slide active={currentSlide === 6}>
         <ChapterBadge chapter={1} title="Architecture" delay={0} active={currentSlide === 6} />
-        <div className="absolute left-16 top-1/3">
+        <div className="absolute left-6 md:left-16 top-1/4 md:top-1/3 z-20">
           <FadeIn delay={0.2} active={currentSlide === 6}>
-            <h2 className={`${syncopate.className} text-4xl text-white font-bold mb-8`}>CARBON<br />CORE</h2>
+            <h2 className={`${syncopate.className} text-4xl text-transparent bg-clip-text bg-gradient-to-br from-[#00ffcc] to-[#0055ff] drop-shadow-[0_0_20px_rgba(0,255,204,0.5)] font-bold mb-8`}>
+              <ScrambleText text="CARBON" active={currentSlide === 6} delay={0.2} /><br />
+              <ScrambleText text="CORE" active={currentSlide === 6} delay={0.4} />
+            </h2>
             <StatCounter value={1525} suffix="kg" label="Dry Weight" delay={0.4} active={currentSlide === 6} />
           </FadeIn>
         </div>
@@ -283,23 +289,49 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S8: Top Speed */}
       <Slide active={currentSlide === 8}>
         <ChapterBadge chapter={2} title="Velocity" delay={0} active={currentSlide === 8} />
-        <div className="absolute right-24 bottom-24 text-right">
-          <StatCounter value={352} suffix="KM/H" label="Top Speed" delay={0.2} active={currentSlide === 8} />
-        </div>
       </Slide>
 
       {/* S9: Nürburgring */}
       <Slide active={currentSlide === 9}>
         <ChapterBadge chapter={2} title="The Ring" delay={0} active={currentSlide === 9} />
-        <div className="absolute left-16 top-1/2 -translate-y-1/2 flex items-center gap-16">
+        <div className="absolute left-1/2 md:left-16 top-1/2 md:top-1/2 -translate-x-1/2 md:-translate-x-0 -translate-y-1/2 flex flex-col md:flex-row items-center gap-8 md:gap-16 w-full max-w-[90vw] md:max-w-none">
           <FadeIn delay={0.2} active={currentSlide === 9}>
             <TrackMap active={currentSlide === 9} />
           </FadeIn>
           <FadeIn delay={1.5} active={currentSlide === 9}>
-            <div className="flex flex-col gap-2">
-              <span className={`${syncopate.className} text-[10px] text-[#ff9900] tracking-[0.4em] uppercase font-bold`}>Lap Record</span>
-              <span className={`${syncopate.className} text-6xl text-white font-bold`}>6:44.97</span>
-              <span className={`${montserrat.className} text-[9px] text-white/50 tracking-widest uppercase mt-2`}>Nordschleife / 20.6 km</span>
+            <div className="relative min-w-[320px] bg-black/60 backdrop-blur-xl border border-[#b59b4c]/30 p-8 shadow-[0_20px_40px_rgba(0,0,0,0.5)] overflow-hidden group">
+              {/* Sweeping metallic glare effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+              
+              {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#b59b4c] opacity-50" />
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#b59b4c] opacity-50" />
+              
+              <div className="flex flex-col gap-2 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-1.5 border border-[#b59b4c] rounded-full animate-pulse flex items-center justify-center">
+                    <div className="w-0.5 h-0.5 bg-[#b59b4c] rounded-full" />
+                  </div>
+                  <span className={`${syncopate.className} text-[8px] text-[#b59b4c] tracking-[0.5em] uppercase font-bold`}>
+                    OFFICIAL LAP RECORD
+                  </span>
+                </div>
+                
+                {/* Mechanical Number Roll Container */}
+                <div className="relative mt-4 mb-6">
+                  <span className={`${montserrat.className} text-7xl text-white font-light tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]`}>
+                    6:44<span className="text-[#b59b4c]">.97</span>
+                  </span>
+                </div>
+                
+                {/* Tactical Data Separator */}
+                <div className="w-full h-[1px] bg-gradient-to-r from-[#b59b4c]/50 to-transparent my-2" />
+
+                <div className="flex items-center justify-between pt-2">
+                  <span className={`${syncopate.className} text-[7px] text-white/50 tracking-[0.3em] uppercase`}>NORDSCHLEIFE</span>
+                  <span className={`${montserrat.className} text-[9px] text-[#b59b4c] tracking-widest font-light`}>20.6 KM</span>
+                </div>
+              </div>
             </div>
           </FadeIn>
         </div>
@@ -435,11 +467,38 @@ export default function Home() {
           <Model3D />
         </div>
 
+        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden mix-blend-overlay opacity-10">
+          <motion.div
+            initial={false}
+            animate={{ 
+              y: useAppStore.getState().currentSlide * -100,
+              scale: 1 + (useAppStore.getState().currentSlide * 0.05)
+            }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className={`${syncopate.className} text-[40vw] font-bold text-transparent text-stroke-2 text-stroke-white select-none`}
+            style={{ WebkitTextStroke: "2px white" }}
+          >
+            SVJ
+          </motion.div>
+        </div>
+
         {/* CSS Vignette — replaces expensive post-processing Vignette pass */}
         <div className="absolute inset-0 z-[1] pointer-events-none" style={{ boxShadow: 'inset 0 0 150px 60px rgba(0,0,0,0.7)' }} />
 
-        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
-          <SlideContent />
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+          <CinematicLetterbox />
+          <motion.div
+            initial={false}
+            animate={{ 
+              skewY: useAppStore.getState().isTransitioning ? (Math.random() > 0.5 ? 2 : -2) : 0,
+              scale: useAppStore.getState().isTransitioning ? 0.98 : 1,
+              filter: useAppStore.getState().isTransitioning ? "blur(4px)" : "blur(0px)"
+            }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="w-full h-full"
+          >
+            <SlideContent />
+          </motion.div>
         </div>
 
         <TelemetryHUD />

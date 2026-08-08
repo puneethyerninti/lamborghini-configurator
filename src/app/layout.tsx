@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display, Syncopate, Montserrat } from "next/font/google";
+import { CinematicLoader } from "@/components/ui/CinematicLoader";
+import { Navbar } from "@/components/ui/Navbar";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,6 +11,17 @@ const inter = Inter({
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
+const syncopate = Syncopate({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-syncopate",
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
@@ -30,7 +43,11 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${playfair.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#050505] text-white">{children}</body>
+      <body className={`${syncopate.variable} ${montserrat.variable} font-sans bg-[#050505] text-white overflow-hidden`}>
+        <CinematicLoader />
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }

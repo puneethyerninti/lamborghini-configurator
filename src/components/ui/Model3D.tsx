@@ -7,6 +7,7 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
 import { Hotspots } from "./Hotspots";
+import { WindTunnel } from "./WindTunnel";
 
 const MODEL_PATH = "/lamborghini_light.glb";
 
@@ -165,56 +166,119 @@ function CinematicLighting() {
 // ═══════════════════════════════════════════════════════════════════
 // Refractive Glass Typography
 // ═══════════════════════════════════════════════════════════════════
-// Pre-allocated vector for RefractiveText scale lerp — zero GC pressure
+// Pre-allocated vector for TextNode scale lerp — zero GC pressure
 const _scaleVec = new THREE.Vector3();
 
-function RefractiveText() {
-  const currentSlide = useAppStore((s) => s.currentSlide);
-  const active = currentSlide === 0;
+function TextNode({ text, active, position, rotation = [0, 0, 0], size, children }: any) {
   const groupRef = useRef<THREE.Group>(null);
-  const isMobileRef = useRef(typeof window !== 'undefined' && (window.innerWidth < 768 || window.innerWidth < window.innerHeight));
-
+  
   useFrame((_, delta) => {
     if (!groupRef.current) return;
     const targetScale = active ? 1 : 0;
     _scaleVec.set(targetScale, targetScale, targetScale);
+    
+    // Fast snap to 0 if inactive and very small to save rendering
+    if (!active && groupRef.current.scale.x < 0.01) {
+      groupRef.current.scale.set(0, 0, 0);
+      groupRef.current.visible = false;
+      return;
+    }
+    
+    groupRef.current.visible = true;
     groupRef.current.scale.lerp(_scaleVec, delta * 4);
-    groupRef.current.position.y = Math.sin(Date.now() / 1000) * 0.1 + 0.8;
+    
+    // Add subtle floating motion
+    if (active) {
+       groupRef.current.position.y = position[1] + Math.sin(Date.now() / 1000) * 0.05;
+    }
   });
 
-  const textSize = isMobileRef.current ? 2 : 4;
-
   return (
-    <group ref={groupRef} position={[0, 0.8, -2]}>
+    <group ref={groupRef} position={position} rotation={rotation}>
       <Center>
         <Text3D
           font="/helvetiker_bold.typeface.json"
-          size={textSize}
-          height={0.5}
+          size={size}
+          height={0.2}
           curveSegments={12}
           bevelEnabled
-          bevelThickness={0.1}
-          bevelSize={0.05}
+          bevelThickness={0.05}
+          bevelSize={0.02}
           bevelOffset={0}
           bevelSegments={3}
         >
-          SVJ
-          {/* MeshPhysicalMaterial glass — single-pass, no FBO needed */}
-          <meshPhysicalMaterial
-            transmission={0.9}
-            thickness={1.5}
-            roughness={0.05}
-            clearcoat={1}
-            clearcoatRoughness={0.1}
-            ior={1.5}
-            color="#ffffff"
-            transparent
-            opacity={0.9}
-            envMapIntensity={1.5}
-          />
+          {text}
+          {children}
         </Text3D>
       </Center>
     </group>
+  );
+}
+
+function DynamicTypography() {
+  const currentSlide = useAppStore((s) => s.currentSlide);
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.innerWidth < window.innerHeight);
+  const baseSize = isMobile ? 1.5 : 3;
+
+  return (
+    <>
+      {/* Slide 0: Hero - Refractive Glass */}
+      <TextNode 
+        text="SVJ" 
+        active={currentSlide === 0} 
+        position={[0, 2.2, -4]} 
+        size={baseSize * 1.3}
+      >
+        <meshPhysicalMaterial
+          transmission={0.9} thickness={1.5} roughness={0.05} clearcoat={1} clearcoatRoughness={0.1} ior={1.5} color="#ffffff" transparent opacity={0.9} envMapIntensity={1.5}
+        />
+      </TextNode>
+
+      {/* Slide 4: Aerodynamics - Frosted Glass */}
+      <TextNode 
+        text="AERO" 
+        active={currentSlide === 4} 
+        position={[5, 1.5, -4]} 
+        rotation={[0, -Math.PI / 4, 0]}
+        size={baseSize * 0.25}
+      >
+        <meshPhysicalMaterial
+          transmission={0.5} thickness={0.5} roughness={0.2} color="#ffffff" transparent opacity={0.8}
+        />
+      </TextNode>
+
+      {/* Slide 5: V12 Heart - Brushed Aluminum */}
+      <TextNode 
+        text="V12" 
+        active={currentSlide === 5} 
+        position={[0, 2.5, -5]} 
+        size={baseSize * 0.3}
+      >
+        <meshStandardMaterial metalness={1} roughness={0.2} color="#cccccc" />
+      </TextNode>
+
+      {/* Slide 6: Carbon Exploded View - Dark Matte */}
+      <TextNode 
+        text="CARBON" 
+        active={currentSlide === 6} 
+        position={[5, 1.5, -4]} 
+        rotation={[0, -Math.PI / 4, 0]}
+        size={baseSize * 0.25}
+      >
+        <meshStandardMaterial metalness={0.4} roughness={0.8} color="#111111" />
+      </TextNode>
+
+      {/* Slide 8: Top Speed - Glowing Oro Elios (Gold) */}
+      <TextNode 
+        text="MAX VELOCITY" 
+        active={currentSlide === 8} 
+        position={[-6, 1.5, 5]} 
+        rotation={[0, Math.PI * 0.75, 0]}
+        size={baseSize * 0.2}
+      >
+        <meshStandardMaterial metalness={1} roughness={0.2} color="#b59b4c" emissive="#b59b4c" emissiveIntensity={0.5} />
+      </TextNode>
+    </>
   );
 }
 
@@ -391,14 +455,24 @@ function CarModel() {
     // Wheels (Dark_Metal handles the rims in this GLB)
     if (materials['Dark_Metal']) {
       _wheelColor.set(
-        wheelStyle === 0 ? '#111111' :
-          wheelStyle === 1 ? '#cccccc' :
-            '#8a603c' // Bronze
+        wheelStyle === 0 ? '#8a603c' : // Bronze
+          wheelStyle === 1 ? '#cccccc' : // Titanium
+            '#111111' // Gloss Black
       );
       materials['Dark_Metal'].color.lerp(_wheelColor, lerpSpeed);
       materials['Dark_Metal'].metalness = THREE.MathUtils.lerp(
         materials['Dark_Metal'].metalness,
         wheelStyle === 1 ? 0.9 : 0.6,
+        lerpSpeed
+      );
+    }
+
+    // Window Glass (Tint lighter if in interior mode or interior theme is bright)
+    if (materials['Window_Glass']) {
+      materials['Window_Glass'].transparent = true;
+      materials['Window_Glass'].opacity = THREE.MathUtils.lerp(
+        materials['Window_Glass'].opacity,
+        isInteriorMode ? 0.2 : 0.8,
         lerpSpeed
       );
     }
@@ -482,20 +556,35 @@ function SceneCamera() {
   const controlsRef = useRef<any>(null);
   const prevSlideRef = useRef(-1);
   const prevInteriorRef = useRef(false);
+  const prevTabRef = useRef("");
 
   useFrame((state, delta) => {
     if (!controlsRef.current) return;
-    const { currentSlide, isInteriorMode, isEngineRevved } = useAppStore.getState();
+    const { currentSlide, isInteriorMode, isEngineRevved, configuratorTab } = useAppStore.getState();
 
-    if (currentSlide !== prevSlideRef.current || isInteriorMode !== prevInteriorRef.current) {
+    if (currentSlide !== prevSlideRef.current || isInteriorMode !== prevInteriorRef.current || (currentSlide === 10 && configuratorTab !== prevTabRef.current)) {
       prevSlideRef.current = currentSlide;
       prevInteriorRef.current = isInteriorMode;
+      prevTabRef.current = configuratorTab;
 
       const controls = controlsRef.current;
       if (isInteriorMode) {
         controls.setLookAt(0.35, 0.8, -0.2, 0.35, 0.8, -2, true);
       } else {
-        const preset = CINEMATIC_PRESETS[currentSlide];
+        let preset = CINEMATIC_PRESETS[currentSlide];
+        
+        // Configurator Tab Overrides
+        if (currentSlide === 10) {
+          if (configuratorTab === "wheels") {
+            preset = { pos: [2.5, 0.4, -2.5], target: [1, 0.3, -1.5], fov: 40, dur: 1.5, ease: "" };
+          } else if (configuratorTab === "interior") {
+            preset = { pos: [-3.5, 1.2, 1.5], target: [-0.35, 0.8, -0.5], fov: 45, dur: 1.5, ease: "" };
+          } else if (configuratorTab === "backdrop") {
+            preset = { pos: [0, 0.5, 8], target: [0, 0.5, 0], fov: 45, dur: 1.5, ease: "" };
+          } else if (configuratorTab === "summary") {
+            preset = { pos: [-5, 2, 5], target: [0, 0.5, 0], fov: 40, dur: 1.5, ease: "" };
+          }
+        }
         if (preset) {
           // Responsive check: if aspect ratio is portrait (mobile), pull the camera back 
           // so the car doesn't get clipped on the sides.
@@ -538,6 +627,38 @@ function SceneCamera() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// Dynamic Features (Environment & Interior Lighting)
+// ═══════════════════════════════════════════════════════════════════
+function DynamicEnvironment() {
+  const environment = useAppStore((s) => s.environment) as 'studio' | 'night' | 'city';
+  const currentSlide = useAppStore((s) => s.currentSlide);
+  const active = currentSlide === 10 || currentSlide === 11; // Only show background in Atelier & Interior
+  
+  return <Environment preset={environment} background={active} backgroundBlurriness={0.5} />;
+}
+
+function InteriorLight() {
+  const interiorTheme = useAppStore((s) => s.interiorTheme);
+  const isInteriorMode = useAppStore((s) => s.isInteriorMode);
+  
+  // Nero = Red accent (#b59b4c as Gold for V2), Bianco = White/Blue (#ffffff), Arancio = Orange (#ff6600)
+  const color = interiorTheme === 'nero' ? '#b59b4c' : interiorTheme === 'bianco' ? '#ffffff' : '#ff6600';
+  
+  // Make it brighter if in interior mode
+  const intensity = isInteriorMode ? 2.5 : 1.0;
+  
+  return (
+    <pointLight 
+      position={[0, 0.5, -0.1]} // inside the cabin
+      color={color}
+      intensity={intensity}
+      distance={3}
+      decay={2}
+    />
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // Model3D — high-quality Canvas
 // ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
@@ -571,14 +692,17 @@ export function Model3D() {
         <CinematicLighting />
 
         <Suspense fallback={null}>
-          <RefractiveText />
+          <DynamicTypography />
           <CarModel />
           <Hotspots />
+          <WindTunnel />
           {/* Lightweight shadow plane — replaces expensive ContactShadows ray-marching */}
           <mesh position={[0, -0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
             <circleGeometry args={[4, 32]} />
             <meshBasicMaterial color="#000000" transparent opacity={0.4} depthWrite={false} />
           </mesh>
+          <DynamicEnvironment />
+          <InteriorLight />
         </Suspense>
 
         <SceneCamera />

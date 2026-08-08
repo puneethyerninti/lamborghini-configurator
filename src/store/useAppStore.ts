@@ -18,6 +18,7 @@ interface AppState {
   isEngineRevved: boolean;
   engineRevLevel: number;
   isTransitioning: boolean;
+  configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "summary";
   
   // Actions
   setSlide: (index: number) => void;
@@ -31,6 +32,7 @@ interface AppState {
   toggleAudio: () => void;
   toggleInteriorMode: () => void;
   revEngine: () => void;
+  setConfiguratorTab: (tab: "exterior" | "wheels" | "interior" | "backdrop" | "summary") => void;
 }
 
 const getChapter = (slideIndex: number) => {
@@ -57,6 +59,7 @@ export const useAppStore = create<AppState>((set) => ({
   isEngineRevved: false,
   engineRevLevel: 0,
   isTransitioning: false,
+  configuratorTab: "exterior",
   
   setSlide: (index) => {
     set({ isTransitioning: true });
@@ -119,5 +122,7 @@ export const useAppStore = create<AppState>((set) => ({
         set({ engineRevLevel: level });
       }
     }, 50);
-  }
+  },
+  
+  setConfiguratorTab: (tab) => set({ configuratorTab: tab }),
 }));

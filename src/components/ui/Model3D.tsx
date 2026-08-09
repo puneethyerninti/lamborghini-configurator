@@ -2,8 +2,8 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles, PositionalAudio } from "@react-three/drei";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles, PositionalAudio, MeshReflectorMaterial } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette, HueSaturation } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
 import { Hotspots } from "./Hotspots";
@@ -146,14 +146,21 @@ function CinematicLighting() {
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
       <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
 
-      {/* Showroom Floor — lightweight, no FBO mirror render */}
+      {/* Showroom Floor — dynamic reflections */}
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
-        <meshStandardMaterial
-          color="#111111"
-          roughness={0.15}
-          metalness={0.85}
-          envMapIntensity={0.4}
+        <MeshReflectorMaterial
+          blur={[300, 100]}
+          resolution={1024}
+          mixBlur={1}
+          mixStrength={40}
+          roughness={0.8}
+          depthScale={1.2}
+          minDepthThreshold={0.4}
+          maxDepthThreshold={1.4}
+          color="#151515"
+          metalness={0.5}
+          mirror={1}
         />
       </mesh>
     </>
@@ -384,6 +391,57 @@ function CarModel() {
             mat.color.set(carColor);
             mat.roughness = 0.15;
             mat.metalness = 0.85;
+            
+            // Micro-Flake Paint Shader Injection
+            if (!mat.userData.hasFlakes) {
+              mat.userData.hasFlakes = true;
+              mat.onBeforeCompile = (shader) => {
+                shader.vertexShader = shader.vertexShader.replace(
+                  '#include <common>',
+                  `#include <common>
+                  varying vec3 vWorldPosition;`
+                );
+                shader.vertexShader = shader.vertexShader.replace(
+                  '#include <worldpos_vertex>',
+                  `#include <worldpos_vertex>
+                  vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;`
+                );
+                
+                shader.fragmentShader = shader.fragmentShader.replace(
+                  '#include <common>',
+                  `#include <common>
+                  varying vec3 vWorldPosition;
+                  
+                  // 3D Noise function for flakes
+                  float hash(vec3 p) {
+                    p = fract(p * 0.3183099 + .1);
+                    p *= 17.0;
+                    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+                  }
+                  float noise(vec3 x) {
+                    vec3 i = floor(x);
+                    vec3 f = fract(x);
+                    f = f * f * (3.0 - 2.0 * f);
+                    return mix(mix(mix(hash(i + vec3(0,0,0)), hash(i + vec3(1,0,0)), f.x),
+                                   mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+                               mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
+                                   mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y), f.z);
+                  }`
+                );
+                
+                shader.fragmentShader = shader.fragmentShader.replace(
+                  '#include <roughnessmap_fragment>',
+                  `#include <roughnessmap_fragment>
+                  float flakeNoise = noise(vWorldPosition * 2000.0); // High frequency noise
+                  // Add sparkle based on view angle and noise
+                  float sparkle = pow(flakeNoise, 4.0) * 1.5;
+                  roughnessFactor = mix(roughnessFactor, 0.05, sparkle * 0.3);
+                  metalnessFactor = mix(metalnessFactor, 1.0, sparkle * 0.5);
+                  `
+                );
+              };
+            }
+            
             applied = true;
           }
         }
@@ -429,11 +487,17 @@ function CarModel() {
 
     const lerpSpeed = delta * 5;
 
-    // Body Paint & X-Ray Mode
+    // Body Paint, X-Ray Mode & Thermal Vision Mode
     if (materials['Body']) {
-      const { xrayMode } = useAppStore.getState();
+      const { xrayMode, isThermalMode } = useAppStore.getState();
       const isXRay = currentSlide === 6 || xrayMode;
-      _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray
+      
+      if (isThermalMode && !isXRay) {
+        _targetColor.set('#ff3300'); // Hot orange/red
+      } else {
+        _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray, else paint
+      }
+      
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
 
       // Toggle Wireframe and Opacity
@@ -442,6 +506,18 @@ function CarModel() {
       materials['Body'].opacity = THREE.MathUtils.lerp(
         materials['Body'].opacity,
         isXRay ? 0.4 : 1.0,
+        lerpSpeed
+      );
+      
+      // Override roughness/metalness for Thermal mode (make it glowing/matte)
+      materials['Body'].roughness = THREE.MathUtils.lerp(
+        materials['Body'].roughness as number,
+        isThermalMode && !isXRay ? 1.0 : 0.15,
+        lerpSpeed
+      );
+      materials['Body'].metalness = THREE.MathUtils.lerp(
+        materials['Body'].metalness as number,
+        isThermalMode && !isXRay ? 0.0 : 0.85,
         lerpSpeed
       );
     }
@@ -703,6 +779,18 @@ function InteractiveSpotlight() {
 }
 
 function CinematicEffects() {
+  const isPolarized = useAppStore((s) => s.isPolarized);
+
+  if (isPolarized) {
+    return (
+      <EffectComposer multisampling={0}>
+        <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.4} />
+        <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        <HueSaturation hue={0} saturation={0.5} />
+      </EffectComposer>
+    );
+  }
+
   return (
     <EffectComposer multisampling={0}>
       <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.4} />

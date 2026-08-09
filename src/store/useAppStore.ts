@@ -19,6 +19,8 @@ interface AppState {
   engineRevLevel: number;
   isTransitioning: boolean;
   xrayMode: boolean;
+  isThermalMode: boolean;
+  isPolarized: boolean;
   timeOfDay: number;
   configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "summary";
   
@@ -33,6 +35,8 @@ interface AppState {
   setEnvironment: (env: 'studio' | 'night' | 'city') => void;
   toggleAudio: () => void;
   toggleInteriorMode: () => void;
+  toggleThermalMode: () => void;
+  togglePolarized: () => void;
   revEngine: () => void;
   setXrayMode: (active: boolean) => void;
   setTimeOfDay: (time: number) => void;
@@ -64,6 +68,8 @@ export const useAppStore = create<AppState>((set) => ({
   engineRevLevel: 0,
   isTransitioning: false,
   xrayMode: false,
+  isThermalMode: false,
+  isPolarized: false,
   timeOfDay: 0.5,
   configuratorTab: "exterior",
   
@@ -114,6 +120,8 @@ export const useAppStore = create<AppState>((set) => ({
   setPackageTier: (tier) => set({ packageTier: tier }),
   
   toggleInteriorMode: () => set((state) => ({ isInteriorMode: !state.isInteriorMode })),
+  toggleThermalMode: () => set((state) => ({ isThermalMode: !state.isThermalMode })),
+  togglePolarized: () => set((state) => ({ isPolarized: !state.isPolarized })),
   
   revEngine: () => {
     // Haptic feedback for mobile devices (Android)

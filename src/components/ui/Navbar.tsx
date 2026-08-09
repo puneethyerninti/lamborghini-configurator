@@ -21,7 +21,7 @@ const OTHER_MODELS = [
 const MENU_LINKS = ["CUSTOMIZATION", "OWNERSHIP", "MOTORSPORT", "DEALERSHIPS", "STORE"];
 
 export function Navbar() {
-  const { toggleAudio, isAudioEnabled, setSlide } = useAppStore();
+  const { toggleAudio, isAudioEnabled, setSlide, isThermalMode, toggleThermalMode, isPolarized, togglePolarized } = useAppStore();
   const [isModelsOpen, setIsModelsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -42,6 +42,24 @@ export function Navbar() {
         </div>
 
         <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80 mix-blend-difference`}>
+          <MagneticButton>
+            <SplitHoverButton 
+              primaryText={isPolarized ? "POLARIZED" : "LENS"}
+              secondaryText={isPolarized ? "OFF" : "ON"}
+              onClick={() => togglePolarized()}
+              className={isPolarized ? "text-[#00d4ff]" : ""}
+            />
+          </MagneticButton>
+          
+          <MagneticButton>
+            <SplitHoverButton 
+              primaryText={isThermalMode ? "THERMAL" : "VISION"}
+              secondaryText={isThermalMode ? "OFF" : "ON"}
+              onClick={() => toggleThermalMode()}
+              className={isThermalMode ? "text-[#ff3300]" : ""}
+            />
+          </MagneticButton>
+
           <MagneticButton>
             <SplitHoverButton 
               primaryText={isAudioEnabled ? "SOUND ON" : "SOUND OFF"}

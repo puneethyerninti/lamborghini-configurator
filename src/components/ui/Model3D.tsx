@@ -71,6 +71,11 @@ function CinematicLighting() {
   const ambientRef = useRef<THREE.AmbientLight>(null);
   const fillLight1 = useRef<THREE.SpotLight>(null);
   const fillLight2 = useRef<THREE.SpotLight>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768 || window.innerWidth < window.innerHeight);
+  }, []);
 
   useFrame((state, delta) => {
     const currentSlide = useAppStore.getState().currentSlide;
@@ -149,19 +154,23 @@ function CinematicLighting() {
       {/* Showroom Floor — dynamic reflections */}
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
-        <MeshReflectorMaterial
-          blur={[300, 100]}
-          resolution={1024}
-          mixBlur={1}
-          mixStrength={40}
-          roughness={0.8}
-          depthScale={1.2}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color="#151515"
-          metalness={0.5}
-          mirror={1}
-        />
+        {isMobile ? (
+          <meshBasicMaterial color="#111111" />
+        ) : (
+          <MeshReflectorMaterial
+            blur={[300, 100]}
+            resolution={1024}
+            mixBlur={1}
+            mixStrength={40}
+            roughness={0.8}
+            depthScale={1.2}
+            minDepthThreshold={0.4}
+            maxDepthThreshold={1.4}
+            color="#151515"
+            metalness={0.5}
+            mirror={1}
+          />
+        )}
       </mesh>
     </>
   );
@@ -817,10 +826,12 @@ function ConfiguratorAddons() {
 // ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
 
   useEffect(() => {
     setMounted(true);
+    setIsMobile(window.innerWidth < 768 || window.innerWidth < window.innerHeight);
   }, []);
 
   if (!mounted) return null;
@@ -829,9 +840,9 @@ export function Model3D() {
     <div className="w-full h-full relative">
       <Canvas
         camera={{ position: [0, 0.4, 6], fov: 45 }}
-        dpr={[1, 1.5]}
+        dpr={isMobile ? 1 : [1, 1.5]}
         gl={{
-          antialias: true,
+          antialias: !isMobile,
           toneMappingExposure: 1.0,
           powerPreference: "high-performance",
         }}

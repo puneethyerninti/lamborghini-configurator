@@ -89,7 +89,7 @@ export function ConfiguratorUI() {
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
       >
-        {(["exterior", "wheels", "interior", "aero", "backdrop", "summary"] as const).map((tab) => (
+        {(["exterior", "wheels", "interior", "backdrop", "summary"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setConfiguratorTab(tab)}
@@ -208,19 +208,6 @@ export function ConfiguratorUI() {
             >
               Enter Cockpit View
             </button>
-          </div>
-        )}
-
-        {/* Aero Tab */}
-        {configuratorTab === "aero" && (
-          <div className="flex flex-col gap-3 animate-fadein">
-            <span className={`${montserrat.className} text-[9px] text-[#b59b4c]/70 uppercase tracking-widest mb-2`}>Aerodynamics</span>
-            <div className="p-4 border border-[#b59b4c]/30 bg-white/5">
-              <span className={`${syncopate.className} text-[10px] text-white block mb-2`}>ALA 2.0 System</span>
-              <p className={`${montserrat.className} text-[9px] text-white/60 leading-relaxed`}>
-                Live wind tunnel visualization active. The Aerodinamica Lamborghini Attiva system dynamically manages aerodynamic load to achieve high downforce or low drag based on dynamic conditions.
-              </p>
-            </div>
           </div>
         )}
 

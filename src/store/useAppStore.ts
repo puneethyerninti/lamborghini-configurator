@@ -19,9 +19,8 @@ interface AppState {
   engineRevLevel: number;
   isTransitioning: boolean;
   xrayMode: boolean;
-  isStormMode: boolean;
   timeOfDay: number;
-  configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "aero" | "summary";
+  configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "summary";
   
   // Actions
   setSlide: (index: number) => void;
@@ -34,11 +33,10 @@ interface AppState {
   setEnvironment: (env: 'studio' | 'night' | 'city') => void;
   toggleAudio: () => void;
   toggleInteriorMode: () => void;
-  toggleStormMode: () => void;
   revEngine: () => void;
   setXrayMode: (active: boolean) => void;
   setTimeOfDay: (time: number) => void;
-  setConfiguratorTab: (tab: "exterior" | "wheels" | "interior" | "backdrop" | "aero" | "summary") => void;
+  setConfiguratorTab: (tab: "exterior" | "wheels" | "interior" | "backdrop" | "summary") => void;
 }
 
 const getChapter = (slideIndex: number) => {
@@ -66,7 +64,6 @@ export const useAppStore = create<AppState>((set) => ({
   engineRevLevel: 0,
   isTransitioning: false,
   xrayMode: false,
-  isStormMode: false,
   timeOfDay: 0.5,
   configuratorTab: "exterior",
   
@@ -117,7 +114,6 @@ export const useAppStore = create<AppState>((set) => ({
   setPackageTier: (tier) => set({ packageTier: tier }),
   
   toggleInteriorMode: () => set((state) => ({ isInteriorMode: !state.isInteriorMode })),
-  toggleStormMode: () => set((state) => ({ isStormMode: !state.isStormMode })),
   
   revEngine: () => {
     // Haptic feedback for mobile devices (Android)

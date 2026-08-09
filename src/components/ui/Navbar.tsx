@@ -21,7 +21,7 @@ const OTHER_MODELS = [
 const MENU_LINKS = ["CUSTOMIZATION", "OWNERSHIP", "MOTORSPORT", "DEALERSHIPS", "STORE"];
 
 export function Navbar() {
-  const { toggleAudio, isAudioEnabled, setSlide, isStormMode, toggleStormMode } = useAppStore();
+  const { toggleAudio, isAudioEnabled, setSlide } = useAppStore();
   const [isModelsOpen, setIsModelsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -42,16 +42,6 @@ export function Navbar() {
         </div>
 
         <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80 mix-blend-difference`}>
-          <MagneticButton>
-            <SplitHoverButton 
-              primaryText={isStormMode ? "CLEAR SKY" : "STORM"}
-              secondaryText={isStormMode ? "SUN" : "RAIN"}
-              onClick={() => {
-                toggleStormMode();
-              }}
-            />
-          </MagneticButton>
-
           <MagneticButton>
             <SplitHoverButton 
               primaryText={isAudioEnabled ? "SOUND ON" : "SOUND OFF"}

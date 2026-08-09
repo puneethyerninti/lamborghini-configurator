@@ -7,8 +7,6 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
 import { Hotspots } from "./Hotspots";
-import { WindTunnel } from "./WindTunnel";
-import { StormWeather } from "./StormWeather";
 
 const MODEL_PATH = "/lamborghini_light.glb";
 
@@ -431,9 +429,9 @@ function CarModel() {
 
     const lerpSpeed = delta * 5;
 
-    // Body Paint & X-Ray Mode & Storm Mode
+    // Body Paint & X-Ray Mode
     if (materials['Body']) {
-      const { xrayMode, isStormMode } = useAppStore.getState();
+      const { xrayMode } = useAppStore.getState();
       const isXRay = currentSlide === 6 || xrayMode;
       _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
@@ -444,18 +442,6 @@ function CarModel() {
       materials['Body'].opacity = THREE.MathUtils.lerp(
         materials['Body'].opacity,
         isXRay ? 0.4 : 1.0,
-        lerpSpeed
-      );
-
-      // Wet Paint Simulation
-      materials['Body'].roughness = THREE.MathUtils.lerp(
-        materials['Body'].roughness as number,
-        isStormMode && !isXRay ? 0.0 : 0.15,
-        lerpSpeed
-      );
-      materials['Body'].metalness = THREE.MathUtils.lerp(
-        materials['Body'].metalness as number,
-        isStormMode && !isXRay ? 0.9 : 0.85,
         lerpSpeed
       );
     }
@@ -732,7 +718,6 @@ function ConfiguratorAddons() {
   const currentSlide = useAppStore((s) => s.currentSlide);
   
   if (currentSlide !== 10) return null;
-  if (configuratorTab === "aero") return <WindTunnel />;
   return null;
 }
 
@@ -741,7 +726,6 @@ function ConfiguratorAddons() {
 // ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
-  const isStormMode = useAppStore((s) => s.isStormMode);
   const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
 
   useEffect(() => {
@@ -773,7 +757,6 @@ export function Model3D() {
           <DynamicTypography />
           <CarModel />
           <Hotspots />
-          <WindTunnel />
           {/* Lightweight shadow plane — replaces expensive ContactShadows ray-marching */}
           <mesh position={[0, -0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
             <circleGeometry args={[4, 32]} />
@@ -784,7 +767,6 @@ export function Model3D() {
           <InteractiveSpotlight />
           <ConfiguratorAddons />
           <Sparkles count={150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
-          {isStormMode && <StormWeather />}
           {isAudioEnabled && (
             <PositionalAudio
               url="/785503__litesaturation__energy-metal-short.wav"

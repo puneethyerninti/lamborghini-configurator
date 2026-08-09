@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles, PositionalAudio, MeshReflectorMaterial } from "@react-three/drei";
+import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles, PositionalAudio, MeshReflectorMaterial, PerformanceMonitor } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, HueSaturation } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
@@ -154,23 +154,19 @@ function CinematicLighting() {
       {/* Showroom Floor — dynamic reflections */}
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
-        {isMobile ? (
-          <meshBasicMaterial color="#111111" />
-        ) : (
-          <MeshReflectorMaterial
-            blur={[300, 100]}
-            resolution={1024}
-            mixBlur={1}
-            mixStrength={40}
-            roughness={0.8}
-            depthScale={1.2}
-            minDepthThreshold={0.4}
-            maxDepthThreshold={1.4}
-            color="#151515"
-            metalness={0.5}
-            mirror={1}
-          />
-        )}
+        <MeshReflectorMaterial
+          blur={isMobile ? [100, 50] : [300, 100]}
+          resolution={isMobile ? 256 : 1024}
+          mixBlur={1}
+          mixStrength={40}
+          roughness={0.8}
+          depthScale={1.2}
+          minDepthThreshold={0.4}
+          maxDepthThreshold={1.4}
+          color="#151515"
+          metalness={0.5}
+          mirror={1}
+        />
       </mesh>
     </>
   );
@@ -827,6 +823,7 @@ function ConfiguratorAddons() {
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [dpr, setDpr] = useState(1.5); // Default to high, scale down if needed
   const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
 
   useEffect(() => {
@@ -840,18 +837,24 @@ export function Model3D() {
     <div className="w-full h-full relative">
       <Canvas
         camera={{ position: [0, 0.4, 6], fov: 45 }}
-        dpr={isMobile ? 1 : [1, 1.5]}
+        dpr={dpr}
         gl={{
-          antialias: !isMobile,
+          antialias: !isMobile, // still keep false on mobile for performance
           toneMappingExposure: 1.0,
           powerPreference: "high-performance",
         }}
         frameloop="always"
       >
+        <PerformanceMonitor 
+          onIncline={() => setDpr(2)} 
+          onDecline={() => setDpr(isMobile ? 0.75 : 1)} 
+          flipflops={3} 
+          onFallback={() => setDpr(0.5)} 
+        />
         <color attach="background" args={["#000000"]} />
-        {typeof window !== 'undefined' && window.innerWidth > 768 && (
-          <CinematicEffects />
-        )}
+        
+        {/* Re-enable effects but let PerformanceMonitor handle the load via DPR */}
+        <CinematicEffects />
 
         <CinematicLighting />
 

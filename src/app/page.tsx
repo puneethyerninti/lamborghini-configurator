@@ -197,9 +197,9 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S2: Philosophy */}
       <Slide active={currentSlide === 2}>
         <ChapterBadge chapter={0} title="Philosophy" delay={0} active={currentSlide === 2} />
-        <div className="absolute left-6 right-6 bottom-24 md:inset-0 flex md:items-center justify-center pointer-events-none">
+        <div className="absolute left-4 right-4 bottom-12 md:inset-0 flex md:items-center justify-center pointer-events-none">
           <FadeIn delay={0.3} direction="down" active={currentSlide === 2}>
-            <h2 className={`${playfair.className} text-xl md:text-5xl text-white md:max-w-4xl text-center leading-tight mx-auto`}>
+            <h2 className={`${playfair.className} text-lg md:text-5xl text-white max-w-[280px] md:max-w-4xl text-center leading-relaxed md:leading-tight mx-auto`}>
               "We don't build cars. We build dreams that happen to have four wheels and an engine."
             </h2>
           </FadeIn>

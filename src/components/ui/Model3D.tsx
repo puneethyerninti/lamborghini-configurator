@@ -155,9 +155,9 @@ function CinematicLighting() {
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
         <MeshReflectorMaterial
-          blur={isMobile ? [100, 50] : [300, 100]}
-          resolution={isMobile ? 256 : 1024}
-          mixBlur={1}
+          blur={isMobile ? [0, 0] : [300, 100]}
+          resolution={isMobile ? 128 : 1024}
+          mixBlur={isMobile ? 0 : 1}
           mixStrength={40}
           roughness={0.8}
           depthScale={1.2}
@@ -823,7 +823,6 @@ function ConfiguratorAddons() {
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [dpr, setDpr] = useState(1.5); // Default to high, scale down if needed
   const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
 
   useEffect(() => {
@@ -833,28 +832,25 @@ export function Model3D() {
 
   if (!mounted) return null;
 
+  // Lock DPR to 1.5 max on mobile to prevent extreme blurriness while maintaining performance
+  const dpr: [number, number] = isMobile ? [1, Math.min(window.devicePixelRatio, 1.5)] : [1, 2];
+
   return (
     <div className="w-full h-full relative">
       <Canvas
         camera={{ position: [0, 0.4, 6], fov: 45 }}
         dpr={dpr}
         gl={{
-          antialias: !isMobile, // still keep false on mobile for performance
+          antialias: !isMobile, // completely off on mobile
           toneMappingExposure: 1.0,
           powerPreference: "high-performance",
         }}
         frameloop="always"
       >
-        <PerformanceMonitor 
-          onIncline={() => setDpr(2)} 
-          onDecline={() => setDpr(isMobile ? 0.75 : 1)} 
-          flipflops={3} 
-          onFallback={() => setDpr(0.5)} 
-        />
         <color attach="background" args={["#000000"]} />
         
-        {/* Re-enable effects but let PerformanceMonitor handle the load via DPR */}
-        <CinematicEffects />
+        {/* Disable heavy post-processing completely on mobile */}
+        {!isMobile && <CinematicEffects />}
 
         <CinematicLighting />
 
@@ -871,7 +867,7 @@ export function Model3D() {
           <InteriorLight />
           <InteractiveSpotlight />
           <ConfiguratorAddons />
-          <Sparkles count={150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
+          <Sparkles count={isMobile ? 30 : 150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
           {isAudioEnabled && (
             <PositionalAudio
               url="/785503__litesaturation__energy-metal-short.wav"

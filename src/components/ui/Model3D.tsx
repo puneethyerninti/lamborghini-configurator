@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Center, CameraControls, Text3D } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
@@ -560,7 +560,7 @@ function SceneCamera() {
 
   useFrame((state, delta) => {
     if (!controlsRef.current) return;
-    const { currentSlide, isInteriorMode, isEngineRevved, configuratorTab } = useAppStore.getState();
+    const { currentSlide, isInteriorMode, isEngineRevved, engineRevLevel, configuratorTab } = useAppStore.getState();
 
     if (currentSlide !== prevSlideRef.current || isInteriorMode !== prevInteriorRef.current || (currentSlide === 10 && configuratorTab !== prevTabRef.current)) {
       prevSlideRef.current = currentSlide;
@@ -608,8 +608,10 @@ function SceneCamera() {
     }
 
     if (isEngineRevved) {
-      controlsRef.current.camera.position.x += (Math.random() - 0.5) * 0.05;
-      controlsRef.current.camera.position.y += (Math.random() - 0.5) * 0.05;
+      const shakeAmt = 0.05 * engineRevLevel;
+      controlsRef.current.camera.position.x += (Math.random() - 0.5) * shakeAmt;
+      controlsRef.current.camera.position.y += (Math.random() - 0.5) * shakeAmt;
+      controlsRef.current.camera.position.z += (Math.random() - 0.5) * shakeAmt;
     }
   });
 
@@ -658,6 +660,44 @@ function InteriorLight() {
   );
 }
 
+function InteractiveSpotlight() {
+  const lightRef = useRef<THREE.SpotLight>(null);
+  const currentSlide = useAppStore((s) => s.currentSlide);
+  
+  useFrame((state, delta) => {
+    if (!lightRef.current) return;
+    if (currentSlide === 10) { // Atelier Configurator
+      lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 20, delta * 3);
+      // Follow mouse
+      const targetX = state.pointer.x * 4;
+      const targetZ = -state.pointer.y * 3;
+      lightRef.current.position.x = THREE.MathUtils.lerp(lightRef.current.position.x, targetX, delta * 5);
+      lightRef.current.position.z = THREE.MathUtils.lerp(lightRef.current.position.z, targetZ, delta * 5);
+    } else {
+      lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, 0, delta * 3);
+    }
+  });
+
+  return (
+    <spotLight 
+      ref={lightRef}
+      position={[0, 6, 0]}
+      angle={0.4}
+      penumbra={0.6}
+      intensity={0}
+      color="#ffffff"
+    />
+  );
+}
+
+function CinematicEffects() {
+  return (
+    <EffectComposer multisampling={0}>
+      <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.4} />
+    </EffectComposer>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // Model3D — high-quality Canvas
 // ═══════════════════════════════════════════════════════════════════
@@ -684,9 +724,7 @@ export function Model3D() {
       >
         <color attach="background" args={["#000000"]} />
         {typeof window !== 'undefined' && window.innerWidth > 768 && (
-          <EffectComposer multisampling={0}>
-            <Bloom luminanceThreshold={5.0} mipmapBlur intensity={0.3} />
-          </EffectComposer>
+          <CinematicEffects />
         )}
 
         <CinematicLighting />
@@ -703,6 +741,8 @@ export function Model3D() {
           </mesh>
           <DynamicEnvironment />
           <InteriorLight />
+          <InteractiveSpotlight />
+          <Sparkles count={150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
         </Suspense>
 
         <SceneCamera />

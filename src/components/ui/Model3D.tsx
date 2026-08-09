@@ -2,12 +2,13 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles } from "@react-three/drei";
+import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles, PositionalAudio } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
 import { Hotspots } from "./Hotspots";
 import { WindTunnel } from "./WindTunnel";
+import { StormWeather } from "./StormWeather";
 
 const MODEL_PATH = "/lamborghini_light.glb";
 
@@ -430,10 +431,10 @@ function CarModel() {
 
     const lerpSpeed = delta * 5;
 
-    // Body Paint & X-Ray Mode
+    // Body Paint & X-Ray Mode & Storm Mode
     if (materials['Body']) {
-      const globalXray = useAppStore.getState().xrayMode;
-      const isXRay = currentSlide === 6 || globalXray;
+      const { xrayMode, isStormMode } = useAppStore.getState();
+      const isXRay = currentSlide === 6 || xrayMode;
       _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
 
@@ -443,6 +444,18 @@ function CarModel() {
       materials['Body'].opacity = THREE.MathUtils.lerp(
         materials['Body'].opacity,
         isXRay ? 0.4 : 1.0,
+        lerpSpeed
+      );
+
+      // Wet Paint Simulation
+      materials['Body'].roughness = THREE.MathUtils.lerp(
+        materials['Body'].roughness as number,
+        isStormMode && !isXRay ? 0.0 : 0.15,
+        lerpSpeed
+      );
+      materials['Body'].metalness = THREE.MathUtils.lerp(
+        materials['Body'].metalness as number,
+        isStormMode && !isXRay ? 0.9 : 0.85,
         lerpSpeed
       );
     }
@@ -728,6 +741,8 @@ function ConfiguratorAddons() {
 // ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
+  const isStormMode = useAppStore((s) => s.isStormMode);
+  const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
 
   useEffect(() => {
     setMounted(true);
@@ -769,6 +784,15 @@ export function Model3D() {
           <InteractiveSpotlight />
           <ConfiguratorAddons />
           <Sparkles count={150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
+          {isStormMode && <StormWeather />}
+          {isAudioEnabled && (
+            <PositionalAudio
+              url="/785503__litesaturation__energy-metal-short.wav"
+              position={[0, 0.5, -2]} // Mounted near engine bay
+              loop
+              autoplay
+            />
+          )}
         </Suspense>
 
         <SceneCamera />

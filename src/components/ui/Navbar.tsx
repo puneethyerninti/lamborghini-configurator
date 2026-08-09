@@ -27,7 +27,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-[100] flex justify-between items-center pointer-events-auto text-white">
+      <header className="absolute top-0 left-0 w-full p-6 md:p-12 z-[100] flex justify-between items-center pointer-events-auto text-white transform-gpu">
         <div className="flex items-center gap-4">
           <img
             src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"

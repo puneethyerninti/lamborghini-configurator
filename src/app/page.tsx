@@ -483,16 +483,16 @@ export default function Home() {
         </div>
 
         {/* CSS Vignette — replaces expensive post-processing Vignette pass */}
-        <div className="absolute inset-0 z-[1] pointer-events-none" style={{ boxShadow: 'inset 0 0 150px 60px rgba(0,0,0,0.7)' }} />
+        <div className="absolute inset-0 z-[1] pointer-events-none transform-gpu" style={{ boxShadow: 'inset 0 0 150px 60px rgba(0,0,0,0.7)' }} />
 
-        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden transform-gpu">
           <CinematicLetterbox />
           <motion.div
             initial={false}
             animate={{ 
               skewY: useAppStore.getState().isTransitioning ? (Math.random() > 0.5 ? 2 : -2) : 0,
               scale: useAppStore.getState().isTransitioning ? 0.98 : 1,
-              filter: useAppStore.getState().isTransitioning ? "blur(4px)" : "blur(0px)"
+              filter: useAppStore.getState().isTransitioning ? "blur(4px)" : "none"
             }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
             className="w-full h-full"

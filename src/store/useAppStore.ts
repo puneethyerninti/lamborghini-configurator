@@ -18,7 +18,9 @@ interface AppState {
   isEngineRevved: boolean;
   engineRevLevel: number;
   isTransitioning: boolean;
-  configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "summary";
+  xrayMode: boolean;
+  timeOfDay: number;
+  configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "aero" | "summary";
   
   // Actions
   setSlide: (index: number) => void;
@@ -32,7 +34,9 @@ interface AppState {
   toggleAudio: () => void;
   toggleInteriorMode: () => void;
   revEngine: () => void;
-  setConfiguratorTab: (tab: "exterior" | "wheels" | "interior" | "backdrop" | "summary") => void;
+  setXrayMode: (active: boolean) => void;
+  setTimeOfDay: (time: number) => void;
+  setConfiguratorTab: (tab: "exterior" | "wheels" | "interior" | "backdrop" | "aero" | "summary") => void;
 }
 
 const getChapter = (slideIndex: number) => {
@@ -59,6 +63,8 @@ export const useAppStore = create<AppState>((set) => ({
   isEngineRevved: false,
   engineRevLevel: 0,
   isTransitioning: false,
+  xrayMode: false,
+  timeOfDay: 0.5,
   configuratorTab: "exterior",
   
   setSlide: (index) => {
@@ -128,5 +134,7 @@ export const useAppStore = create<AppState>((set) => ({
     }, 50);
   },
   
+  setXrayMode: (active) => set({ xrayMode: active }),
+  setTimeOfDay: (time) => set({ timeOfDay: time }),
   setConfiguratorTab: (tab) => set({ configuratorTab: tab }),
 }));

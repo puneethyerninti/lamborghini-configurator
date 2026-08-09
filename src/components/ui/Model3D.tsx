@@ -432,7 +432,8 @@ function CarModel() {
 
     // Body Paint & X-Ray Mode
     if (materials['Body']) {
-      const isXRay = currentSlide === 6;
+      const globalXray = useAppStore.getState().xrayMode;
+      const isXRay = currentSlide === 6 || globalXray;
       _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
 
@@ -441,7 +442,7 @@ function CarModel() {
       materials['Body'].transparent = true;
       materials['Body'].opacity = THREE.MathUtils.lerp(
         materials['Body'].opacity,
-        isXRay ? 0.3 : 1.0,
+        isXRay ? 0.4 : 1.0,
         lerpSpeed
       );
     }
@@ -634,9 +635,21 @@ function SceneCamera() {
 function DynamicEnvironment() {
   const environment = useAppStore((s) => s.environment) as 'studio' | 'night' | 'city';
   const currentSlide = useAppStore((s) => s.currentSlide);
+  const timeOfDay = useAppStore((s) => s.timeOfDay);
   const active = currentSlide === 10 || currentSlide === 11; // Only show background in Atelier & Interior
   
-  return <Environment preset={environment} background={active} backgroundBlurriness={0.5} />;
+  // Calculate environment intensity based on timeOfDay (0 = Midnight, 0.5 = High Noon, 1 = Sunset)
+  // At midnight, it should be very dim. At high noon, bright. At sunset, medium.
+  const envIntensity = timeOfDay < 0.3 ? 0.2 + timeOfDay : timeOfDay < 0.7 ? 1.0 : 1.5 - timeOfDay;
+
+  return (
+    <Environment 
+      preset={environment} 
+      background={active} 
+      backgroundBlurriness={0.5} 
+      environmentIntensity={envIntensity}
+    />
+  );
 }
 
 function InteriorLight() {
@@ -699,6 +712,18 @@ function CinematicEffects() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// Configurator Active Addons
+// ═══════════════════════════════════════════════════════════════════
+function ConfiguratorAddons() {
+  const configuratorTab = useAppStore((s) => s.configuratorTab);
+  const currentSlide = useAppStore((s) => s.currentSlide);
+  
+  if (currentSlide !== 10) return null;
+  if (configuratorTab === "aero") return <WindTunnel />;
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // Model3D — high-quality Canvas
 // ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
@@ -742,6 +767,7 @@ export function Model3D() {
           <DynamicEnvironment />
           <InteriorLight />
           <InteractiveSpotlight />
+          <ConfiguratorAddons />
           <Sparkles count={150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
         </Suspense>
 

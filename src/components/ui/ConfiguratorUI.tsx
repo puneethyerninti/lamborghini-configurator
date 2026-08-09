@@ -53,7 +53,9 @@ export function ConfiguratorUI() {
     interiorTheme, setInteriorTheme,
     packageTier, setPackageTier,
     environment, setEnvironment,
-    configuratorTab, setConfiguratorTab
+    configuratorTab, setConfiguratorTab,
+    xrayMode, setXrayMode,
+    timeOfDay, setTimeOfDay
   } = useAppStore();
 
   return (
@@ -66,10 +68,19 @@ export function ConfiguratorUI() {
       onWheel={(e) => e.stopPropagation()}
     >
 
-      {/* Header */}
-      <div className="text-right w-full border-b border-[#b59b4c]/30 pb-4 mb-2">
-        <h3 className={`${syncopate.className} text-[8px] tracking-[0.4em] text-[#b59b4c] mb-2 uppercase font-bold`}>Ad Personam</h3>
-        <h2 className={`${syncopate.className} text-2xl text-white tracking-widest`}>ATELIER</h2>
+      <div className="text-right w-full border-b border-[#b59b4c]/30 pb-4 mb-2 flex justify-between items-end">
+        <button 
+          onPointerDown={() => setXrayMode(true)}
+          onPointerUp={() => setXrayMode(false)}
+          onPointerLeave={() => setXrayMode(false)}
+          className={`px-3 py-1 border ${xrayMode ? 'bg-[#00d4ff] text-black border-[#00d4ff]' : 'bg-transparent text-[#00d4ff] border-[#00d4ff]/50'} ${syncopate.className} text-[8px] tracking-widest uppercase transition-colors`}
+        >
+          X-Ray Scan
+        </button>
+        <div>
+          <h3 className={`${syncopate.className} text-[8px] tracking-[0.4em] text-[#b59b4c] mb-2 uppercase font-bold`}>Ad Personam</h3>
+          <h2 className={`${syncopate.className} text-2xl text-white tracking-widest`}>ATELIER</h2>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -78,7 +89,7 @@ export function ConfiguratorUI() {
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
       >
-        {(["exterior", "wheels", "interior", "backdrop", "summary"] as const).map((tab) => (
+        {(["exterior", "wheels", "interior", "aero", "backdrop", "summary"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setConfiguratorTab(tab)}
@@ -199,6 +210,20 @@ export function ConfiguratorUI() {
             </button>
           </div>
         )}
+
+        {/* Aero Tab */}
+        {configuratorTab === "aero" && (
+          <div className="flex flex-col gap-3 animate-fadein">
+            <span className={`${montserrat.className} text-[9px] text-[#b59b4c]/70 uppercase tracking-widest mb-2`}>Aerodynamics</span>
+            <div className="p-4 border border-[#b59b4c]/30 bg-white/5">
+              <span className={`${syncopate.className} text-[10px] text-white block mb-2`}>ALA 2.0 System</span>
+              <p className={`${montserrat.className} text-[9px] text-white/60 leading-relaxed`}>
+                Live wind tunnel visualization active. The Aerodinamica Lamborghini Attiva system dynamically manages aerodynamic load to achieve high downforce or low drag based on dynamic conditions.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Backdrop Tab */}
         {configuratorTab === "backdrop" && (
           <div className="flex flex-col gap-3 animate-fadein">
@@ -215,6 +240,24 @@ export function ConfiguratorUI() {
                 <span className={`${montserrat.className} text-[9px] text-white/60 block`}>{env.desc}</span>
               </HoverBorderButton>
             ))}
+
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <span className={`${montserrat.className} text-[9px] text-[#b59b4c]/70 uppercase tracking-widest block mb-4`}>Time of Day</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={timeOfDay}
+                onChange={(e) => setTimeOfDay(parseFloat(e.target.value))}
+                className="w-full accent-[#b59b4c]"
+              />
+              <div className="flex justify-between mt-2">
+                <span className={`${montserrat.className} text-[8px] text-white/40 uppercase`}>Midnight</span>
+                <span className={`${montserrat.className} text-[8px] text-white/40 uppercase`}>Noon</span>
+                <span className={`${montserrat.className} text-[8px] text-white/40 uppercase`}>Sunset</span>
+              </div>
+            </div>
           </div>
         )}
 

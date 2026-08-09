@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display, Syncopate, Montserrat } from "next/font/google";
 import { CinematicLoader } from "@/components/ui/CinematicLoader";
 import { CinematicLetterbox } from "@/components/ui/CinematicLetterbox";
@@ -33,6 +33,14 @@ export const metadata: Metadata = {
   icons: {
     icon: "https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#000000",
 };
 
 export default function RootLayout({

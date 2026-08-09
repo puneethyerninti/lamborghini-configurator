@@ -154,19 +154,23 @@ function CinematicLighting() {
       {/* Showroom Floor — dynamic reflections */}
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
-        <MeshReflectorMaterial
-          blur={isMobile ? [0, 0] : [300, 100]}
-          resolution={isMobile ? 128 : 1024}
-          mixBlur={isMobile ? 0 : 1}
-          mixStrength={40}
-          roughness={0.8}
-          depthScale={1.2}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color="#151515"
-          metalness={0.5}
-          mirror={1}
-        />
+        {isMobile ? (
+          <meshBasicMaterial color="#0a0a0a" />
+        ) : (
+          <MeshReflectorMaterial
+            blur={[300, 100]}
+            resolution={1024}
+            mixBlur={1}
+            mixStrength={40}
+            roughness={0.8}
+            depthScale={1.2}
+            minDepthThreshold={0.4}
+            maxDepthThreshold={1.4}
+            color="#151515"
+            metalness={0.5}
+            mirror={1}
+          />
+        )}
       </mesh>
     </>
   );
@@ -832,8 +836,8 @@ export function Model3D() {
 
   if (!mounted) return null;
 
-  // Lock DPR to 1.5 max on mobile to prevent extreme blurriness while maintaining performance
-  const dpr: [number, number] = isMobile ? [1, Math.min(window.devicePixelRatio, 1.5)] : [1, 2];
+  // Lock DPR to max 2 on mobile to ensure crisp HD resolution
+  const dpr: [number, number] = isMobile ? [1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 2, 2)] : [1, 2];
 
   return (
     <div className="w-full h-full relative">
@@ -841,7 +845,7 @@ export function Model3D() {
         camera={{ position: [0, 0.4, 6], fov: 45 }}
         dpr={dpr}
         gl={{
-          antialias: !isMobile, // completely off on mobile
+          antialias: true, // Keep antialiasing enabled for smooth edges
           toneMappingExposure: 1.0,
           powerPreference: "high-performance",
         }}

@@ -182,12 +182,12 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S1: Heritage */}
       <Slide active={currentSlide === 1}>
         <ChapterBadge chapter={0} title="Heritage" delay={0} active={currentSlide === 1} />
-        <LineReveal direction="y" delay={0.2} className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-[1px] h-48" color="bg-[#ff3333]/40" />
+        <LineReveal direction="y" delay={0.2} className="absolute left-6 md:left-12 bottom-32 md:top-1/2 md:-translate-y-1/2 md:bottom-auto w-[1px] h-32 md:h-48" color="bg-[#ff3333]/40" />
 
-        <MouseParallax intensity={15} className="absolute left-10 md:left-20 top-1/2 -translate-y-1/2 pr-6">
+        <MouseParallax intensity={15} className="absolute left-10 md:left-20 bottom-32 md:top-1/2 md:-translate-y-1/2 md:bottom-auto pr-6">
           <FadeIn delay={0.3} active={currentSlide === 1}>
             <span className={`${syncopate.className} text-[10px] text-[#ff3333] tracking-[0.4em] uppercase mb-4 block`}>Since 1963</span>
-            <p className={`${montserrat.className} text-lg text-white/80 max-w-sm leading-relaxed`}>
+            <p className={`${montserrat.className} text-sm md:text-lg text-white/80 max-w-[280px] md:max-w-sm leading-relaxed`}>
               Born in Sant'Agata Bolognese. A lineage of uncompromising V12 power, daring design, and relentless pursuit of the extraordinary.
             </p>
           </FadeIn>
@@ -217,7 +217,7 @@ const SlideContent = React.memo(function SlideContent() {
             <h2 className={`${syncopate.className} text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-[#00ffff] to-[#0088ff] drop-shadow-[0_0_20px_rgba(0,255,255,0.6)] font-bold mb-4`}>
               <ScrambleText text="LDVA 2.0" active={currentSlide === 3} delay={0.2} />
             </h2>
-            <p className={`${montserrat.className} text-sm text-[#00d4ff] max-w-sm ml-auto uppercase tracking-widest leading-loose mb-8 drop-shadow-[0_0_10px_rgba(0,212,255,0.5)]`}>
+            <p className={`${montserrat.className} text-xs md:text-sm text-[#00d4ff] max-w-[200px] md:max-w-sm ml-auto uppercase tracking-widest leading-loose mb-8 drop-shadow-[0_0_10px_rgba(0,212,255,0.5)]`}>
               Lamborghini Dinamica Veicolo Attiva
             </p>
             <StatCounter value={50} suffix="ms" label="Reaction Time" delay={0.5} active={currentSlide === 3} />
@@ -264,7 +264,7 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S6: Carbon Architecture */}
       <Slide active={currentSlide === 6}>
         <ChapterBadge chapter={1} title="Architecture" delay={0} active={currentSlide === 6} />
-        <div className="absolute left-6 md:left-16 top-1/4 md:top-1/3 z-20">
+        <div className="absolute left-6 md:left-16 bottom-24 md:top-1/3 md:bottom-auto z-20">
           <FadeIn delay={0.2} active={currentSlide === 6}>
             <h2 className={`${syncopate.className} text-4xl text-transparent bg-clip-text bg-gradient-to-br from-[#00ffcc] to-[#0055ff] drop-shadow-[0_0_20px_rgba(0,255,204,0.5)] font-bold mb-8`}>
               <ScrambleText text="CARBON" active={currentSlide === 6} delay={0.2} /><br />
@@ -370,7 +370,7 @@ const SlideContent = React.memo(function SlideContent() {
       {/* S12: Legacy / Stats Wall */}
       <Slide active={currentSlide === 12}>
         <ChapterBadge chapter={4} title="Masterpiece" delay={0} active={currentSlide === 12} />
-        <div className="absolute left-8 md:left-16 top-1/4 max-w-[300px] md:max-w-lg">
+        <div className="absolute left-8 md:left-16 bottom-16 md:top-1/4 md:bottom-auto max-w-[300px] md:max-w-lg">
           <FadeIn delay={0.2} active={currentSlide === 12}>
             <h2 className={`${syncopate.className} text-xl md:text-2xl text-white font-bold tracking-widest mb-8 md:mb-12 uppercase`}>Technical Specifications</h2>
 

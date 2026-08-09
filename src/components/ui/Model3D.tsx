@@ -666,11 +666,14 @@ function SceneCamera() {
           // so the car doesn't get clipped on the sides.
           const isMobile = window.innerWidth < window.innerHeight;
           const mobileMult = isMobile ? 2.0 : 1.0;
+          
+          // Push the car UP on the screen on mobile in the configurator tab so UI doesn't overlap it
+          const targetYOffset = isMobile && currentSlide === 10 ? 1.0 : 0;
 
           controls.smoothTime = preset.dur / 2;
           controls.setLookAt(
-            preset.pos[0] * mobileMult, preset.pos[1], preset.pos[2] * mobileMult,
-            preset.target[0], preset.target[1], preset.target[2],
+            preset.pos[0] * mobileMult, preset.pos[1] + targetYOffset, preset.pos[2] * mobileMult,
+            preset.target[0], preset.target[1] + targetYOffset, preset.target[2],
             true
           );
           controls.camera.fov = preset.fov * (isMobile ? 1.2 : 1.0);

@@ -6,7 +6,7 @@ import { Syncopate, Montserrat } from "next/font/google";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 import { motion, AnimatePresence } from "framer-motion";
-import { SplitTextReveal } from "@/components/ui/SplitTextReveal";
+import { ScrambleText } from "@/components/ui/ScrambleText";
 import { SplitHoverButton } from "@/components/ui/SplitHoverButton";
 
 const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
@@ -134,13 +134,11 @@ export function Navbar() {
             <div className="flex flex-col gap-6 items-center">
               {MENU_LINKS.map((link, idx) => (
                 <MagneticButton key={link} strength={10}>
-                  <div className="cursor-pointer group overflow-hidden">
-                    <SplitTextReveal
+                  <div className="cursor-pointer group overflow-hidden px-4 py-2">
+                    <ScrambleText
                       text={link}
-                      className={`${syncopate.className} text-3xl md:text-6xl text-white/50 group-hover:text-white font-bold tracking-[0.1em] transition-colors`}
-                      active={isMenuOpen}
-                      delay={0.1 + idx * 0.1}
-                      stagger={0.02}
+                      className={`${syncopate.className} text-3xl md:text-6xl text-white/50 group-hover:text-white font-bold tracking-[0.1em] transition-colors inline-block`}
+                      hoverMode={true}
                     />
                   </div>
                 </MagneticButton>

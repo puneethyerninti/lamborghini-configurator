@@ -110,6 +110,10 @@ export const useAppStore = create<AppState>((set) => ({
   toggleInteriorMode: () => set((state) => ({ isInteriorMode: !state.isInteriorMode })),
   
   revEngine: () => {
+    // Haptic feedback for mobile devices (Android)
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([40, 30, 40, 30, 100, 50, 200]);
+    }
     set({ isEngineRevved: true, engineRevLevel: 1 });
     // Animate the rev level down
     let level = 1;

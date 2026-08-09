@@ -47,11 +47,11 @@ body {
     radial-gradient(circle at 15% 50%, rgba(20, 20, 30, 0.5), transparent 30%),
     radial-gradient(circle at 85% 30%, rgba(30, 20, 40, 0.5), transparent 30%);
   background-attachment: fixed;
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g transform="translate(2,2) scale(0.75)"><path d="M2,0 L30,0 C30,0 32,15 16,32 C0,15 2,0 2,0 Z" fill="%23050505" stroke="%23b59b4c" stroke-width="2"/><path d="M16,8 L19,13 L23,11 L20,16 L25,21 L16,23 L7,21 L12,16 L9,11 L13,13 Z" fill="%23b59b4c"/></g></svg>') 16 16, auto;
+  cursor: none !important;
 }
 
 button, a, [role="button"], [data-cursor="hover"] {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g transform="translate(2,2) scale(0.85)"><path d="M2,0 L30,0 C30,0 32,15 16,32 C0,15 2,0 2,0 Z" fill="%23b59b4c" stroke="%23ffffff" stroke-width="2"/><path d="M16,8 L19,13 L23,11 L20,16 L25,21 L16,23 L7,21 L12,16 L9,11 L13,13 Z" fill="%23050505"/></g></svg>') 16 16, pointer !important;
+  cursor: none !important;
 }
 
 ::selection {

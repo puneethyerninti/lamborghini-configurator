@@ -32,7 +32,7 @@ export function Navbar() {
           <img
             src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
             alt="Lamborghini Logo"
-            className="w-10 h-11 md:w-12 md:h-14 object-contain drop-shadow-2xl brightness-110 cursor-pointer"
+            className="w-8 h-9 md:w-12 md:h-14 object-contain drop-shadow-2xl brightness-110 cursor-pointer"
             onClick={() => {
               setSlide(0);
               setIsModelsOpen(false);
@@ -41,8 +41,8 @@ export function Navbar() {
           />
         </div>
 
-        <div className={`flex gap-6 md:gap-8 ${syncopate.className} text-[9px] font-bold tracking-[0.2em] uppercase opacity-80 mix-blend-difference`}>
-          <MagneticButton>
+        <div className={`flex flex-wrap justify-end gap-3 md:gap-8 ${syncopate.className} text-[6.5px] md:text-[9px] font-bold tracking-[0.2em] uppercase opacity-80 mix-blend-difference`}>
+          <MagneticButton className="hidden md:block">
             <SplitHoverButton 
               primaryText={isPolarized ? "POLARIZED" : "LENS"}
               secondaryText={isPolarized ? "OFF" : "ON"}
@@ -50,8 +50,7 @@ export function Navbar() {
               className={isPolarized ? "text-[#00d4ff]" : ""}
             />
           </MagneticButton>
-          
-          <MagneticButton>
+          <MagneticButton className="hidden md:block">
             <SplitHoverButton 
               primaryText={isThermalMode ? "THERMAL" : "VISION"}
               secondaryText={isThermalMode ? "OFF" : "ON"}
@@ -155,7 +154,7 @@ export function Navbar() {
                   <div className="cursor-pointer group overflow-hidden px-4 py-2">
                     <ScrambleText
                       text={link}
-                      className={`${syncopate.className} text-3xl md:text-6xl text-white/50 group-hover:text-white font-bold tracking-[0.1em] transition-colors inline-block`}
+                      className={`${syncopate.className} text-2xl md:text-6xl text-white/50 group-hover:text-white font-bold tracking-[0.1em] transition-colors inline-block`}
                       hoverMode={true}
                     />
                   </div>

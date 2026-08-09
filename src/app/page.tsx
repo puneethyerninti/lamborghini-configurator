@@ -199,7 +199,7 @@ const SlideContent = React.memo(function SlideContent() {
         <ChapterBadge chapter={0} title="Philosophy" delay={0} active={currentSlide === 2} />
         <div className="absolute inset-0 flex items-center justify-center">
           <FadeIn delay={0.3} direction="down" active={currentSlide === 2}>
-            <h2 className={`${playfair.className} text-3xl md:text-5xl text-white max-w-4xl text-center leading-tight`}>
+            <h2 className={`${playfair.className} text-3xl md:text-5xl text-white max-w-4xl px-6 md:px-0 text-center leading-tight`}>
               "We don't build cars. We build dreams that happen to have four wheels and an engine."
             </h2>
           </FadeIn>
@@ -319,7 +319,7 @@ const SlideContent = React.memo(function SlideContent() {
                 
                 {/* Mechanical Number Roll Container */}
                 <div className="relative mt-4 mb-6">
-                  <span className={`${montserrat.className} text-7xl text-white font-light tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]`}>
+                  <span className={`${montserrat.className} text-5xl md:text-7xl text-white font-light tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]`}>
                     6:44<span className="text-[#b59b4c]">.97</span>
                   </span>
                 </div>

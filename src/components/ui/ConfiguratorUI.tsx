@@ -60,7 +60,7 @@ export function ConfiguratorUI() {
 
   return (
     <div 
-      className="flex flex-col gap-6 pointer-events-auto items-start md:items-end max-h-[45vh] md:max-h-[70vh] pb-12 md:pb-6 w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/60 backdrop-blur-2xl border-t md:border p-6 md:rounded-none mt-auto transition-all duration-700"
+      className="flex flex-col gap-4 md:gap-6 pointer-events-auto items-start md:items-end max-h-[40vh] md:max-h-[70vh] pb-12 md:pb-6 w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/60 backdrop-blur-2xl border-t md:border p-4 md:p-6 md:rounded-none mt-auto transition-all duration-700"
       style={{
         boxShadow: `0 10px 40px ${carColor}44, inset 0 0 20px ${carColor}11`,
         borderColor: `${carColor}55`

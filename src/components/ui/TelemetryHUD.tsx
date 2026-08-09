@@ -110,7 +110,7 @@ export function TelemetryHUD() {
       </div>
       
       {/* ── RPM Minimalist Arc (Bottom Left) ── */}
-      <div className="absolute left-4 bottom-8 md:left-24 md:bottom-24 w-28 h-28 md:w-48 md:h-48 flex items-center justify-center">
+      <div className="absolute left-4 bottom-12 md:left-24 md:bottom-24 w-20 h-20 md:w-48 md:h-48 flex items-center justify-center">
         <svg viewBox="0 0 200 200" className="w-full h-full absolute">
           {/* Base track */}
           <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="565" strokeDashoffset="141" strokeLinecap="round" className="-rotate-90 origin-center" />
@@ -133,31 +133,31 @@ export function TelemetryHUD() {
 
         <div className="absolute flex flex-col items-center justify-center pt-8">
            <div className="flex items-baseline gap-1">
-             <span ref={rpmTextRef} className={`${montserrat.className} text-xl md:text-2xl text-white font-light tracking-[0.2em]`}>0000</span>
+             <span ref={rpmTextRef} className={`${montserrat.className} text-base md:text-2xl text-white font-light tracking-[0.2em]`}>0000</span>
            </div>
-           <span className={`${syncopate.className} text-[6px] md:text-[8px] text-[#b59b4c] tracking-[0.4em] uppercase mt-1 opacity-80`}>ENGINE RPM</span>
+           <span className={`${syncopate.className} text-[5px] md:text-[8px] text-[#b59b4c] tracking-[0.4em] uppercase mt-1 opacity-80`}>ENGINE RPM</span>
         </div>
       </div>
 
       {/* ── Velocity (Bottom Right) ── */}
-      <div className="absolute right-4 bottom-8 md:right-24 md:bottom-24 text-right flex flex-col items-end">
-        <span className={`${syncopate.className} text-[7px] md:text-[9px] text-[#b59b4c] tracking-[0.5em] uppercase block mb-1 md:mb-2 opacity-80`}>VELOCITY</span>
+      <div className="absolute right-4 bottom-12 md:right-24 md:bottom-24 text-right flex flex-col items-end">
+        <span className={`${syncopate.className} text-[6px] md:text-[9px] text-[#b59b4c] tracking-[0.5em] uppercase block mb-1 md:mb-2 opacity-80`}>VELOCITY</span>
         <div className="flex items-baseline justify-end gap-1">
-          <span ref={speedTextRef} className={`${montserrat.className} text-6xl md:text-8xl text-white font-light tracking-tighter`}>
+          <span ref={speedTextRef} className={`${montserrat.className} text-4xl md:text-8xl text-white font-light tracking-tighter`}>
             0
           </span>
-          <span ref={speedDecimalsRef} className={`${montserrat.className} text-2xl md:text-4xl text-white/40 font-light tracking-tighter w-12 text-left`}>
+          <span ref={speedDecimalsRef} className={`${montserrat.className} text-xl md:text-4xl text-white/40 font-light tracking-tighter w-8 md:w-12 text-left`}>
             .0
           </span>
-          <span className={`${syncopate.className} text-[8px] text-[#b59b4c] tracking-[0.2em] font-bold ml-2`}>KM/H</span>
+          <span className={`${syncopate.className} text-[6px] md:text-[8px] text-[#b59b4c] tracking-[0.2em] font-bold ml-1 md:ml-2`}>KM/H</span>
         </div>
       </div>
 
       {/* ── G-Force Tactical Radar (Top Left on Mobile, Top Right on Desktop) ── */}
-      <div className="absolute top-28 left-4 md:left-auto md:top-32 md:right-24 flex flex-col items-start md:items-end gap-3">
-         <span className={`${syncopate.className} text-[7px] md:text-[9px] text-[#b59b4c] tracking-[0.5em] uppercase opacity-80`}>G-FORCE</span>
+      <div className="absolute top-24 left-4 md:left-auto md:top-32 md:right-24 flex flex-col items-start md:items-end gap-2 md:gap-3">
+         <span className={`${syncopate.className} text-[6px] md:text-[9px] text-[#b59b4c] tracking-[0.5em] uppercase opacity-80`}>G-FORCE</span>
          
-         <div className="w-32 h-32 md:w-40 md:h-40 relative flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full border border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
+         <div className="w-20 h-20 md:w-40 md:h-40 relative flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full border border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
             
             {/* Concentric rings */}
             <div className="absolute inset-[15%] rounded-full border-[0.5px] border-white/5" />

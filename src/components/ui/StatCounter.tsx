@@ -78,11 +78,11 @@ export function StatCounter({
 
   return (
     <div className={`flex flex-col ${hasStarted ? "animate-number" : "opacity-0"}`}>
-      <span className={`${syncopate.className} text-6xl md:text-8xl font-bold text-white leading-none tracking-tighter tabular-nums`}>
+      <span className={`${syncopate.className} text-5xl md:text-8xl font-bold text-white leading-none tracking-tighter tabular-nums`}>
         {displayString}
-        <span className="text-3xl text-[#ff3333] ml-2 tracking-normal">{suffix}</span>
+        <span className="text-xl md:text-3xl text-[#ff3333] ml-2 tracking-normal">{suffix}</span>
       </span>
-      <span className={`${montserrat.className} text-[10px] tracking-[0.4em] text-white/50 uppercase block mt-4`}>
+      <span className={`${montserrat.className} text-[8px] md:text-[10px] tracking-[0.4em] text-white/50 uppercase block mt-4`}>
         {label}
       </span>
     </div>

@@ -155,7 +155,7 @@ function CinematicLighting() {
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
         {isMobile ? (
-          <meshBasicMaterial color="#0a0a0a" />
+          <meshStandardMaterial color="#151515" metalness={0.9} roughness={0.4} envMapIntensity={1} />
         ) : (
           <MeshReflectorMaterial
             blur={[300, 100]}
@@ -712,6 +712,7 @@ function SceneCamera() {
       maxPolarAngle={Math.PI / 2 - 0.02}
       dollySpeed={0.5}
       smoothTime={0.8}
+      enabled={useAppStore.getState().currentSlide === 10 || useAppStore.getState().currentSlide === 11 || (typeof window !== 'undefined' && window.innerWidth >= 768)}
     />
   );
 }
@@ -836,8 +837,7 @@ export function Model3D() {
 
   if (!mounted) return null;
 
-  // Lock DPR to max 2 on mobile to ensure crisp HD resolution
-  const dpr: [number, number] = isMobile ? [1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 2, 2)] : [1, 2];
+  const dpr: [number, number] = isMobile ? [1, 1.25] : [1, 2];
 
   return (
     <div className="w-full h-full relative">
@@ -845,7 +845,7 @@ export function Model3D() {
         camera={{ position: [0, 0.4, 6], fov: 45 }}
         dpr={dpr}
         gl={{
-          antialias: true, // Keep antialiasing enabled for smooth edges
+          antialias: !isMobile, // Disable on mobile to drastically improve FPS
           toneMappingExposure: 1.0,
           powerPreference: "high-performance",
         }}

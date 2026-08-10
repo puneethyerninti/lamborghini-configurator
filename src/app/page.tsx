@@ -467,7 +467,7 @@ export default function Home() {
           <Model3D />
         </div>
 
-        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden mix-blend-overlay opacity-10">
+        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden mix-blend-screen md:mix-blend-overlay opacity-10 md:opacity-20">
           <motion.div
             initial={false}
             animate={{ 

@@ -837,7 +837,7 @@ export function Model3D() {
 
   if (!mounted) return null;
 
-  const dpr: [number, number] = isMobile ? [1, 1.25] : [1, 2];
+  const dpr: [number, number] = [1, 2];
 
   return (
     <div className="w-full h-full relative">

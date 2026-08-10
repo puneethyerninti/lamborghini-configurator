@@ -99,10 +99,10 @@ function InteractionHandler() {
       if (isInteriorMode) return;
 
       const now = performance.now();
-      if (now - lastEventTime.current > 1200) locked.current = false;
+      if (now - lastEventTime.current > 800) locked.current = false;
       if (locked.current) return;
 
-      if (Math.abs(deltaY) > 40) { // Increased threshold for intentional swipes
+      if (Math.abs(deltaY) > 30) { 
         locked.current = true;
         lastEventTime.current = now;
         if (deltaY > 0) nextSlide();
@@ -117,11 +117,10 @@ function InteractionHandler() {
       touchStartX.current = e.touches[0].clientX;
     };
 
-    const onTouchEnd = (e: TouchEvent) => {
-      const deltaY = touchStartY.current - e.changedTouches[0].clientY;
-      const deltaX = touchStartX.current - e.changedTouches[0].clientX;
+    const onTouchMove = (e: TouchEvent) => {
+      const deltaY = touchStartY.current - e.touches[0].clientY;
+      const deltaX = touchStartX.current - e.touches[0].clientX;
 
-      // Only trigger if it's primarily a vertical swipe
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
         handleMove(deltaY);
       }
@@ -129,12 +128,12 @@ function InteractionHandler() {
 
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchmove", onTouchMove);
     };
   }, []);
 

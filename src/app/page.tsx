@@ -99,7 +99,18 @@ function InteractionHandler() {
       if (isInteriorMode) return;
 
       const now = performance.now();
-      if (now - lastEventTime.current > 800) locked.current = false;
+      const timeDiff = now - lastEventTime.current;
+
+      // Extend lock if we are receiving rapid momentum scroll events
+      if (locked.current && timeDiff < 150) {
+        lastEventTime.current = now;
+        return;
+      }
+
+      if (timeDiff > 800) {
+        locked.current = false;
+      }
+
       if (locked.current) return;
 
       if (Math.abs(deltaY) > 30) { 

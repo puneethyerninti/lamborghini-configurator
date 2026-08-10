@@ -158,8 +158,8 @@ function CinematicLighting() {
           <meshStandardMaterial color="#151515" metalness={0.9} roughness={0.4} envMapIntensity={1} />
         ) : (
           <MeshReflectorMaterial
-            blur={[300, 100]}
-            resolution={1024}
+            blur={[100, 50]}
+            resolution={256}
             mixBlur={1}
             mixStrength={40}
             roughness={0.8}

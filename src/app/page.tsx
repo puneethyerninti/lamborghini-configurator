@@ -91,48 +91,40 @@ function InteractionHandler() {
   const lastEventTime = useRef(0);
   const touchStartY = useRef(0);
   const touchStartX = useRef(0);
-  const locked = useRef(false);
+  const touchHandled = useRef(false);
 
   useEffect(() => {
-    const handleMove = (deltaY: number) => {
-      const { nextSlide, prevSlide } = useAppStore.getState();
-
+    const triggerSlide = (direction: "next" | "prev") => {
       const now = performance.now();
-      const timeDiff = now - lastEventTime.current;
+      if (now - lastEventTime.current < 550) return;
+      lastEventTime.current = now;
 
-      // Extend lock if we are receiving rapid momentum scroll events
-      if (locked.current && timeDiff < 150) {
-        lastEventTime.current = now;
-        return;
-      }
-
-      if (timeDiff > 600) {
-        locked.current = false;
-      }
-
-      if (locked.current) return;
-
-      if (Math.abs(deltaY) > 30) {
-        locked.current = true;
-        lastEventTime.current = now;
-        if (deltaY > 0) nextSlide();
-        else prevSlide();
-      }
+      const { nextSlide, prevSlide } = useAppStore.getState();
+      if (direction === "next") nextSlide();
+      else prevSlide();
     };
 
-    const onWheel = (e: WheelEvent) => handleMove(e.deltaY);
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > 25) {
+        triggerSlide(e.deltaY > 0 ? "next" : "prev");
+      }
+    };
 
     const onTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0].clientY;
       touchStartX.current = e.touches[0].clientX;
+      touchHandled.current = false;
     };
 
     const onTouchMove = (e: TouchEvent) => {
+      if (touchHandled.current) return;
+
       const deltaY = touchStartY.current - e.touches[0].clientY;
       const deltaX = touchStartX.current - e.touches[0].clientX;
 
-      if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        handleMove(deltaY);
+      if (Math.abs(deltaY) > 35 && Math.abs(deltaY) > Math.abs(deltaX)) {
+        touchHandled.current = true;
+        triggerSlide(deltaY > 0 ? "next" : "prev");
       }
     };
 

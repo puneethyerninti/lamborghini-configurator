@@ -145,7 +145,6 @@ function CinematicLighting() {
   return (
     <>
       <ambientLight ref={ambientRef} intensity={0.05} />
-      <Environment preset={environment as any} resolution={512} />
       <spotLight ref={lightRef} position={[0, 8, 4]} angle={0.6} penumbra={1} intensity={5} color="#fff5e6" />
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
       <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
@@ -228,7 +227,7 @@ function DynamicTypography() {
         size={baseSize * 1.3}
       >
         <meshPhysicalMaterial
-          transmission={0.9} thickness={1.5} roughness={0.05} clearcoat={1} clearcoatRoughness={0.1} ior={1.5} color="#ffffff" transparent opacity={0.9} envMapIntensity={1.5}
+          transmission={isMobile ? 0 : 0.9} thickness={1.5} roughness={0.05} clearcoat={1} clearcoatRoughness={0.1} ior={1.5} color="#ffffff" transparent opacity={0.9} envMapIntensity={1.5}
         />
       </TextNode>
 
@@ -241,7 +240,7 @@ function DynamicTypography() {
         size={baseSize * 0.25}
       >
         <meshPhysicalMaterial
-          transmission={0.5} thickness={0.5} roughness={0.2} color="#ffffff" transparent opacity={0.8}
+          transmission={isMobile ? 0 : 0.5} thickness={0.5} roughness={0.2} color="#ffffff" transparent opacity={0.8}
         />
       </TextNode>
 
@@ -636,9 +635,9 @@ function DynamicEnvironment() {
   const timeOfDay = useAppStore((s) => s.timeOfDay);
   const active = currentSlide === 10 || currentSlide === 11; // Only show background in Atelier & Interior
 
-  // Calculate environment intensity based on timeOfDay (0 = Midnight, 0.5 = High Noon, 1 = Sunset)
-  // At midnight, it should be very dim. At high noon, bright. At sunset, medium.
+  // Calculate environment intensity based on timeOfDay
   const envIntensity = timeOfDay < 0.3 ? 0.2 + timeOfDay : timeOfDay < 0.7 ? 1.0 : 1.5 - timeOfDay;
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.innerWidth < window.innerHeight);
 
   return (
     <Environment
@@ -646,6 +645,7 @@ function DynamicEnvironment() {
       background={active}
       backgroundBlurriness={0.5}
       environmentIntensity={envIntensity}
+      resolution={isMobile ? 256 : 512}
     />
   );
 }
@@ -725,17 +725,21 @@ function ConfiguratorAddons() {
 // ═══════════════════════════════════════════════════════════════════
 export function Model3D() {
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768 || window.innerWidth < window.innerHeight;
+    }
+    return false;
+  });
   const isAudioEnabled = useAppStore((s) => s.isAudioEnabled);
 
   useEffect(() => {
     setMounted(true);
-    setIsMobile(window.innerWidth < 768 || window.innerWidth < window.innerHeight);
   }, []);
 
   if (!mounted) return null;
 
-  const dpr: [number, number] = [1, 2];
+  const dpr: [number, number] = isMobile ? [1, 1.25] : [1, 2];
 
   return (
     <div className="w-full h-full relative">

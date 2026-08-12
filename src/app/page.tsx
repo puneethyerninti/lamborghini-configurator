@@ -362,26 +362,14 @@ const SlideContent = React.memo(function SlideContent() {
         </div>
       </Slide>
 
-      {/* S11: Interior (Same Configurator UI, but camera moves inside) */}
-      <Slide active={currentSlide === 11} className="!pointer-events-none">
-        <ChapterBadge chapter={3} title="Cockpit" delay={0} active={currentSlide === 11} />
-        <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
-          <MouseParallax intensity={10}>
-            <FadeIn delay={0} direction="left" active={currentSlide === 11}>
-              <ConfiguratorUI />
-            </FadeIn>
-          </MouseParallax>
-        </div>
-      </Slide>
-
 
       {/* â”€â”€ Chapter 5: The Invitation â”€â”€ */}
 
-      {/* S12: Legacy / Stats Wall */}
-      <Slide active={currentSlide === 12}>
-        <ChapterBadge chapter={4} title="Masterpiece" delay={0} active={currentSlide === 12} />
+      {/* S11: Legacy / Stats Wall */}
+      <Slide active={currentSlide === 11}>
+        <ChapterBadge chapter={4} title="Masterpiece" delay={0} active={currentSlide === 11} />
         <div className="absolute left-8 md:left-16 bottom-16 md:top-1/4 md:bottom-auto max-w-[300px] md:max-w-lg">
-          <FadeIn delay={0.2} active={currentSlide === 12}>
+          <FadeIn delay={0.2} active={currentSlide === 11}>
             <h2 className={`${syncopate.className} text-xl md:text-2xl text-white font-bold tracking-widest mb-8 md:mb-12 uppercase`}>Technical Specifications</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 md:gap-y-8">
@@ -410,10 +398,10 @@ const SlideContent = React.memo(function SlideContent() {
         </div>
       </Slide>
 
-      {/* S13: Inquiry */}
-      <Slide active={currentSlide === 13} className="flex items-center justify-center">
+      {/* S12: Inquiry */}
+      <Slide active={currentSlide === 12} className="flex items-center justify-center">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-[-1]" />
-        <FadeIn delay={0.3} active={currentSlide === 13} className="flex flex-col items-center pointer-events-auto">
+        <FadeIn delay={0.3} active={currentSlide === 12} className="flex flex-col items-center pointer-events-auto">
           <img
             src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
             alt="Lamborghini Logo"
@@ -446,9 +434,9 @@ const SlideContent = React.memo(function SlideContent() {
   );
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
 // Cinematic Letterbox (Phase A)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
 function CinematicLetterbox() {
   const isTransitioning = useAppStore(s => s.isTransitioning);
   return (
@@ -459,9 +447,9 @@ function CinematicLetterbox() {
   );
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
 // Main Page Shell
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
 export default function Home() {
   const { toggleAudio, isAudioEnabled } = useAppStore();
 
@@ -478,7 +466,7 @@ export default function Home() {
           <Model3D />
         </div>
 
-        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden opacity-5 md:opacity-10">
+        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden opacity-[0.03]">
           <motion.div
             initial={false}
             animate={{

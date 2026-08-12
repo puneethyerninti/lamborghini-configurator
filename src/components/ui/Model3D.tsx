@@ -36,11 +36,10 @@ const CINEMATIC_PRESETS: Record<number, { pos: number[], target: number[], fov: 
 
   // Chapter 4: The Atelier
   10: { pos: [6, 1.5, 6], target: [0, 0.5, 0], fov: 40, dur: 2.0, ease: 'power3.inOut' }, // Configurator
-  11: { pos: [-0.35, 0.8, -0.2], target: [0.35, 0.8, -2], fov: 55, dur: 1.5, ease: 'power2.inOut' }, // Interior
 
   // Chapter 5: Legacy
-  12: { pos: [-7, 2, -5], target: [0, 0.5, 0], fov: 40, dur: 3.0, ease: 'power1.inOut' }, // Stats wall
-  13: { pos: [0, 1, 8], target: [0, 0.5, 0], fov: 35, dur: 2.0, ease: 'power3.out' }, // Inquiry - clean front
+  11: { pos: [-7, 2, -5], target: [0, 0.5, 0], fov: 40, dur: 3.0, ease: 'power1.inOut' }, // Stats wall
+  12: { pos: [0, 1, 8], target: [0, 0.5, 0], fov: 35, dur: 2.0, ease: 'power3.out' }, // Inquiry - clean front
 };
 
 // Simple custom easing functions to replace GSAP
@@ -422,7 +421,7 @@ function CarModel() {
     const { isInteriorMode, currentSlide } = useAppStore.getState();
 
     // 1. Smooth Camera/Model Rotation tracking
-    if (groupRef.current && (currentSlide === 0 || currentSlide === 12 || currentSlide === 13)) {
+    if (groupRef.current && (currentSlide === 0 || currentSlide === 11 || currentSlide === 12)) {
       currentRotation.current.slerp(targetRotation.current, delta * 2);
       groupRef.current.quaternion.copy(currentRotation.current);
     }

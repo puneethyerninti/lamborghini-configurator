@@ -11,7 +11,7 @@ const CHAPTERS = [
   { id: 1, title: "ENGINEERING", start: 3 },
   { id: 2, title: "PERFORMANCE", start: 7 },
   { id: 3, title: "THE ATELIER", start: 10 },
-  { id: 4, title: "LEGACY", start: 12 },
+  { id: 4, title: "LEGACY", start: 11 },
 ];
 
 export function SlideNav() {

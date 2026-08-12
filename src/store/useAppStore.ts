@@ -47,13 +47,13 @@ const getChapter = (slideIndex: number) => {
   if (slideIndex <= 2) return 0; // The Bull
   if (slideIndex <= 6) return 1; // Engineering
   if (slideIndex <= 9) return 2; // Performance
-  if (slideIndex <= 11) return 3; // Atelier
-  return 4; // Invitation
+  if (slideIndex === 10) return 3; // Atelier
+  return 4; // Legacy
 };
 
 export const useAppStore = create<AppState>((set) => ({
   currentSlide: 0,
-  totalSlides: 14,
+  totalSlides: 13,
   chapter: 0,
 
   carColor: '#a10a0a', // Rosso Mars

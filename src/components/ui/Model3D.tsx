@@ -464,33 +464,9 @@ function CarModel() {
             const mat = mesh.material as THREE.MeshStandardMaterial;
             const name = mat.name.toLowerCase();
             if (!name.includes("glass") && !name.includes("window") && !name.includes("tire") && !name.includes("rubber") && !name.includes("black") && !name.includes("dark")) {
-              // Upgrade Body Paint to premium MeshPhysicalMaterial
-              const premiumPaint = new THREE.MeshPhysicalMaterial({
-                color: carColor,
-                metalness: 0.6,
-                roughness: 0.15,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.05,
-                envMapIntensity: 1.5,
-              });
-              mesh.material = premiumPaint;
-              if (materials[mat.name]) materials[mat.name] = premiumPaint;
-            }
-
-            // Upgrade Glass to realistic physical transmission glass (Fixes the WebGL shader crash entirely)
-            if (name.includes("glass") || name.includes("window")) {
-              const premiumGlass = new THREE.MeshPhysicalMaterial({
-                color: '#000000',
-                metalness: 0.9,
-                roughness: 0.0,
-                envMapIntensity: 2.0,
-                transmission: 0.9, // glass effect
-                transparent: true,
-                ior: 1.5,
-                thickness: 0.5,
-              });
-              mesh.material = premiumGlass;
-              if (materials[mat.name]) materials[mat.name] = premiumGlass;
+              mat.color.set(carColor);
+              mat.roughness = 0.15;
+              mat.metalness = 0.85;
             }
           }
         }
@@ -531,10 +507,9 @@ function CarModel() {
         _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray, else paint
       }
 
-      // Smoothly update body paint color
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
-      
-      // Wireframe for X-Ray
+
+      // Toggle Wireframe
       materials['Body'].wireframe = isXRay;
 
       // Override roughness/metalness for Thermal mode (make it glowing/matte)
@@ -571,15 +546,7 @@ function CarModel() {
       );
     }
 
-    // Window Glass (Tint lighter if in interior mode or interior theme is bright)
-    if (materials['Window_Glass']) {
-      const targetTransmission = isInteriorMode ? 0.95 : 0.8;
-      (materials['Window_Glass'] as THREE.MeshPhysicalMaterial).transmission = THREE.MathUtils.lerp(
-        (materials['Window_Glass'] as THREE.MeshPhysicalMaterial).transmission || 0.9,
-        targetTransmission,
-        lerpSpeed
-      );
-    }
+    // Window Glass opacity modification removed to prevent shader crash
 
     // Accent Trim / Exhaust (SVJ 63 Edition Gold)
     if (materials['Aluminum']) {

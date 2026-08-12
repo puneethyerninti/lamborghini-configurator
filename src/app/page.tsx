@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Model3D } from "@/components/ui/Model3D";
 import { ConfiguratorUI } from "@/components/ui/ConfiguratorUI";
-import { CinematicLoader } from "@/components/ui/CinematicLoader";
 import { SlideNav } from "@/components/ui/SlideNav";
 import { ChapterBadge } from "@/components/ui/ChapterBadge";
 import { StatCounter } from "@/components/ui/StatCounter";
@@ -469,7 +468,7 @@ export default function Home() {
     <MouseParallaxProvider>
       <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
         <AudioEngine />
-        <CinematicLoader />
+        <CinematicLetterbox />
         
         <Navbar />
 

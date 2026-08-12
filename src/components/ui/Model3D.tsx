@@ -39,7 +39,7 @@ const CINEMATIC_PRESETS: Record<number, { pos: number[], target: number[], fov: 
 
   // Chapter 5: Legacy
   11: { pos: [-7, 2, -5], target: [0, 0.5, 0], fov: 40, dur: 3.0, ease: 'power2.inOut' }, // Stats wall
-  12: { pos: [0, 1, 8], target: [0, 0.5, 0], fov: 35, dur: 3.0, ease: 'power2.inOut' }, // Inquiry - clean front
+  12: { pos: [2, 1, 7], target: [1.5, 0.4, 0], fov: 35, dur: 3.0, ease: 'power2.inOut' }, // Inquiry - offset right
 };
 
 // Simple custom easing functions to replace GSAP

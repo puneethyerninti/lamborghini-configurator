@@ -397,26 +397,48 @@ const SlideContent = React.memo(function SlideContent() {
         </div>
       </Slide>
 
-      {/* S12: Inquiry */}
-      <Slide active={currentSlide === 12} className="flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/80 z-[-1]" />
-        <FadeIn delay={0.3} active={currentSlide === 12} className="flex flex-col items-center pointer-events-auto">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
-            alt="Lamborghini Logo"
-            className="w-16 h-20 object-contain drop-shadow-2xl brightness-110 mb-8"
-          />
-          <h2 className={`${playfair.className} text-4xl text-white mb-12`}>Begin the Conversation</h2>
-          <div className="flex gap-4">
-            <input type="text" placeholder="NAME" className={`bg-transparent border-b border-white/20 px-4 py-2 text-white outline-none focus:border-white transition-colors ${syncopate.className} text-[9px] tracking-widest`} />
-            <input type="email" placeholder="EMAIL" className={`bg-transparent border-b border-white/20 px-4 py-2 text-white outline-none focus:border-white transition-colors ${syncopate.className} text-[9px] tracking-widest`} />
-          </div>
-          <button
-            className={`mt-12 border border-white px-16 py-5 ${syncopate.className} font-bold tracking-[0.3em] text-[9px] uppercase text-black bg-white hover:bg-black hover:text-white transition-all duration-500 cursor-pointer`}
-          >
-            Submit Inquiry
-          </button>
-        </FadeIn>
+      {/* S12: Inquiry / Reserve */}
+      <Slide active={currentSlide === 12} className="pointer-events-none">
+        <ChapterBadge chapter={4} title="Ownership" delay={0} active={currentSlide === 12} />
+        <div className="absolute left-0 md:left-16 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-[400px] pointer-events-auto z-10">
+          <FadeIn delay={0.2} direction="right" active={currentSlide === 12}>
+            <div className="flex flex-col gap-6 p-8 md:p-10 bg-black/80 border-t md:border border-white/10 backdrop-blur-md">
+              <div>
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
+                  alt="Lamborghini Logo"
+                  className="w-10 h-12 object-contain drop-shadow-2xl brightness-110 mb-6"
+                />
+                <h2 className={`${syncopate.className} text-xl text-white font-bold tracking-widest uppercase mb-2`}>Acquire</h2>
+                <p className={`${montserrat.className} text-[10px] text-white/50 uppercase tracking-[0.2em]`}>Begin the conversation</p>
+              </div>
+
+              <div className="flex flex-col gap-5 mt-4">
+                <input 
+                  type="text" 
+                  placeholder="FULL NAME" 
+                  className={`bg-transparent border-b border-white/20 pb-2 text-white outline-none focus:border-[#b59b4c] transition-colors ${syncopate.className} text-[8px] tracking-[0.2em] w-full`} 
+                />
+                <input 
+                  type="email" 
+                  placeholder="EMAIL ADDRESS" 
+                  className={`bg-transparent border-b border-white/20 pb-2 text-white outline-none focus:border-[#b59b4c] transition-colors ${syncopate.className} text-[8px] tracking-[0.2em] w-full`} 
+                />
+                <input 
+                  type="text" 
+                  placeholder="PREFERRED DEALERSHIP" 
+                  className={`bg-transparent border-b border-white/20 pb-2 text-white outline-none focus:border-[#b59b4c] transition-colors ${syncopate.className} text-[8px] tracking-[0.2em] w-full`} 
+                />
+              </div>
+
+              <button
+                className={`mt-6 border border-[#b59b4c] px-8 py-4 ${syncopate.className} font-bold tracking-[0.3em] text-[8px] uppercase text-[#b59b4c] hover:bg-[#b59b4c] hover:text-black transition-colors duration-500 w-full`}
+              >
+                Submit Inquiry
+              </button>
+            </div>
+          </FadeIn>
+        </div>
       </Slide>
 
       {/* Scroll hint on Hero */}

@@ -420,11 +420,7 @@ function CarModel() {
     if (!groupRef.current) return;
     const { currentSlide } = useAppStore.getState();
 
-    // 1. Smooth Camera/Model Rotation tracking
-    if (groupRef.current && (currentSlide === 0 || currentSlide === 11 || currentSlide === 12)) {
-      currentRotation.current.slerp(targetRotation.current, delta * 2);
-      groupRef.current.quaternion.copy(currentRotation.current);
-    }
+
 
     // 2. Real-Time Material Injection
     if (!materials) return;

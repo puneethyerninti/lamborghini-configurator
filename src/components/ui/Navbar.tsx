@@ -43,7 +43,7 @@ export function Navbar() {
 
         <div className={`flex flex-wrap justify-end gap-3 md:gap-8 ${syncopate.className} text-[6.5px] md:text-[9px] font-bold tracking-[0.2em] uppercase opacity-80 mix-blend-difference`}>
           <MagneticButton className="hidden md:block">
-            <SplitHoverButton 
+            <SplitHoverButton
               primaryText={isPolarized ? "POLARIZED" : "LENS"}
               secondaryText={isPolarized ? "OFF" : "ON"}
               onClick={() => togglePolarized()}
@@ -51,7 +51,7 @@ export function Navbar() {
             />
           </MagneticButton>
           <MagneticButton className="hidden md:block">
-            <SplitHoverButton 
+            <SplitHoverButton
               primaryText={isThermalMode ? "THERMAL" : "VISION"}
               secondaryText={isThermalMode ? "OFF" : "ON"}
               onClick={() => toggleThermalMode()}
@@ -60,7 +60,7 @@ export function Navbar() {
           </MagneticButton>
 
           <MagneticButton>
-            <SplitHoverButton 
+            <SplitHoverButton
               primaryText={isAudioEnabled ? "SOUND ON" : "SOUND OFF"}
               secondaryText={isAudioEnabled ? "MUTE" : "PLAY"}
               onClick={() => {
@@ -78,7 +78,7 @@ export function Navbar() {
           </MagneticButton>
 
           <MagneticButton className="hidden md:block">
-            <SplitHoverButton 
+            <SplitHoverButton
               primaryText="MODELS"
               secondaryText="VIEW ALL"
               onClick={() => {
@@ -90,7 +90,7 @@ export function Navbar() {
           </MagneticButton>
 
           <MagneticButton>
-            <SplitHoverButton 
+            <SplitHoverButton
               primaryText={isMenuOpen ? "CLOSE" : "MENU"}
               secondaryText={isMenuOpen ? "BACK" : "OPEN"}
               onClick={() => {

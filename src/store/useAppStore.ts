@@ -4,14 +4,14 @@ interface AppState {
   currentSlide: number;
   totalSlides: number;
   chapter: number;
-  
+
   // Customization
   carColor: string;
   wheelStyle: 0 | 1 | 2;
   interiorTheme: 'nero' | 'bianco' | 'arancio';
   packageTier: 'standard' | 'magnolia' | 'svj63';
   environment: 'studio' | 'night' | 'city';
-  
+
   // Modes
   isAudioEnabled: boolean;
   isInteriorMode: boolean;
@@ -23,7 +23,7 @@ interface AppState {
   isPolarized: boolean;
   timeOfDay: number;
   configuratorTab: "exterior" | "wheels" | "interior" | "backdrop" | "summary";
-  
+
   // Actions
   setSlide: (index: number) => void;
   nextSlide: () => void;
@@ -55,13 +55,13 @@ export const useAppStore = create<AppState>((set) => ({
   currentSlide: 0,
   totalSlides: 14,
   chapter: 0,
-  
+
   carColor: '#a10a0a', // Rosso Mars
   wheelStyle: 0,
   interiorTheme: 'nero',
   packageTier: 'standard',
   environment: 'studio',
-  
+
   isAudioEnabled: false,
   isInteriorMode: false,
   isEngineRevved: false,
@@ -72,40 +72,40 @@ export const useAppStore = create<AppState>((set) => ({
   isPolarized: false,
   timeOfDay: 0.5,
   configuratorTab: "exterior",
-  
+
   setSlide: (index) => {
     set({ isTransitioning: true });
     setTimeout(() => set({ isTransitioning: false }), 800);
-    set({ 
-      currentSlide: index, 
+    set({
+      currentSlide: index,
       chapter: getChapter(index),
-      isInteriorMode: false 
+      isInteriorMode: false
     });
   },
-  
+
   setEnvironment: (env) => set({ environment: env }),
   toggleAudio: () => set((state) => ({ isAudioEnabled: !state.isAudioEnabled })),
-  
+
   nextSlide: () => set((state) => {
     const next = Math.min(state.currentSlide + 1, state.totalSlides - 1);
     if (next !== state.currentSlide) {
       setTimeout(() => set({ isTransitioning: false }), 800);
-      return { 
-        currentSlide: next, 
+      return {
+        currentSlide: next,
         chapter: getChapter(next),
         isInteriorMode: false,
-        isTransitioning: true 
+        isTransitioning: true
       };
     }
     return state;
   }),
-  
+
   prevSlide: () => set((state) => {
     const prev = Math.max(state.currentSlide - 1, 0);
     if (prev !== state.currentSlide) {
       setTimeout(() => set({ isTransitioning: false }), 800);
-      return { 
-        currentSlide: prev, 
+      return {
+        currentSlide: prev,
         chapter: getChapter(prev),
         isInteriorMode: false,
         isTransitioning: true
@@ -113,16 +113,16 @@ export const useAppStore = create<AppState>((set) => ({
     }
     return state;
   }),
-  
+
   setCarColor: (color) => set({ carColor: color }),
   setWheelStyle: (style) => set({ wheelStyle: style }),
   setInteriorTheme: (theme) => set({ interiorTheme: theme }),
   setPackageTier: (tier) => set({ packageTier: tier }),
-  
+
   toggleInteriorMode: () => set((state) => ({ isInteriorMode: !state.isInteriorMode })),
   toggleThermalMode: () => set((state) => ({ isThermalMode: !state.isThermalMode })),
   togglePolarized: () => set((state) => ({ isPolarized: !state.isPolarized })),
-  
+
   revEngine: () => {
     // Haptic feedback for mobile devices (Android)
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -141,7 +141,7 @@ export const useAppStore = create<AppState>((set) => ({
       }
     }, 50);
   },
-  
+
   setXrayMode: (active) => set({ xrayMode: active }),
   setTimeOfDay: (time) => set({ timeOfDay: time }),
   setConfiguratorTab: (tab) => set({ configuratorTab: tab }),

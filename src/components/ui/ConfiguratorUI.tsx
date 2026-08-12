@@ -59,7 +59,7 @@ export function ConfiguratorUI() {
   } = useAppStore();
 
   return (
-    <div 
+    <div
       className="flex flex-col gap-4 md:gap-6 pointer-events-auto items-start md:items-end max-h-[40vh] md:max-h-[70vh] pb-12 md:pb-6 w-full max-w-full md:max-w-[350px] bg-black/80 md:bg-black/60 backdrop-blur-2xl border-t md:border p-4 md:p-6 md:rounded-none mt-auto transition-all duration-700"
       style={{
         boxShadow: `0 10px 40px ${carColor}44, inset 0 0 20px ${carColor}11`,
@@ -69,7 +69,7 @@ export function ConfiguratorUI() {
     >
 
       <div className="text-right w-full border-b border-[#b59b4c]/30 pb-4 mb-2 flex justify-between items-end">
-        <button 
+        <button
           onPointerDown={() => setXrayMode(true)}
           onPointerUp={() => setXrayMode(false)}
           onPointerLeave={() => setXrayMode(false)}
@@ -84,7 +84,7 @@ export function ConfiguratorUI() {
       </div>
 
       {/* Tabs */}
-      <div 
+      <div
         className="flex gap-4 w-full justify-start md:justify-between mb-4 overflow-x-auto pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap"
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
@@ -94,8 +94,8 @@ export function ConfiguratorUI() {
             key={tab}
             onClick={() => setConfiguratorTab(tab)}
             className={`pb-2 text-[9px] uppercase tracking-[0.2em] font-bold transition-all snap-start shrink-0 ${configuratorTab === tab
-                ? "text-white border-b border-[#b59b4c]"
-                : "text-white/40 border-b border-transparent hover:text-white/80 hover:border-white/20"
+              ? "text-white border-b border-[#b59b4c]"
+              : "text-white/40 border-b border-transparent hover:text-white/80 hover:border-white/20"
               }`}
           >
             {tab}
@@ -104,7 +104,7 @@ export function ConfiguratorUI() {
       </div>
 
       {/* Scrollable Content */}
-      <div 
+      <div
         className="w-full overflow-y-auto pr-2 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-8"
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
@@ -254,7 +254,7 @@ export function ConfiguratorUI() {
             <div className="border border-[#b59b4c]/30 p-4 bg-white/5 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-[#b59b4c] opacity-50" />
               <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-[#b59b4c] opacity-50" />
-              
+
               <h4 className={`${syncopate.className} text-[10px] text-[#b59b4c] mb-4 uppercase font-bold tracking-widest`}>Configuration</h4>
 
               <div className="flex justify-between border-b border-white/10 pb-2 mb-2">

@@ -30,9 +30,8 @@ export function HoverBorderButton({ children, onClick, active = false, className
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden transition-all ${className} ${
-        active ? "bg-white/5" : "bg-transparent"
-      }`}
+      className={`relative overflow-hidden transition-all ${className} ${active ? "bg-white/5" : "bg-transparent"
+        }`}
       style={{
         border: `1px solid ${active ? color : 'rgba(255,255,255,0.1)'}`
       }}
@@ -46,22 +45,17 @@ export function HoverBorderButton({ children, onClick, active = false, className
           background: `radial-gradient(150px circle at ${position.x}px ${position.y}px, ${color}33, transparent 40%)`,
         }}
       />
-      
-      {/* Tracing border line via clip path or masking trick */}
+
+      {/* Tracing border line via 1px padding mask (GPU safe) */}
       <motion.div
         animate={{ opacity }}
         transition={{ duration: 0.3 }}
-        className="pointer-events-none absolute inset-0 opacity-0"
+        className="pointer-events-none absolute inset-0 opacity-0 p-[1px]"
         style={{
           background: `radial-gradient(100px circle at ${position.x}px ${position.y}px, ${color}, transparent 40%)`,
-          WebkitMaskImage: 'linear-gradient(#fff 0 0)',
-          WebkitMaskComposite: 'xor',
-          maskImage: 'linear-gradient(#fff 0 0)',
-          maskComposite: 'exclude',
-          padding: '1px',
         }}
       >
-        <div className="w-full h-full bg-black/80" />
+        <div className="w-full h-full bg-[#050505]" />
       </motion.div>
 
       <div className="relative z-10 w-full h-full flex flex-col text-left">

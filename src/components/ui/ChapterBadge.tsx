@@ -10,7 +10,7 @@ const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V"];
 export function ChapterBadge({ chapter, title, delay = 0, active = true }: { chapter: number; title: string; delay?: number; active?: boolean }) {
   if (!active) return null;
   return (
-    <div 
+    <div
       className="absolute top-28 md:top-32 left-8 md:left-12 flex items-center gap-6 pointer-events-none z-10 animate-fadein"
       style={{ animationDelay: `${delay}s` }}
     >

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Model3D } from "@/components/ui/Model3D";
 import { ConfiguratorUI } from "@/components/ui/ConfiguratorUI";
-// CinematicLoader removed — no loading screen
+import { CinematicLoader } from "@/components/ui/CinematicLoader";
 import { SlideNav } from "@/components/ui/SlideNav";
 import { ChapterBadge } from "@/components/ui/ChapterBadge";
 import { StatCounter } from "@/components/ui/StatCounter";
@@ -113,7 +113,7 @@ function InteractionHandler() {
 
       if (locked.current) return;
 
-      if (Math.abs(deltaY) > 30) { 
+      if (Math.abs(deltaY) > 30) {
         locked.current = true;
         lastEventTime.current = now;
         if (deltaY > 0) nextSlide();
@@ -312,11 +312,11 @@ const SlideContent = React.memo(function SlideContent() {
             <div className="relative min-w-[320px] bg-black/60 backdrop-blur-xl border border-[#b59b4c]/30 p-8 shadow-[0_20px_40px_rgba(0,0,0,0.5)] overflow-hidden group">
               {/* Sweeping metallic glare effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
-              
+
               {/* Corner Accents */}
               <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#b59b4c] opacity-50" />
               <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#b59b4c] opacity-50" />
-              
+
               <div className="flex flex-col gap-2 relative z-10">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 border border-[#b59b4c] rounded-full animate-pulse flex items-center justify-center">
@@ -326,14 +326,14 @@ const SlideContent = React.memo(function SlideContent() {
                     OFFICIAL LAP RECORD
                   </span>
                 </div>
-                
+
                 {/* Mechanical Number Roll Container */}
                 <div className="relative mt-4 mb-6">
                   <span className={`${montserrat.className} text-5xl md:text-7xl text-white font-light tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]`}>
                     6:44<span className="text-[#b59b4c]">.97</span>
                   </span>
                 </div>
-                
+
                 {/* Tactical Data Separator */}
                 <div className="w-full h-[1px] bg-gradient-to-r from-[#b59b4c]/50 to-transparent my-2" />
 
@@ -469,10 +469,11 @@ export default function Home() {
     <MouseParallaxProvider>
       <main className="fixed inset-0 w-screen h-screen overflow-hidden selection:bg-white/20 bg-black touch-none">
         <AudioEngine />
-        <CinematicLetterbox />
-
+        <CinematicLoader />
+        
         <Navbar />
 
+        {/* 3D Canvas Layer */}
         <div className="absolute inset-0 z-0 bg-black">
           <Model3D />
         </div>
@@ -480,7 +481,7 @@ export default function Home() {
         <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden mix-blend-screen md:mix-blend-overlay opacity-10 md:opacity-20">
           <motion.div
             initial={false}
-            animate={{ 
+            animate={{
               y: useAppStore.getState().currentSlide * -100,
               scale: 1 + (useAppStore.getState().currentSlide * 0.05)
             }}
@@ -499,7 +500,7 @@ export default function Home() {
           <CinematicLetterbox />
           <motion.div
             initial={false}
-            animate={{ 
+            animate={{
               skewY: useAppStore.getState().isTransitioning ? (Math.random() > 0.5 ? 2 : -2) : 0,
               scale: useAppStore.getState().isTransitioning ? 0.98 : 1,
               filter: useAppStore.getState().isTransitioning ? "blur(4px)" : "none"

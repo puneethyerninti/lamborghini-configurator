@@ -186,25 +186,25 @@ const _scaleVec = new THREE.Vector3();
 
 function TextNode({ text, active, position, rotation = [0, 0, 0], size, children }: any) {
   const groupRef = useRef<THREE.Group>(null);
-  
+
   useFrame((_, delta) => {
     if (!groupRef.current) return;
     const targetScale = active ? 1 : 0;
     _scaleVec.set(targetScale, targetScale, targetScale);
-    
+
     // Fast snap to 0 if inactive and very small to save rendering
     if (!active && groupRef.current.scale.x < 0.01) {
       groupRef.current.scale.set(0, 0, 0);
       groupRef.current.visible = false;
       return;
     }
-    
+
     groupRef.current.visible = true;
     groupRef.current.scale.lerp(_scaleVec, delta * 4);
-    
+
     // Add subtle floating motion
     if (active) {
-       groupRef.current.position.y = position[1] + Math.sin(Date.now() / 1000) * 0.05;
+      groupRef.current.position.y = position[1] + Math.sin(Date.now() / 1000) * 0.05;
     }
   });
 
@@ -238,10 +238,10 @@ function DynamicTypography() {
   return (
     <>
       {/* Slide 0: Hero - Refractive Glass */}
-      <TextNode 
-        text="SVJ" 
-        active={currentSlide === 0} 
-        position={[0, 2.2, -4]} 
+      <TextNode
+        text="SVJ"
+        active={currentSlide === 0}
+        position={[0, 2.2, -4]}
         size={baseSize * 1.3}
       >
         <meshPhysicalMaterial
@@ -250,10 +250,10 @@ function DynamicTypography() {
       </TextNode>
 
       {/* Slide 4: Aerodynamics - Frosted Glass */}
-      <TextNode 
-        text="AERO" 
-        active={currentSlide === 4} 
-        position={[5, 1.5, -4]} 
+      <TextNode
+        text="AERO"
+        active={currentSlide === 4}
+        position={[5, 1.5, -4]}
         rotation={[0, -Math.PI / 4, 0]}
         size={baseSize * 0.25}
       >
@@ -263,20 +263,20 @@ function DynamicTypography() {
       </TextNode>
 
       {/* Slide 5: V12 Heart - Brushed Aluminum */}
-      <TextNode 
-        text="V12" 
-        active={currentSlide === 5} 
-        position={[0, 2.5, -5]} 
+      <TextNode
+        text="V12"
+        active={currentSlide === 5}
+        position={[0, 2.5, -5]}
         size={baseSize * 0.3}
       >
         <meshStandardMaterial metalness={1} roughness={0.2} color="#cccccc" />
       </TextNode>
 
       {/* Slide 6: Carbon Exploded View - Dark Matte */}
-      <TextNode 
-        text="CARBON" 
-        active={currentSlide === 6} 
-        position={[5, 1.5, -4]} 
+      <TextNode
+        text="CARBON"
+        active={currentSlide === 6}
+        position={[5, 1.5, -4]}
         rotation={[0, -Math.PI / 4, 0]}
         size={baseSize * 0.25}
       >
@@ -284,10 +284,10 @@ function DynamicTypography() {
       </TextNode>
 
       {/* Slide 8: Top Speed - Glowing Oro Elios (Gold) */}
-      <TextNode 
-        text="MAX VELOCITY" 
-        active={currentSlide === 8} 
-        position={[-6, 1.5, 5]} 
+      <TextNode
+        text="MAX VELOCITY"
+        active={currentSlide === 8}
+        position={[-6, 1.5, 5]}
         rotation={[0, Math.PI * 0.75, 0]}
         size={baseSize * 0.2}
       >
@@ -400,7 +400,7 @@ function CarModel() {
             mat.color.set(carColor);
             mat.roughness = 0.15;
             mat.metalness = 0.85;
-            
+
             // Micro-Flake Paint Shader Injection
             if (!mat.userData.hasFlakes) {
               mat.userData.hasFlakes = true;
@@ -415,7 +415,7 @@ function CarModel() {
                   `#include <worldpos_vertex>
                   vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;`
                 );
-                
+
                 shader.fragmentShader = shader.fragmentShader.replace(
                   '#include <common>',
                   `#include <common>
@@ -437,7 +437,7 @@ function CarModel() {
                                    mix(hash(i + vec3(0.0,1.0,1.0)), hash(i + vec3(1.0,1.0,1.0)), f.x), f.y), f.z);
                   }`
                 );
-                
+
                 shader.fragmentShader = shader.fragmentShader.replace(
                   '#include <metalnessmap_fragment>',
                   `#include <metalnessmap_fragment>
@@ -450,7 +450,7 @@ function CarModel() {
                 );
               };
             }
-            
+
             applied = true;
           }
         }
@@ -500,13 +500,13 @@ function CarModel() {
     if (materials['Body']) {
       const { xrayMode, isThermalMode } = useAppStore.getState();
       const isXRay = currentSlide === 6 || xrayMode;
-      
+
       if (isThermalMode && !isXRay) {
         _targetColor.set('#ff3300'); // Hot orange/red
       } else {
         _targetColor.set(isXRay ? '#00d4ff' : carColor); // Cyan wireframe for X-Ray, else paint
       }
-      
+
       materials['Body'].color.lerp(_targetColor, lerpSpeed);
 
       // Toggle Wireframe and Opacity
@@ -517,7 +517,7 @@ function CarModel() {
         isXRay ? 0.4 : 1.0,
         lerpSpeed
       );
-      
+
       // Override roughness/metalness for Thermal mode (make it glowing/matte)
       materials['Body'].roughness = THREE.MathUtils.lerp(
         materials['Body'].roughness as number,
@@ -657,7 +657,7 @@ function SceneCamera() {
         controls.setLookAt(0.35, 0.8, -0.2, 0.35, 0.8, -2, true);
       } else {
         let preset = CINEMATIC_PRESETS[currentSlide];
-        
+
         // Configurator Tab Overrides
         if (currentSlide === 10) {
           if (configuratorTab === "wheels") {
@@ -675,7 +675,7 @@ function SceneCamera() {
           // so the car doesn't get clipped on the sides.
           const isMobile = window.innerWidth < window.innerHeight;
           const mobileMult = isMobile ? 2.0 : 1.0;
-          
+
           // Push the car UP on the screen on mobile in the configurator tab so UI doesn't overlap it
           const targetYOffset = isMobile && currentSlide === 10 ? 1.0 : 0;
 
@@ -725,16 +725,16 @@ function DynamicEnvironment() {
   const currentSlide = useAppStore((s) => s.currentSlide);
   const timeOfDay = useAppStore((s) => s.timeOfDay);
   const active = currentSlide === 10 || currentSlide === 11; // Only show background in Atelier & Interior
-  
+
   // Calculate environment intensity based on timeOfDay (0 = Midnight, 0.5 = High Noon, 1 = Sunset)
   // At midnight, it should be very dim. At high noon, bright. At sunset, medium.
   const envIntensity = timeOfDay < 0.3 ? 0.2 + timeOfDay : timeOfDay < 0.7 ? 1.0 : 1.5 - timeOfDay;
 
   return (
-    <Environment 
-      preset={environment} 
-      background={active} 
-      backgroundBlurriness={0.5} 
+    <Environment
+      preset={environment}
+      background={active}
+      backgroundBlurriness={0.5}
       environmentIntensity={envIntensity}
     />
   );
@@ -743,15 +743,15 @@ function DynamicEnvironment() {
 function InteriorLight() {
   const interiorTheme = useAppStore((s) => s.interiorTheme);
   const isInteriorMode = useAppStore((s) => s.isInteriorMode);
-  
+
   // Nero = Red accent (#b59b4c as Gold for V2), Bianco = White/Blue (#ffffff), Arancio = Orange (#ff6600)
   const color = interiorTheme === 'nero' ? '#b59b4c' : interiorTheme === 'bianco' ? '#ffffff' : '#ff6600';
-  
+
   // Make it brighter if in interior mode
   const intensity = isInteriorMode ? 2.5 : 1.0;
-  
+
   return (
-    <pointLight 
+    <pointLight
       position={[0, 0.5, -0.1]} // inside the cabin
       color={color}
       intensity={intensity}
@@ -764,7 +764,7 @@ function InteriorLight() {
 function InteractiveSpotlight() {
   const lightRef = useRef<THREE.SpotLight>(null);
   const currentSlide = useAppStore((s) => s.currentSlide);
-  
+
   useFrame((state, delta) => {
     if (!lightRef.current) return;
     if (currentSlide === 10) { // Atelier Configurator
@@ -780,7 +780,7 @@ function InteractiveSpotlight() {
   });
 
   return (
-    <spotLight 
+    <spotLight
       ref={lightRef}
       position={[0, 6, 0]}
       angle={0.4}
@@ -817,7 +817,7 @@ function CinematicEffects() {
 function ConfiguratorAddons() {
   const configuratorTab = useAppStore((s) => s.configuratorTab);
   const currentSlide = useAppStore((s) => s.currentSlide);
-  
+
   if (currentSlide !== 10) return null;
   return null;
 }
@@ -852,7 +852,7 @@ export function Model3D() {
         frameloop="always"
       >
         <color attach="background" args={["#000000"]} />
-        
+
         {/* Disable heavy post-processing completely on mobile */}
         {!isMobile && <CinematicEffects />}
 

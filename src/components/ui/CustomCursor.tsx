@@ -17,7 +17,7 @@ export function CustomCursor() {
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
-    
+
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       // Check if hovering over interactive elements
@@ -64,14 +64,14 @@ export function CustomCursor() {
       >
         <svg viewBox="0 0 32 32" className="w-full h-full">
           <g transform="translate(2,2) scale(0.85)">
-            <path 
-              d="M2,0 L30,0 C30,0 32,15 16,32 C0,15 2,0 2,0 Z" 
-              fill={isHovering ? "#ffffff" : "transparent"} 
-              stroke="#ffffff" 
+            <path
+              d="M2,0 L30,0 C30,0 32,15 16,32 C0,15 2,0 2,0 Z"
+              fill={isHovering ? "#ffffff" : "transparent"}
+              stroke="#ffffff"
               strokeWidth="2"
             />
-            <path 
-              d="M16,8 L19,13 L23,11 L20,16 L25,21 L16,23 L7,21 L12,16 L9,11 L13,13 Z" 
+            <path
+              d="M16,8 L19,13 L23,11 L20,16 L25,21 L16,23 L7,21 L12,16 L9,11 L13,13 Z"
               fill={isHovering ? "#050505" : "#b59b4c"}
             />
           </g>

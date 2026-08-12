@@ -26,12 +26,12 @@ export function ScrambleText({ text, active = true, delay = 0, className = "", h
     }
 
     setDisplayText("");
-    
+
     // Start after delay (skip delay if hoverMode)
     const timeout = setTimeout(() => {
       let iteration = 0;
       const maxIterations = text.length * 2;
-      
+
       intervalRef.current = setInterval(() => {
         setDisplayText(prev => {
           return text.split("").map((letter, index) => {
@@ -42,7 +42,7 @@ export function ScrambleText({ text, active = true, delay = 0, className = "", h
             return CHARS[Math.floor(Math.random() * CHARS.length)];
           }).join("");
         });
-        
+
         if (iteration >= maxIterations) {
           clearInterval(intervalRef.current!);
         }
@@ -57,8 +57,8 @@ export function ScrambleText({ text, active = true, delay = 0, className = "", h
   }, [active, text, delay, hoverMode, isHovered]);
 
   return (
-    <span 
-      className={className} 
+    <span
+      className={className}
       onMouseEnter={() => hoverMode && setIsHovered(true)}
       onMouseLeave={() => hoverMode && setIsHovered(false)}
     >

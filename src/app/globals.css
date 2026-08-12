@@ -50,7 +50,10 @@ body {
   cursor: none !important;
 }
 
-button, a, [role="button"], [data-cursor="hover"] {
+button,
+a,
+[role="button"],
+[data-cursor="hover"] {
   cursor: none !important;
 }
 
@@ -63,13 +66,16 @@ button, a, [role="button"], [data-cursor="hover"] {
   width: 4px;
   height: 4px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #b59b4c;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #d4c07c;
 }
@@ -167,11 +173,56 @@ button, a, [role="button"], [data-cursor="hover"] {
 }
 
 @keyframes glitch {
-  0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 2px); }
-  20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -2px); }
-  40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
-  60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
-  80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 2px); }
-  100% { clip-path: inset(30% 0 40% 0); transform: translate(0); }
+  0% {
+    clip-path: inset(20% 0 80% 0);
+    transform: translate(-2px, 2px);
+  }
+
+  20% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(2px, -2px);
+  }
+
+  40% {
+    clip-path: inset(40% 0 50% 0);
+    transform: translate(-2px, 2px);
+  }
+
+  60% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(2px, -2px);
+  }
+
+  80% {
+    clip-path: inset(10% 0 70% 0);
+    transform: translate(-2px, 2px);
+  }
+
+  100% {
+    clip-path: inset(30% 0 40% 0);
+    transform: translate(0);
+  }
 }
-.animate-glitch { animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+
+.animate-glitch {
+  animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+@keyframes kineticGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-kinetic-gradient {
+  animation: kineticGradient 8s ease infinite;
+}
+
+@keyframes breathing {
+  0%, 100% { opacity: 0.5; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.animate-breathing {
+  animation: breathing 4s ease-in-out infinite;
+}
+

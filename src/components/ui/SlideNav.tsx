@@ -36,7 +36,7 @@ export function SlideNav() {
   const offset = circumference - progress * circumference;
 
   return (
-    <div 
+    <div
       className="fixed right-4 bottom-4 md:bottom-auto md:right-8 md:top-1/2 md:-translate-y-1/2 z-[100] flex flex-col items-end gap-3 mix-blend-difference pointer-events-auto"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -45,15 +45,14 @@ export function SlideNav() {
         {CHAPTERS.map((chap) => {
           const isActive = chapter === chap.id;
           return (
-            <div 
-              key={chap.id} 
+            <div
+              key={chap.id}
               className="flex items-center justify-end gap-4 cursor-pointer group"
               onClick={() => setSlide(chap.start)}
             >
-              <span 
-                className={`hidden md:block ${syncopate.className} text-[9px] tracking-[0.3em] font-bold uppercase transition-all duration-300 ${
-                  isActive || isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-                } ${isActive ? "text-white" : "text-white/40 group-hover:text-white/80"}`}
+              <span
+                className={`hidden md:block ${syncopate.className} text-[9px] tracking-[0.3em] font-bold uppercase transition-all duration-300 ${isActive || isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                  } ${isActive ? "text-white" : "text-white/40 group-hover:text-white/80"}`}
               >
                 {chap.title}
               </span>
@@ -61,26 +60,26 @@ export function SlideNav() {
           );
         })}
       </div>
-      
+
       {/* 3D Technical Progress Ring */}
       <div className="relative flex items-center justify-center cursor-pointer group" onClick={() => useAppStore.getState().nextSlide()}>
         <svg className="w-16 h-16 transform -rotate-90 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
           {/* Background track */}
           <circle cx="32" cy="32" r="20" stroke="rgba(255,255,255,0.1)" strokeWidth="1" fill="none" />
           {/* Progress fill */}
-          <circle 
-            cx="32" cy="32" r="20" 
-            stroke="#ffffff" strokeWidth="2" fill="none" 
-            strokeDasharray={circumference} 
-            strokeDashoffset={offset} 
+          <circle
+            cx="32" cy="32" r="20"
+            stroke="#ffffff" strokeWidth="2" fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
             strokeLinecap="round"
-            className="transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)]" 
+            className="transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
           />
           {/* Inner rotating technical dashed ring */}
-          <circle 
-            cx="32" cy="32" r="14" 
-            stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none" 
-            strokeDasharray="2 4" 
+          <circle
+            cx="32" cy="32" r="14"
+            stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none"
+            strokeDasharray="2 4"
             className="origin-center animate-[spin_10s_linear_infinite]"
           />
         </svg>

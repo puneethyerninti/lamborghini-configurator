@@ -18,7 +18,7 @@ const HOTSPOTS = [
 
 export function Hotspots() {
   const currentSlide = useAppStore((s) => s.currentSlide);
-  const active = currentSlide === 12; // Active only on Specs wall
+  const active = currentSlide === 11; // Active only on Specs wall
   const groupRef = useRef<THREE.Group>(null);
   const opacityRef = useRef(0);
 

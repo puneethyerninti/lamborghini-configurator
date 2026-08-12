@@ -498,24 +498,21 @@ function CarModel() {
     const isExploded = currentSlide === 6;
     const targetExplosionAmount = isExploded ? 1 : 0;
 
-    // Only animate if we're on Slide 6 or actively returning from it
-    // Optimization: Only traverse if the first child is far from origin or we are exploded
-    let shouldAnimate = isExploded;
-    if (!shouldAnimate) {
-      const firstChild = scene.children[0];
-      if (firstChild && firstChild.userData.originalPos) {
-        shouldAnimate = firstChild.position.distanceTo(firstChild.userData.originalPos) > 0.01;
-      }
+    // Track global explosion progress instead of checking random children which freezes the lerp
+    if (!groupRef.current.userData.explosionProgress) {
+      groupRef.current.userData.explosionProgress = 0;
     }
+    const prevProgress = groupRef.current.userData.explosionProgress;
+    groupRef.current.userData.explosionProgress = THREE.MathUtils.lerp(prevProgress, targetExplosionAmount, lerpSpeed);
 
-    if (shouldAnimate) {
+    // Only traverse if we are not at rest (progress > 0.001)
+    if (groupRef.current.userData.explosionProgress > 0.001 || targetExplosionAmount === 1) {
       scene.traverse((child: THREE.Object3D) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           if (mesh.userData.originalPos && mesh.userData.explodeDir) {
-            // Avoid .clone() allocations in the render loop to prevent GC freezing
-            _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(targetExplosionAmount).add(mesh.userData.originalPos);
-            mesh.position.lerp(_tempVec, lerpSpeed);
+            _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(groupRef.current.userData.explosionProgress).add(mesh.userData.originalPos);
+            mesh.position.copy(_tempVec);
             mesh.updateMatrix();
           }
         }

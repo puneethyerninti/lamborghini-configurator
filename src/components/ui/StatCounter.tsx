@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Syncopate, Montserrat } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["400"], subsets: ["latin"] });
+
+
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 

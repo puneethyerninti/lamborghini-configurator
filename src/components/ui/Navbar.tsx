@@ -2,20 +2,20 @@
 
 import React, { useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { Syncopate, Montserrat } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrambleText } from "@/components/ui/ScrambleText";
 import { SplitHoverButton } from "@/components/ui/SplitHoverButton";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["200", "300", "400", "500"], subsets: ["latin"] });
+
+
 
 const OTHER_MODELS = [
   { name: "REVUELTO", type: "V12 Hybrid", img: "https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/facelift_2019/models_gw/2023/03_29_revuelto/gate_models_s_02_m.jpg" },
   { name: "URUS SE", type: "Super SUV", img: "https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/facelift_2019/models_gw/2024/04_24_urus_se/gate_models_s_03_m.jpg" },
-  { name: "HURACÁN", type: "V10", img: "https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/facelift_2019/models_gw/2023/11_20_huracan_stj/gate_models_s_04_m.jpg" },
+  { name: "HURACÃN", type: "V10", img: "https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/facelift_2019/models_gw/2023/11_20_huracan_stj/gate_models_s_04_m.jpg" },
 ];
 
 const MENU_LINKS = ["CUSTOMIZATION", "OWNERSHIP", "MOTORSPORT", "DEALERSHIPS", "STORE"];
@@ -103,7 +103,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* ── Models Mega-Menu ── */}
+      {/* â”€â”€ Models Mega-Menu â”€â”€ */}
       <AnimatePresence>
         {isModelsOpen && (
           <motion.div
@@ -138,7 +138,7 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* ── Full-Screen Menu ── */}
+      {/* â”€â”€ Full-Screen Menu â”€â”€ */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div

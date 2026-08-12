@@ -12,7 +12,8 @@ import { WaveformViz } from "@/components/ui/WaveformViz";
 import { TrackMap } from "@/components/ui/TrackMap";
 import { TelemetryHUD } from "@/components/ui/TelemetryHUD";
 import { useAppStore } from "@/store/useAppStore";
-import { Syncopate, Montserrat, Playfair_Display } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 import { Hotspots } from "@/components/ui/Hotspots";
 import { SplitTextReveal } from "@/components/ui/SplitTextReveal";
 import { ScrambleText } from "@/components/ui/ScrambleText";
@@ -20,13 +21,13 @@ import { Navbar } from "@/components/ui/Navbar";
 import { MouseParallaxProvider, useParallax, MouseParallax } from "@/components/ui/MouseParallax";
 import { AudioEngine, globalAudioCtx, playGlobalMusic, pauseGlobalMusic } from "@/components/ui/AudioEngine";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["200", "300", "400", "500"], subsets: ["latin"] });
+
+
 const playfair = Playfair_Display({ weight: ["400", "600"], style: ["normal", "italic"], subsets: ["latin"] });
 
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // UI Utilities
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function Slide({ active, children, className = "" }: { active: boolean; children: React.ReactNode; className?: string }) {
   return (
@@ -81,11 +82,11 @@ function FadeIn({ children, delay = 0, className = "", direction = "up", active 
   );
 }
 
-// Parallax component removed — redundant with MouseParallax (Framer Motion spring-based)
+// Parallax component removed â€” redundant with MouseParallax (Framer Motion spring-based)
 
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // Scroll/Touch Handler
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function InteractionHandler() {
   const lastEventTime = useRef(0);
   const touchStartY = useRef(0);
@@ -150,9 +151,9 @@ function InteractionHandler() {
   return null;
 }
 
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // Slide Content (All 14 Slides)
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const SlideContent = React.memo(function SlideContent() {
   const { currentSlide, isInteriorMode, chapter } = useAppStore();
 
@@ -160,7 +161,7 @@ const SlideContent = React.memo(function SlideContent() {
     <>
       <SlideNav />
 
-      {/* ── Chapter 1: The Bull ── */}
+      {/* â”€â”€ Chapter 1: The Bull â”€â”€ */}
 
       {/* S0: Hero Cold Open */}
       <Slide active={currentSlide === 0 && !isInteriorMode} className="p-8 md:p-16">
@@ -216,7 +217,7 @@ const SlideContent = React.memo(function SlideContent() {
       </Slide>
 
 
-      {/* ── Chapter 2: Engineering ── */}
+      {/* â”€â”€ Chapter 2: Engineering â”€â”€ */}
 
       {/* S3: LDVA 2.0 */}
       <Slide active={currentSlide === 3}>
@@ -285,7 +286,7 @@ const SlideContent = React.memo(function SlideContent() {
       </Slide>
 
 
-      {/* ── Chapter 3: Performance ── */}
+      {/* â”€â”€ Chapter 3: Performance â”€â”€ */}
 
       {/* S7: Acceleration */}
       <Slide active={currentSlide === 7}>
@@ -300,7 +301,7 @@ const SlideContent = React.memo(function SlideContent() {
         <ChapterBadge chapter={2} title="Velocity" delay={0} active={currentSlide === 8} />
       </Slide>
 
-      {/* S9: Nürburgring */}
+      {/* S9: NÃ¼rburgring */}
       <Slide active={currentSlide === 9}>
         <ChapterBadge chapter={2} title="The Ring" delay={0} active={currentSlide === 9} />
         <div className="absolute left-1/2 md:left-16 top-1/2 md:top-1/2 -translate-x-1/2 md:-translate-x-0 -translate-y-1/2 flex flex-col md:flex-row items-center gap-8 md:gap-16 w-full max-w-[90vw] md:max-w-none">
@@ -347,7 +348,7 @@ const SlideContent = React.memo(function SlideContent() {
       </Slide>
 
 
-      {/* ── Chapter 4: The Atelier ── */}
+      {/* â”€â”€ Chapter 4: The Atelier â”€â”€ */}
 
       {/* S10: Configurator */}
       <Slide active={currentSlide === 10 && !isInteriorMode} className="!pointer-events-none">
@@ -374,7 +375,7 @@ const SlideContent = React.memo(function SlideContent() {
       </Slide>
 
 
-      {/* ── Chapter 5: The Invitation ── */}
+      {/* â”€â”€ Chapter 5: The Invitation â”€â”€ */}
 
       {/* S12: Legacy / Stats Wall */}
       <Slide active={currentSlide === 12}>
@@ -386,11 +387,11 @@ const SlideContent = React.memo(function SlideContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 md:gap-y-8">
               <div className="flex flex-col gap-1 border-l border-white/20 pl-4">
                 <span className={`${montserrat.className} text-[8px] text-white/50 uppercase tracking-widest`}>Engine</span>
-                <span className={`${syncopate.className} text-xs text-white`}>V12, 60°, MPI</span>
+                <span className={`${syncopate.className} text-xs text-white`}>V12, 60Â°, MPI</span>
               </div>
               <div className="flex flex-col gap-1 border-l border-white/20 pl-4">
                 <span className={`${montserrat.className} text-[8px] text-white/50 uppercase tracking-widest`}>Displacement</span>
-                <span className={`${syncopate.className} text-xs text-white`}>6,498 cm³</span>
+                <span className={`${syncopate.className} text-xs text-white`}>6,498 cmÂ³</span>
               </div>
               <div className="flex flex-col gap-1 border-l border-white/20 pl-4">
                 <span className={`${montserrat.className} text-[8px] text-white/50 uppercase tracking-widest`}>Transmission</span>
@@ -445,9 +446,9 @@ const SlideContent = React.memo(function SlideContent() {
   );
 });
 
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // Cinematic Letterbox (Phase A)
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function CinematicLetterbox() {
   const isTransitioning = useAppStore(s => s.isTransitioning);
   return (
@@ -458,9 +459,9 @@ function CinematicLetterbox() {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // Main Page Shell
-// ═══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export default function Home() {
   const { toggleAudio, isAudioEnabled } = useAppStore();
 
@@ -492,7 +493,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* CSS Vignette — replaces expensive post-processing Vignette pass */}
+        {/* CSS Vignette â€” replaces expensive post-processing Vignette pass */}
         <div className="absolute inset-0 z-[1] pointer-events-none transform-gpu" style={{ boxShadow: 'inset 0 0 150px 60px rgba(0,0,0,0.7)' }} />
 
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden transform-gpu">

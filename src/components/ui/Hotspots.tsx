@@ -4,11 +4,11 @@ import React, { useRef } from "react";
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useAppStore } from "@/store/useAppStore";
-import { Syncopate, Montserrat } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 import * as THREE from "three";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["400", "700"], subsets: ["latin"] });
+
+
 
 const HOTSPOTS = [
   { id: "engine", pos: [0, 1.2, 1.8] as [number, number, number], title: "V12 Powertrain", desc: "770 CV naturally aspirated engine." },

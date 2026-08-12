@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Syncopate, Montserrat } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["300", "400", "700"], subsets: ["latin"] });
+
+
 
 const TRACK_PATH = "M 130 260 C 90 260, 60 230, 50 180 C 40 130, 60 80, 100 50 C 140 20, 190 20, 230 40 C 260 55, 270 90, 300 100 C 330 110, 360 100, 370 130 C 380 160, 360 210, 330 240 C 290 280, 240 280, 200 250 C 170 230, 160 260, 130 260 Z";
 const ORO_ELIOS = "#b59b4c";

@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { Syncopate, Montserrat } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HoverBorderButton } from "@/components/ui/HoverBorderButton";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["300", "400"], subsets: ["latin"] });
+
+
 
 const COLORS = [
   { name: "Bianco Isis", hex: "#ffffff", type: "Solid" },
@@ -29,9 +29,9 @@ const WHEELS = [
 ];
 
 const INTERIORS = [
-  { id: 'nero', name: "Nero Cosmus", material: "Alcantara®", accent: "Rosso" },
+  { id: 'nero', name: "Nero Cosmus", material: "AlcantaraÂ®", accent: "Rosso" },
   { id: 'bianco', name: "Bianco Polar", material: "Leather", accent: "Nero" },
-  { id: 'arancio', name: "Arancio Leonis", material: "Alcantara®", accent: "Nero" },
+  { id: 'arancio', name: "Arancio Leonis", material: "AlcantaraÂ®", accent: "Nero" },
 ];
 
 const PACKAGES = [

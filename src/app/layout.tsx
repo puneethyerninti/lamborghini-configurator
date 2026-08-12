@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display, Syncopate, Montserrat } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 import { CinematicLoader } from "@/components/ui/CinematicLoader";
 import { CinematicLetterbox } from "@/components/ui/CinematicLetterbox";
 import { CustomCursor } from "@/components/ui/CustomCursor";
@@ -16,16 +17,7 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-const syncopate = Syncopate({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-syncopate",
-});
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Automobili Lamborghini | Aventador SVJ",

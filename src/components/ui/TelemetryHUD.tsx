@@ -2,10 +2,10 @@
 
 import React, { useEffect, useRef } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { Syncopate, Montserrat } from "next/font/google";
+import { syncopate, montserrat } from "@/fonts";
 
-const syncopate = Syncopate({ weight: ["400", "700"], subsets: ["latin"] });
-const montserrat = Montserrat({ weight: ["200", "300", "400"], subsets: ["latin"] });
+
+
 
 // Ultra-premium Oro Elios gold
 const ORO_ELIOS = "#b59b4c";
@@ -95,7 +95,7 @@ export function TelemetryHUD() {
   return (
     <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden mix-blend-screen opacity-90 animate-glitch">
 
-      {/* ── Reticle: Aerospace Minimalist ── */}
+      {/* â”€â”€ Reticle: Aerospace Minimalist â”€â”€ */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[70vh] h-[90vw] md:h-[70vh] max-w-[700px] max-h-[700px] opacity-30">
         <div className="absolute inset-0 border-[0.5px] border-white/20 rounded-full animate-[spin_120s_linear_infinite]" />
         {/* Hairline crosshairs */}
@@ -109,7 +109,7 @@ export function TelemetryHUD() {
         <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[1px] border-r-[1px] border-[#b59b4c] opacity-50" />
       </div>
 
-      {/* ── RPM Minimalist Arc (Bottom Left) ── */}
+      {/* â”€â”€ RPM Minimalist Arc (Bottom Left) â”€â”€ */}
       <div className="absolute left-4 bottom-12 md:left-24 md:bottom-24 w-20 h-20 md:w-48 md:h-48 flex items-center justify-center">
         <svg viewBox="0 0 200 200" className="w-full h-full absolute">
           {/* Base track */}
@@ -139,7 +139,7 @@ export function TelemetryHUD() {
         </div>
       </div>
 
-      {/* ── Velocity (Bottom Right) ── */}
+      {/* â”€â”€ Velocity (Bottom Right) â”€â”€ */}
       <div className="absolute right-4 bottom-12 md:right-24 md:bottom-24 text-right flex flex-col items-end">
         <span className={`${syncopate.className} text-[6px] md:text-[9px] text-[#b59b4c] tracking-[0.5em] uppercase block mb-1 md:mb-2 opacity-80`}>VELOCITY</span>
         <div className="flex items-baseline justify-end gap-1">
@@ -153,7 +153,7 @@ export function TelemetryHUD() {
         </div>
       </div>
 
-      {/* ── G-Force Tactical Radar (Top Left on Mobile, Top Right on Desktop) ── */}
+      {/* â”€â”€ G-Force Tactical Radar (Top Left on Mobile, Top Right on Desktop) â”€â”€ */}
       <div className="absolute top-24 left-4 md:left-auto md:top-32 md:right-24 flex flex-col items-start md:items-end gap-2 md:gap-3">
         <span className={`${syncopate.className} text-[6px] md:text-[9px] text-[#b59b4c] tracking-[0.5em] uppercase opacity-80`}>G-FORCE</span>
 

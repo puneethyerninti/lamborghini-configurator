@@ -89,15 +89,15 @@ function CinematicLetterbox() {
   const isTransitioning = useAppStore((s) => s.isTransitioning);
   return (
     <div className="pointer-events-none z-[100] fixed inset-0 overflow-hidden">
-      {/* Top Black Bar with Gold Accent Line */}
+      {/* Top Black Bar */}
       <div
-        className={`absolute top-0 left-0 w-full h-[14vh] bg-black border-b border-[#c8a96e]/30 transition-transform duration-300 ease-out ${
+        className={`absolute top-0 left-0 w-full h-[14vh] bg-black transition-transform duration-300 ease-out ${
           isTransitioning ? "translate-y-0" : "-translate-y-full"
         }`}
       />
-      {/* Bottom Black Bar with Gold Accent Line */}
+      {/* Bottom Black Bar */}
       <div
-        className={`absolute bottom-0 left-0 w-full h-[14vh] bg-black border-t border-[#c8a96e]/30 transition-transform duration-300 ease-out ${
+        className={`absolute bottom-0 left-0 w-full h-[14vh] bg-black transition-transform duration-300 ease-out ${
           isTransitioning ? "translate-y-0" : "translate-y-full"
         }`}
       />

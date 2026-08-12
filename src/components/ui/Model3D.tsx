@@ -625,7 +625,6 @@ function SceneCamera() {
       maxPolarAngle={Math.PI / 2 - 0.02}
       dollySpeed={0.5}
       smoothTime={0.8}
-      enabled={useAppStore.getState().currentSlide === 10 || useAppStore.getState().currentSlide === 11 || (typeof window !== 'undefined' && window.innerWidth >= 768)}
     />
   );
 }

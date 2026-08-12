@@ -106,7 +106,7 @@ function InteractionHandler() {
         return;
       }
 
-      if (timeDiff > 800) {
+      if (timeDiff > 600) {
         locked.current = false;
       }
 
@@ -402,7 +402,7 @@ const SlideContent = React.memo(function SlideContent() {
         <ChapterBadge chapter={4} title="Ownership" delay={0} active={currentSlide === 12} />
         <div className="absolute left-0 md:left-16 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-[400px] pointer-events-auto z-10">
           <FadeIn delay={0.2} direction="right" active={currentSlide === 12}>
-            <div className="flex flex-col gap-6 p-8 md:p-10 bg-black/80 border-t md:border border-white/10 backdrop-blur-md">
+            <div className="flex flex-col gap-6 p-8 md:p-10 bg-black/90 border-t md:border border-white/10">
               <div>
                 <img
                   src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"
@@ -462,8 +462,8 @@ function CinematicLetterbox() {
   const isTransitioning = useAppStore(s => s.isTransitioning);
   return (
     <div className="pointer-events-none z-[100]">
-      <div className={`fixed top-0 left-0 w-full h-[15vh] bg-black transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : '-translate-y-full'}`} />
-      <div className={`fixed bottom-0 left-0 w-full h-[15vh] bg-black transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : 'translate-y-full'}`} />
+      <div className={`fixed top-0 left-0 w-full h-[15vh] bg-black transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : '-translate-y-full'}`} />
+      <div className={`fixed bottom-0 left-0 w-full h-[15vh] bg-black transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : 'translate-y-full'}`} />
     </div>
   );
 }

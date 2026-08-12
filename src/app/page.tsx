@@ -478,7 +478,7 @@ export default function Home() {
           <Model3D />
         </div>
 
-        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden mix-blend-screen md:mix-blend-overlay opacity-10 md:opacity-20">
+        <div className="absolute inset-0 pointer-events-none -z-[1] flex items-center justify-center overflow-hidden opacity-5 md:opacity-10">
           <motion.div
             initial={false}
             animate={{
@@ -497,7 +497,6 @@ export default function Home() {
         <div className="absolute inset-0 z-[1] pointer-events-none transform-gpu" style={{ boxShadow: 'inset 0 0 150px 60px rgba(0,0,0,0.7)' }} />
 
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden transform-gpu">
-          <CinematicLetterbox />
           <motion.div
             initial={false}
             animate={{

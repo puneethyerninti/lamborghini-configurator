@@ -2,8 +2,8 @@
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CameraControls, Center, Environment, Text3D, useGLTF, Sparkles, PositionalAudio, MeshReflectorMaterial, PerformanceMonitor } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette, HueSaturation } from "@react-three/postprocessing";
+import { CameraControls, Center, Environment, Text3D, useGLTF, PerformanceMonitor } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useAppStore } from "@/store/useAppStore";
 import { Hotspots } from "./Hotspots";
@@ -151,26 +151,10 @@ function CinematicLighting() {
       <spotLight ref={fillLight1} position={[-10, 5, 10]} angle={0.5} penumbra={0.8} intensity={0.001} color="#ffffff" />
       <spotLight ref={fillLight2} position={[0, 10, 0]} angle={0.8} penumbra={1} intensity={0.001} color="#ff0000" />
 
-      {/* Showroom Floor — dynamic reflections */}
+      {/* Showroom Floor — simple dark material for performance */}
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
-        {isMobile ? (
-          <meshStandardMaterial color="#151515" metalness={0.9} roughness={0.4} envMapIntensity={1} />
-        ) : (
-          <MeshReflectorMaterial
-            blur={[100, 50]}
-            resolution={256}
-            mixBlur={1}
-            mixStrength={40}
-            roughness={0.8}
-            depthScale={1.2}
-            minDepthThreshold={0.4}
-            maxDepthThreshold={1.4}
-            color="#151515"
-            metalness={0.5}
-            mirror={1}
-          />
-        )}
+        <meshStandardMaterial color="#111111" metalness={0.8} roughness={0.4} envMapIntensity={0.5} />
       </mesh>
     </>
   );
@@ -400,56 +384,8 @@ function CarModel() {
             mat.color.set(carColor);
             mat.roughness = 0.15;
             mat.metalness = 0.85;
-
-            // Micro-Flake Paint Shader Injection
-            if (!mat.userData.hasFlakes) {
-              mat.userData.hasFlakes = true;
-              mat.onBeforeCompile = (shader) => {
-                shader.vertexShader = shader.vertexShader.replace(
-                  '#include <common>',
-                  `#include <common>
-                  varying vec3 vWorldPosition;`
-                );
-                shader.vertexShader = shader.vertexShader.replace(
-                  '#include <worldpos_vertex>',
-                  `#include <worldpos_vertex>
-                  vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;`
-                );
-
-                shader.fragmentShader = shader.fragmentShader.replace(
-                  '#include <common>',
-                  `#include <common>
-                  varying vec3 vWorldPosition;
-                  
-                  // 3D Noise function for flakes
-                  float hash(vec3 p) {
-                    p = fract(p * 0.3183099 + 0.1);
-                    p *= 17.0;
-                    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
-                  }
-                  float noise(vec3 x) {
-                    vec3 i = floor(x);
-                    vec3 f = fract(x);
-                    f = f * f * (3.0 - 2.0 * f);
-                    return mix(mix(mix(hash(i + vec3(0.0,0.0,0.0)), hash(i + vec3(1.0,0.0,0.0)), f.x),
-                                   mix(hash(i + vec3(0.0,1.0,0.0)), hash(i + vec3(1.0,1.0,0.0)), f.x), f.y),
-                               mix(mix(hash(i + vec3(0.0,0.0,1.0)), hash(i + vec3(1.0,0.0,1.0)), f.x),
-                                   mix(hash(i + vec3(0.0,1.0,1.0)), hash(i + vec3(1.0,1.0,1.0)), f.x), f.y), f.z);
-                  }`
-                );
-
-                shader.fragmentShader = shader.fragmentShader.replace(
-                  '#include <metalnessmap_fragment>',
-                  `#include <metalnessmap_fragment>
-                  float flakeNoise = noise(vWorldPosition * 2000.0); // High frequency noise
-                  // Add sparkle based on view angle and noise
-                  float sparkle = pow(flakeNoise, 4.0) * 1.5;
-                  roughnessFactor = mix(roughnessFactor, 0.05, sparkle * 0.3);
-                  metalnessFactor = mix(metalnessFactor, 1.0, sparkle * 0.5);
-                  `
-                );
-              };
-            }
+            mat.envMapIntensity = 1.2;
+            mat.needsUpdate = true;
 
             applied = true;
           }
@@ -778,21 +714,9 @@ function InteractiveSpotlight() {
 }
 
 function CinematicEffects() {
-  const isPolarized = useAppStore((s) => s.isPolarized);
-
-  if (isPolarized) {
-    return (
-      <EffectComposer multisampling={0}>
-        <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.4} />
-        <Vignette eskil={false} offset={0.1} darkness={1.1} />
-        <HueSaturation hue={0} saturation={0.5} />
-      </EffectComposer>
-    );
-  }
-
   return (
     <EffectComposer multisampling={0}>
-      <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.4} />
+      <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.3} />
     </EffectComposer>
   );
 }
@@ -857,15 +781,6 @@ export function Model3D() {
           <InteriorLight />
           <InteractiveSpotlight />
           <ConfiguratorAddons />
-          <Sparkles count={isMobile ? 30 : 150} scale={12} size={1.5} speed={0.2} opacity={0.15} color="#ffffff" noise={1} />
-          {isAudioEnabled && (
-            <PositionalAudio
-              url="/785503__litesaturation__energy-metal-short.wav"
-              position={[0, 0.5, -2]} // Mounted near engine bay
-              loop
-              autoplay
-            />
-          )}
         </Suspense>
 
         <SceneCamera />

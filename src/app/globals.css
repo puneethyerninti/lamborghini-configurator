@@ -43,18 +43,6 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
-  background-image:
-    radial-gradient(circle at 15% 50%, rgba(20, 20, 30, 0.5), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(30, 20, 40, 0.5), transparent 30%);
-  background-attachment: fixed;
-  cursor: none !important;
-}
-
-button,
-a,
-[role="button"],
-[data-cursor="hover"] {
-  cursor: none !important;
 }
 
 ::selection {

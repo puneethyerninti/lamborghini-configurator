@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { syncopate, montserrat } from "@/fonts";
-import { CinematicLetterbox } from "@/components/ui/CinematicLetterbox";
-import { CustomCursor } from "@/components/ui/CustomCursor";
-import { Navbar } from "@/components/ui/Navbar";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,9 +42,6 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} h-full antialiased dark`}
     >
       <body className={`${syncopate.variable} ${montserrat.variable} font-sans bg-[#050505] text-white overflow-hidden`}>
-        <CustomCursor />
-        <CinematicLetterbox />
-        <Navbar />
         {children}
       </body>
     </html>

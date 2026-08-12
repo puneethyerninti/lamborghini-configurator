@@ -93,7 +93,7 @@ export function TelemetryHUD() {
   if (!active) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden mix-blend-screen opacity-90 animate-glitch">
+    <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden opacity-90">
 
       {/* â”€â”€ Reticle: Aerospace Minimalist â”€â”€ */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[70vh] h-[90vw] md:h-[70vh] max-w-[700px] max-h-[700px] opacity-30">

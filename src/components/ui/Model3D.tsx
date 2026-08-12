@@ -418,7 +418,7 @@ function CarModel() {
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
-    const { isInteriorMode, currentSlide } = useAppStore.getState();
+    const { currentSlide } = useAppStore.getState();
 
     // 1. Smooth Camera/Model Rotation tracking
     if (groupRef.current && (currentSlide === 0 || currentSlide === 11 || currentSlide === 12)) {
@@ -489,12 +489,13 @@ function CarModel() {
       materials['Aluminum'].color.lerp(_trimColor, lerpSpeed);
     }
 
-    if (isInteriorMode) {
+    const isInteriorView = currentSlide === 10 && useAppStore.getState().configuratorTab === "interior";
+    if (isInteriorView) {
       targetRotation.current.identity();
       currentRotation.current.slerp(targetRotation.current, delta * 4);
       groupRef.current.quaternion.copy(currentRotation.current);
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, 0, delta * 4);
-      return;
+      return; // Skip exploded view and bobbing animations in interior mode!
     }
 
     // Exploded View Assembly (Slide 6)
@@ -566,25 +567,21 @@ function SceneCamera() {
 
   useFrame((state, delta) => {
     if (!controlsRef.current) return;
-    const { currentSlide, isInteriorMode, isEngineRevved, engineRevLevel, configuratorTab } = useAppStore.getState();
+    const { currentSlide, isEngineRevved, engineRevLevel, configuratorTab } = useAppStore.getState();
 
-    if (currentSlide !== prevSlideRef.current || isInteriorMode !== prevInteriorRef.current || (currentSlide === 10 && configuratorTab !== prevTabRef.current)) {
+    if (currentSlide !== prevSlideRef.current || (currentSlide === 10 && configuratorTab !== prevTabRef.current)) {
       prevSlideRef.current = currentSlide;
-      prevInteriorRef.current = isInteriorMode;
       prevTabRef.current = configuratorTab;
 
       const controls = controlsRef.current;
-      if (isInteriorMode) {
-        controls.setLookAt(0.35, 0.8, -0.2, 0.35, 0.8, -2, true);
-      } else {
-        let preset = CINEMATIC_PRESETS[currentSlide];
+      let preset = CINEMATIC_PRESETS[currentSlide];
 
         // Configurator Tab Overrides
         if (currentSlide === 10) {
           if (configuratorTab === "wheels") {
             preset = { pos: [2.5, 0.4, -2.5], target: [1, 0.3, -1.5], fov: 40, dur: 1.5, ease: "" };
           } else if (configuratorTab === "interior") {
-            preset = { pos: [-3.5, 1.2, 1.5], target: [-0.35, 0.8, -0.5], fov: 45, dur: 1.5, ease: "" };
+            preset = { pos: [-0.35, 0.8, -0.2], target: [0.35, 0.8, -2], fov: 55, dur: 1.5, ease: "" };
           } else if (configuratorTab === "backdrop") {
             preset = { pos: [0, 0.5, 8], target: [0, 0.5, 0], fov: 45, dur: 1.5, ease: "" };
           } else if (configuratorTab === "summary") {
@@ -609,10 +606,9 @@ function SceneCamera() {
           controls.camera.fov = preset.fov * (isMobile ? 1.2 : 1.0);
           controls.camera.updateProjectionMatrix();
         }
-      }
     }
 
-    if (!useAppStore.getState().isInteriorMode && useAppStore.getState().currentSlide === 0) {
+    if (useAppStore.getState().currentSlide === 0) {
       controlsRef.current.azimuthAngle -= delta * 0.05;
     }
 
@@ -663,7 +659,7 @@ function DynamicEnvironment() {
 
 function InteriorLight() {
   const interiorTheme = useAppStore((s) => s.interiorTheme);
-  const isInteriorMode = useAppStore((s) => s.isInteriorMode);
+  const isInteriorMode = useAppStore((s) => s.currentSlide === 10 && s.configuratorTab === "interior");
 
   // Nero = Red accent (#b59b4c as Gold for V2), Bianco = White/Blue (#ffffff), Arancio = Orange (#ff6600)
   const color = interiorTheme === 'nero' ? '#b59b4c' : interiorTheme === 'bianco' ? '#ffffff' : '#ff6600';

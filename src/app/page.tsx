@@ -95,8 +95,7 @@ function InteractionHandler() {
 
   useEffect(() => {
     const handleMove = (deltaY: number) => {
-      const { isInteriorMode, nextSlide, prevSlide } = useAppStore.getState();
-      if (isInteriorMode) return;
+      const { nextSlide, prevSlide } = useAppStore.getState();
 
       const now = performance.now();
       const timeDiff = now - lastEventTime.current;
@@ -155,7 +154,7 @@ function InteractionHandler() {
 // Slide Content (All 14 Slides)
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const SlideContent = React.memo(function SlideContent() {
-  const { currentSlide, isInteriorMode, chapter } = useAppStore();
+  const { currentSlide, chapter } = useAppStore();
 
   return (
     <>
@@ -164,7 +163,7 @@ const SlideContent = React.memo(function SlideContent() {
       {/* â”€â”€ Chapter 1: The Bull â”€â”€ */}
 
       {/* S0: Hero Cold Open */}
-      <Slide active={currentSlide === 0 && !isInteriorMode} className="p-8 md:p-16">
+      <Slide active={currentSlide === 0} className="p-8 md:p-16">
         <ChapterBadge chapter={0} title="Identity" active={currentSlide === 0} />
 
 
@@ -351,7 +350,7 @@ const SlideContent = React.memo(function SlideContent() {
       {/* â”€â”€ Chapter 4: The Atelier â”€â”€ */}
 
       {/* S10: Configurator */}
-      <Slide active={currentSlide === 10 && !isInteriorMode} className="!pointer-events-none">
+      <Slide active={currentSlide === 10} className="!pointer-events-none">
         <ChapterBadge chapter={3} title="Ad Personam" delay={0} active={currentSlide === 10} />
         <div className="absolute right-0 md:right-48 lg:right-56 bottom-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-auto pointer-events-auto z-10">
           <MouseParallax intensity={10}>

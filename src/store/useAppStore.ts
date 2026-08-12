@@ -14,7 +14,6 @@ interface AppState {
 
   // Modes
   isAudioEnabled: boolean;
-  isInteriorMode: boolean;
   isEngineRevved: boolean;
   engineRevLevel: number;
   isTransitioning: boolean;
@@ -34,7 +33,6 @@ interface AppState {
   setPackageTier: (tier: 'standard' | 'magnolia' | 'svj63') => void;
   setEnvironment: (env: 'studio' | 'night' | 'city') => void;
   toggleAudio: () => void;
-  toggleInteriorMode: () => void;
   toggleThermalMode: () => void;
   togglePolarized: () => void;
   revEngine: () => void;
@@ -63,7 +61,6 @@ export const useAppStore = create<AppState>((set) => ({
   environment: 'studio',
 
   isAudioEnabled: false,
-  isInteriorMode: false,
   isEngineRevved: false,
   engineRevLevel: 0,
   isTransitioning: false,
@@ -78,8 +75,7 @@ export const useAppStore = create<AppState>((set) => ({
     setTimeout(() => set({ isTransitioning: false }), 800);
     set({
       currentSlide: index,
-      chapter: getChapter(index),
-      isInteriorMode: false
+      chapter: getChapter(index)
     });
   },
 
@@ -93,7 +89,6 @@ export const useAppStore = create<AppState>((set) => ({
       return {
         currentSlide: next,
         chapter: getChapter(next),
-        isInteriorMode: false,
         isTransitioning: true
       };
     }
@@ -107,7 +102,6 @@ export const useAppStore = create<AppState>((set) => ({
       return {
         currentSlide: prev,
         chapter: getChapter(prev),
-        isInteriorMode: false,
         isTransitioning: true
       };
     }
@@ -118,8 +112,6 @@ export const useAppStore = create<AppState>((set) => ({
   setWheelStyle: (style) => set({ wheelStyle: style }),
   setInteriorTheme: (theme) => set({ interiorTheme: theme }),
   setPackageTier: (tier) => set({ packageTier: tier }),
-
-  toggleInteriorMode: () => set((state) => ({ isInteriorMode: !state.isInteriorMode })),
   toggleThermalMode: () => set((state) => ({ isThermalMode: !state.isThermalMode })),
   togglePolarized: () => set((state) => ({ isPolarized: !state.isPolarized })),
 

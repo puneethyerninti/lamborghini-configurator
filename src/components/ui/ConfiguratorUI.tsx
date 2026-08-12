@@ -202,12 +202,6 @@ export function ConfiguratorUI() {
               </HoverBorderButton>
             ))}
 
-            <button
-              onClick={() => useAppStore.getState().toggleInteriorMode()}
-              className={`mt-4 border border-[#b59b4c] px-8 py-4 ${syncopate.className} text-[9px] font-bold tracking-[0.3em] uppercase text-[#b59b4c] hover:bg-[#b59b4c] hover:text-black transition-colors w-full`}
-            >
-              Enter Cockpit View
-            </button>
           </div>
         )}
 

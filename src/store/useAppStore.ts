@@ -72,7 +72,7 @@ export const useAppStore = create<AppState>((set) => ({
 
   setSlide: (index) => {
     set({ isTransitioning: true });
-    setTimeout(() => set({ isTransitioning: false }), 500);
+    setTimeout(() => set({ isTransitioning: false }), 800);
     set({
       currentSlide: index,
       chapter: getChapter(index)
@@ -85,7 +85,7 @@ export const useAppStore = create<AppState>((set) => ({
   nextSlide: () => set((state) => {
     const next = Math.min(state.currentSlide + 1, state.totalSlides - 1);
     if (next !== state.currentSlide) {
-      setTimeout(() => set({ isTransitioning: false }), 500);
+      setTimeout(() => set({ isTransitioning: false }), 800);
       return {
         currentSlide: next,
         chapter: getChapter(next),
@@ -98,7 +98,7 @@ export const useAppStore = create<AppState>((set) => ({
   prevSlide: () => set((state) => {
     const prev = Math.max(state.currentSlide - 1, 0);
     if (prev !== state.currentSlide) {
-      setTimeout(() => set({ isTransitioning: false }), 500);
+      setTimeout(() => set({ isTransitioning: false }), 800);
       return {
         currentSlide: prev,
         chapter: getChapter(prev),

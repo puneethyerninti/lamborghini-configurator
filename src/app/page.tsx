@@ -96,7 +96,7 @@ function InteractionHandler() {
   useEffect(() => {
     const triggerSlide = (direction: "next" | "prev") => {
       const now = performance.now();
-      if (now - lastEventTime.current < 550) return;
+      if (now - lastEventTime.current < 700) return;
       lastEventTime.current = now;
 
       const { nextSlide, prevSlide } = useAppStore.getState();
@@ -454,8 +454,8 @@ function CinematicLetterbox() {
   const isTransitioning = useAppStore(s => s.isTransitioning);
   return (
     <div className="pointer-events-none z-[100]">
-      <div className={`fixed top-0 left-0 w-full h-[15vh] bg-black transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : '-translate-y-full'}`} />
-      <div className={`fixed bottom-0 left-0 w-full h-[15vh] bg-black transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : 'translate-y-full'}`} />
+      <div className={`fixed top-0 left-0 w-full h-[12vh] bg-black transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isTransitioning ? 'translate-y-0' : '-translate-y-full'}`} />
+      <div className={`fixed bottom-0 left-0 w-full h-[12vh] bg-black transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isTransitioning ? 'translate-y-0' : 'translate-y-full'}`} />
     </div>
   );
 }

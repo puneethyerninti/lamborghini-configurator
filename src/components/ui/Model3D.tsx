@@ -590,7 +590,7 @@ function SceneCamera() {
           // Push the car UP on the screen on mobile in the configurator tab so UI doesn't overlap it
           const targetYOffset = isMobile && currentSlide === 10 ? 1.0 : 0;
 
-          controls.smoothTime = preset.dur / 2;
+          controls.smoothTime = isMobile ? 0.5 : 0.75;
           controls.setLookAt(
             preset.pos[0] * mobileMult, preset.pos[1] + targetYOffset, preset.pos[2] * mobileMult,
             preset.target[0], preset.target[1] + targetYOffset, preset.target[2],
@@ -704,7 +704,7 @@ function InteractiveSpotlight() {
 function CinematicEffects() {
   return (
     <EffectComposer multisampling={0}>
-      <Bloom luminanceThreshold={3.0} mipmapBlur intensity={0.3} />
+      <Bloom luminanceThreshold={1.2} mipmapBlur intensity={0.25} />
     </EffectComposer>
   );
 }

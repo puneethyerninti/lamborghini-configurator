@@ -399,7 +399,7 @@ const SlideContent = React.memo(function SlideContent() {
 
       {/* S12: Inquiry */}
       <Slide active={currentSlide === 12} className="flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-[-1]" />
+        <div className="absolute inset-0 bg-black/80 z-[-1]" />
         <FadeIn delay={0.3} active={currentSlide === 12} className="flex flex-col items-center pointer-events-auto">
           <img
             src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg"

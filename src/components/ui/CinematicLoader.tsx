@@ -13,14 +13,25 @@ export function CinematicLoader() {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    if (!active && progress === 100) {
+    let timer: NodeJS.Timeout;
+    if (progress === 100 || (!active && progress > 0)) {
       // Add a generous delay to allow ThreeJS shader compilation to finish
       // before we drop the loader. This prevents the initial hero section from lagging.
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setShow(false);
       }, 1500);
-      return () => clearTimeout(timer);
     }
+    
+    // Safety fallback: if loading takes longer than 4 seconds, forcefully drop the loader 
+    // so the user is never permanently stuck on a booting screen.
+    const fallback = setTimeout(() => {
+      setShow(false);
+    }, 4000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(fallback);
+    };
   }, [active, progress]);
 
   return (

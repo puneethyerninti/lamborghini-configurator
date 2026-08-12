@@ -468,6 +468,13 @@ function CarModel() {
               mat.roughness = 0.15;
               mat.metalness = 0.85;
             }
+            
+            // Pre-enable transparency for Body and Glass to prevent WebGL shader crashes 
+            // when interpolating opacity dynamically later in useFrame.
+            if (name.includes("body") || name.includes("glass") || name.includes("window")) {
+              mat.transparent = true;
+              mat.needsUpdate = true;
+            }
           }
         }
       });
@@ -511,7 +518,6 @@ function CarModel() {
 
       // Toggle Wireframe and Opacity
       materials['Body'].wireframe = isXRay;
-      materials['Body'].transparent = true;
       materials['Body'].opacity = THREE.MathUtils.lerp(
         materials['Body'].opacity,
         isXRay ? 0.4 : 1.0,
@@ -554,7 +560,6 @@ function CarModel() {
 
     // Window Glass (Tint lighter if in interior mode or interior theme is bright)
     if (materials['Window_Glass']) {
-      materials['Window_Glass'].transparent = true;
       materials['Window_Glass'].opacity = THREE.MathUtils.lerp(
         materials['Window_Glass'].opacity,
         isInteriorMode ? 0.2 : 0.8,

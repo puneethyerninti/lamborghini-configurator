@@ -504,14 +504,15 @@ function CarModel() {
     }
     const prevProgress = groupRef.current.userData.explosionProgress;
     groupRef.current.userData.explosionProgress = THREE.MathUtils.lerp(prevProgress, targetExplosionAmount, lerpSpeed);
+    const currentExplosionProgress = groupRef.current.userData.explosionProgress;
 
     // Only traverse if we are not at rest (progress > 0.001)
-    if (groupRef.current.userData.explosionProgress > 0.001 || targetExplosionAmount === 1) {
+    if (currentExplosionProgress > 0.001 || targetExplosionAmount === 1) {
       scene.traverse((child: THREE.Object3D) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           if (mesh.userData.originalPos && mesh.userData.explodeDir) {
-            _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(groupRef.current.userData.explosionProgress).add(mesh.userData.originalPos);
+            _tempVec.copy(mesh.userData.explodeDir).multiplyScalar(currentExplosionProgress).add(mesh.userData.originalPos);
             mesh.position.copy(_tempVec);
             mesh.updateMatrix();
           }

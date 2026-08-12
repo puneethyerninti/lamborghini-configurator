@@ -440,8 +440,8 @@ function CinematicLetterbox() {
   const isTransitioning = useAppStore(s => s.isTransitioning);
   return (
     <div className="pointer-events-none z-[100]">
-      <div className={`fixed top-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[15vh]' : 'h-0'}`} />
-      <div className={`fixed bottom-0 left-0 w-full bg-black transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'h-[15vh]' : 'h-0'}`} />
+      <div className={`fixed top-0 left-0 w-full h-[15vh] bg-black transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : '-translate-y-full'}`} />
+      <div className={`fixed bottom-0 left-0 w-full h-[15vh] bg-black transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] ${isTransitioning ? 'translate-y-0' : 'translate-y-full'}`} />
     </div>
   );
 }

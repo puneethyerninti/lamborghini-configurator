@@ -2,7 +2,13 @@
   <img src="https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg" alt="Lamborghini Logo" width="100" />
   <br/>
   <h1>Automobili Lamborghini | Aventador SVJ</h1>
-  <p><strong>A Cinematic Spatial Web Experience</strong></p>
+  <p><strong>A Cinematic 3D Spatial Web Experience & Ad Personam Configurator</strong></p>
+
+  [![Live Demo](https://img.shields.io/badge/LIVE_DEMO-lamborghini--svj.vercel.app-gold?style=for-the-badge&logo=vercel)](https://lamborghini-svj.vercel.app)
+  [![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+  [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org)
+  [![React Three Fiber](https://img.shields.io/badge/React_Three_Fiber-black?style=for-the-badge&logo=react)](https://docs.pmnd.rs/react-three-fiber)
+  [![Zustand](https://img.shields.io/badge/Zustand-443e38?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
 </div>
 
 <br/>
